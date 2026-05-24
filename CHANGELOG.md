@@ -10,10 +10,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Published the initial production portfolio deployment on Vercel Hobby.
 - Connected the GitHub repository to Vercel for automatic production and preview deployments.
+- Added opt-in GitHub project discovery using the `portfolio-showcase` repository topic.
+
+### Changed
+
+- Removed the repetitive proof-of-work card section in favor of a tighter project presentation.
+- Reframed the hero and profile panel around the current backend, full-stack, and cloud-data toolkit.
 
 ### Planned
 
-- Add deeper case-study pages as portfolio content grows.
+- Expand project detail only when a future project has meaningful outcomes or demos to show.
 
 ## [0.1.0] - 2026-05-24
 

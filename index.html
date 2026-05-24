@@ -60,11 +60,12 @@
     <main>
       <section class="hero" aria-labelledby="intro-title">
         <div class="hero-copy">
-          <p class="eyebrow">Full-stack developer · data systems · applied AI</p>
-          <h1 id="intro-title">Turning ideas into fast, useful software.</h1>
+          <p class="eyebrow">Backend · full-stack · cloud data · applied AI</p>
+          <h1 id="intro-title">Building reliable products from API to interface.</h1>
           <p class="hero-text">
-            I’m Manmohan, a developer building across React interfaces, TypeScript services,
-            cloud-native data pipelines, and AI-powered product experiments.
+            I’m Manmohan, building today with TypeScript, Java, REST APIs, React, AWS,
+            Kafka, PostgreSQL, Docker, and Kubernetes, with earlier work across UI,
+            graphics, design patterns, and AI experiments.
           </p>
           <div class="spatial-status" aria-label="Portfolio mode">
             <span></span>
@@ -74,8 +75,8 @@
             <span>Backend</span>
             <span>TypeScript</span>
             <span>Java</span>
-            <span>Cloud</span>
-            <span>AI</span>
+            <span>AWS</span>
+            <span>Kafka</span>
           </div>
           <div class="hero-actions" aria-label="Profile links">
             <a class="button primary external-link" href="https://github.com/manmohanml1">
@@ -102,21 +103,25 @@
             />
             <div>
               <p class="profile-name">Manmohan M. L.</p>
-              <p class="profile-detail">Software engineering portfolio</p>
+              <p class="profile-detail">Backend and full-stack engineer</p>
             </div>
           </div>
           <div class="signal-grid">
+            <div class="signal-card">
+              <span>Backend</span>
+              <strong>TypeScript + Java</strong>
+            </div>
+            <div class="signal-card">
+              <span>Cloud data</span>
+              <strong>Kafka + AWS</strong>
+            </div>
             <div class="signal-card">
               <span>Frontend</span>
               <strong>React apps</strong>
             </div>
             <div class="signal-card">
-              <span>Systems</span>
-              <strong>Kafka + K8s</strong>
-            </div>
-            <div class="signal-card">
-              <span>AI</span>
-              <strong>LangChain</strong>
+              <span>Exploring</span>
+              <strong>Applied AI</strong>
             </div>
           </div>
           <div class="system-monitor" aria-label="Engineering snapshot">
@@ -124,10 +129,10 @@
               <span>systems check</span>
               <strong>online</strong>
             </div>
-            <pre><code>api: express + typescript
-tests: jest / junit / pytest
-data: kafka -> postgres
-deploy: docker + kubernetes</code></pre>
+            <pre><code>api: typescript + java
+tests: jest + junit 5
+data: kafka + postgres
+ship: github -> vercel</code></pre>
           </div>
         </aside>
       </section>
@@ -143,8 +148,8 @@ deploy: docker + kubernetes</code></pre>
             <h2>Interfaces, APIs, data pipelines, and AI workflows that connect cleanly.</h2>
           </article>
           <article class="bento-tile reveal">
-            <span class="metric">10</span>
-            <p>public repositories surfaced from GitHub</p>
+            <span class="metric">8+</span>
+            <p>curated projects with opt-in GitHub additions</p>
           </article>
           <article class="bento-tile reveal">
             <span class="metric">4</span>
@@ -157,26 +162,13 @@ deploy: docker + kubernetes</code></pre>
         </div>
       </section>
 
-      <section class="section case-study-section" aria-labelledby="case-study-title">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">Proof of work</p>
-            <h2 id="case-study-title">Built like real systems, not just screenshots.</h2>
-          </div>
-          <p class="section-copy">
-            A portfolio should show how code is structured, tested, deployed, and connected.
-          </p>
-        </div>
-        <div class="case-study-grid" id="case-study-grid"></div>
-      </section>
-
       <section class="section" id="work" aria-labelledby="work-title">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">Selected GitHub work</p>
-            <h2 id="work-title">Featured projects</h2>
+            <p class="eyebrow">Selected GitHub work + opt-in updates</p>
+            <h2 id="work-title">Projects</h2>
           </div>
-          <p class="section-copy">A focused set of repos showing frontend delivery, backend APIs, cloud data systems, and applied AI.</p>
+          <p class="section-copy">Curated projects first, with newly tagged GitHub work added automatically.</p>
         </div>
 
         <div class="filter-bar" role="group" aria-label="Filter projects">
@@ -189,7 +181,7 @@ deploy: docker + kubernetes</code></pre>
 
         <div class="project-toolbar" aria-live="polite">
           <span id="project-count">Showing all projects</span>
-          <strong>Filter updates the cards below</strong>
+          <strong id="github-project-status">Loading tagged GitHub additions...</strong>
         </div>
         <div class="project-grid" id="project-grid"></div>
       </section>

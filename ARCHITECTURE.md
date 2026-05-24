@@ -6,9 +6,10 @@ This portfolio is a static, no-build site with modular ES modules. It is intenti
 
 - `index.html`: semantic page shell and persistent layout anchors.
 - `styles.css`: current visual system, responsive layout, theme variables, and animations.
-- `src/data/portfolio.js`: editable portfolio content, projects, skills, journey, and proof sections.
+- `src/data/portfolio.js`: editable curated portfolio content, skills, and journey sections.
 - `src/data/themes.js`: theme definitions used by the style switcher.
 - `src/config/environment.js`: runtime environment resolution for local, staging/preview, and production hosts.
+- `src/services/github-projects.js`: opt-in public GitHub repository discovery via `portfolio-showcase` topic.
 - `src/render/`: DOM rendering modules for content sections.
 - `src/features/`: interactive features such as theme switching, reveal animation, card tilt, cursor light, and back-to-top.
 - `src/utils/`: small shared utilities.
@@ -26,7 +27,7 @@ This is not as heavy as a framework, but it avoids the worst static-site problem
 
 ## Update Checklist
 
-1. Update content in `src/data/portfolio.js`.
+1. Update curated content in `src/data/portfolio.js`, or tag a public repository `portfolio-showcase` for live inclusion.
 2. Add or adjust themes in `src/data/themes.js`.
 3. Keep rendering logic in `src/render/`.
 4. Keep interaction logic in `src/features/`.
@@ -43,6 +44,12 @@ The static client resolves three supported environments:
 - `production`: any deployed public hostname not matching staging rules.
 
 For local testing only, load `?env=staging` or `?env=production` to exercise an environment before deployment.
+
+## GitHub Project Inclusion
+
+Curated flagship projects remain in `src/data/portfolio.js`. Additional public repositories are fetched from GitHub at runtime and rendered only when explicitly tagged `portfolio-showcase`. Optional category topics (`portfolio-frontend`, `portfolio-backend`, `portfolio-data`, `portfolio-ai`) place a project into the matching filter.
+
+This keeps inclusion intentional and avoids requiring a deployment for each new selected repository. If the public GitHub API is temporarily unavailable or rate limited, the curated project set continues to render.
 
 ## Pipeline
 
