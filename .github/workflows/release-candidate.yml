@@ -1,0 +1,47 @@
+name: Prepare Release Candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: Environment to validate and package
+        required: true
+        default: staging
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+
+jobs:
+  package:
+    name: Package ${{ inputs.target_environment }}
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.target_environment }}
+    env:
+      PORTFOLIO_ENV: ${{ inputs.target_environment }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check source syntax
+        run: node scripts/check.mjs
+
+      - name: Run tests for selected environment
+        run: node --test
+
+      - name: Package validated static release candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-${{ inputs.target_environment }}-${{ github.sha }}
+          path: |
+            index.html
+            styles.css
+            src
+          if-no-files-found: error

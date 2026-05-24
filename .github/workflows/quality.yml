@@ -1,0 +1,58 @@
+name: Portfolio Quality
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate (${{ matrix.environment }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        environment:
+          - development
+          - staging
+          - production
+        node-version:
+          - 20
+          - 22
+    env:
+      PORTFOLIO_ENV: ${{ matrix.environment }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Check source syntax
+        run: node scripts/check.mjs
+
+      - name: Run tests
+        run: node --test
+
+  static-artifact:
+    name: Package static site
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Package deployable files
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-static-site
+          path: |
+            index.html
+            styles.css
+            src
+          if-no-files-found: error
