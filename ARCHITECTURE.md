@@ -9,6 +9,7 @@ This portfolio is a static, no-build site with modular ES modules. It is intenti
 - `src/data/portfolio.js`: editable curated portfolio content, skills, and journey sections.
 - `src/data/themes.js`: theme definitions used by the style switcher.
 - `src/config/environment.js`: runtime environment resolution for local, staging/preview, and production hosts.
+- `src/config/release.js`: visible production release version and release type badge metadata.
 - `src/services/github-projects.js`: opt-in public GitHub repository discovery via `portfolio-showcase` topic.
 - `src/render/`: DOM rendering modules for content sections.
 - `src/features/`: interactive features such as theme switching, reveal animation, card tilt, cursor light, and back-to-top.
@@ -32,8 +33,10 @@ This is not as heavy as a framework, but it avoids the worst static-site problem
 3. Keep rendering logic in `src/render/`.
 4. Keep interaction logic in `src/features/`.
 5. Record meaningful user-visible changes under `Unreleased` in `CHANGELOG.md`.
-6. Run `node scripts/check.mjs` and `node --test`.
-7. Preview in browser at desktop and mobile widths.
+6. Update `src/config/release.js` according to the versioning policy.
+7. Title the pull request with `feat:` or `fix:`.
+8. Run `node scripts/check.mjs` and `node --test`.
+9. Preview in browser at desktop and mobile widths.
 
 ## Environments
 
@@ -69,7 +72,15 @@ Once a hosting provider is chosen, add a deployment step that consumes the valid
 
 ## Git Workflow
 
-`main` is the stable, public portfolio branch. After the initial repository publish, keep future work on focused feature branches and merge through pull requests so the automated checks guard every update. The changelog provides a readable history independent of individual commits.
+`main` is the stable, public portfolio branch. After the initial repository publish, keep future work on focused feature branches and merge through pull requests so the automated checks guard every update. Pull request titles must use `feat:` for functionality and `fix:` for corrections. The changelog provides a readable history independent of individual commits.
+
+## Release Versioning
+
+- `feat:` increments the minor release, such as `v1.0.0` to `v1.1.0`.
+- `fix:` increments the patch release, such as `v1.1.0` to `v1.1.1`.
+- A major overhaul uses a `feat:` pull request and increments the major release, such as `v1.11.0` to `v2.0.0`.
+
+Update `src/config/release.js` and the changelog together so the header badge always represents the deployed release.
 
 ## When To Move To A Framework
 

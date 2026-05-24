@@ -18,6 +18,7 @@ test("document loads the modular application entry and contact link", () => {
 test("document includes accessible controls for theme and back-to-top actions", () => {
   assert.match(html, /aria-label="Change visual style"/);
   assert.match(html, /aria-label="Back to top"/);
+  assert.match(html, /id="release-indicator"/);
 });
 
 test("document emphasizes backend work without the removed proof section", () => {
