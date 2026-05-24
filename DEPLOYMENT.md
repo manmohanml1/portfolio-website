@@ -11,12 +11,12 @@ This portfolio is a static application: it needs only `index.html`, `styles.css`
 
 ## Git Deployment Connection
 
-The initial production deployment has been published through the Vercel CLI. Automatic deploys from GitHub still require adding GitHub as a Vercel login connection, then connecting:
+The initial production deployment was published through the Vercel CLI, and the Vercel project is now connected to GitHub:
 
 - GitHub repository: [manmohanml1/portfolio-website](https://github.com/manmohanml1/portfolio-website)
 - Vercel project: `portfolio-website`
 
-After the GitHub connection is authorized in Vercel, pushes to `main` should deploy production and feature branches or pull requests should generate preview deployments.
+Pushes to `main` deploy production. Feature branches and pull requests create Vercel preview deployments for review before merge.
 
 ## Environments
 
@@ -28,7 +28,7 @@ The current quality pipeline validates three logical environments:
 | `staging` | Preview deployment reviewed before publishing |
 | `production` | Public portfolio on the primary domain |
 
-Connect Vercel preview deployments to pull requests and production deployment to `main` after the GitHub login connection is available.
+Vercel preview deployments are connected to feature branches and pull requests, while production deployments are connected to `main`.
 
 ## Release Habit
 

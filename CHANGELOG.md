@@ -9,10 +9,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ### Added
 
 - Published the initial production portfolio deployment on Vercel Hobby.
+- Connected the GitHub repository to Vercel for automatic production and preview deployments.
 
 ### Planned
 
-- Enable automatic Vercel preview and production deploys after authorizing the GitHub login connection in Vercel.
 - Add deeper case-study pages as portfolio content grows.
 
 ## [0.1.0] - 2026-05-24
