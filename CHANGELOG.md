@@ -6,22 +6,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-05-24
+
 ### Added
 
-- Published the initial production portfolio deployment on Vercel Hobby.
-- Connected the GitHub repository to Vercel for automatic production and preview deployments.
 - Added opt-in GitHub project discovery using the `portfolio-showcase` repository topic.
+- Added a visible deployment release indicator and a documented version policy.
+- Added CI enforcement requiring pull request titles to begin with `feat:` or `fix:`.
 
 ### Changed
 
 - Removed the repetitive proof-of-work card section in favor of a tighter project presentation.
 - Reframed the hero and profile panel around the current backend, full-stack, and cloud-data toolkit.
 
-### Planned
-
-- Expand project detail only when a future project has meaningful outcomes or demos to show.
-
-## [0.1.0] - 2026-05-24
+## [1.0.0] - 2026-05-24
 
 ### Added
 
@@ -33,6 +31,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Modular JavaScript architecture separating content, rendering, interactions, themes, and environment configuration.
 - Automated tests for project filtering, themes, content integrity, environment resolution, and document contracts.
 - GitHub Actions workflows for pull-request quality validation and environment-specific release candidate packaging.
+- Published the initial production portfolio deployment on Vercel Hobby.
+- Connected the GitHub repository to Vercel for automatic production and preview deployments.
 
-[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/manmohanml1/portfolio-website/releases/tag/v0.1.0
+[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/manmohanml1/portfolio-website/releases/tag/v1.0.0

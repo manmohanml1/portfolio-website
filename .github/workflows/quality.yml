@@ -9,6 +9,20 @@ on:
   workflow_dispatch:
 
 jobs:
+  pull-request-title:
+    name: Validate PR title convention
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require feat or fix prefix
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if [[ ! "$PR_TITLE" =~ ^(feat|fix):[[:space:]].+ ]]; then
+            echo "Pull request titles must start with 'feat: ' or 'fix: '."
+            exit 1
+          fi
+
   validate:
     name: Validate (${{ matrix.environment }})
     runs-on: ubuntu-latest
@@ -41,7 +55,8 @@ jobs:
 
   static-artifact:
     name: Package static site
-    needs: validate
+    needs:
+      - validate
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository

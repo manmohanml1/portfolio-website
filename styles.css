@@ -461,6 +461,7 @@ body:hover .cursor-light {
   backdrop-filter: blur(18px);
 }
 
+.brand-cluster,
 .brand,
 nav,
 .hero-actions,
@@ -475,6 +476,29 @@ nav,
 .brand {
   gap: 12px;
   font-weight: 900;
+}
+
+.brand-cluster {
+  gap: 12px;
+  min-width: 0;
+}
+
+.release-indicator {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border: 1px solid rgba(54, 214, 196, 0.34);
+  border-radius: 8px;
+  color: var(--cyan);
+  background: var(--soft-panel);
+  font-size: 0.7rem;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.release-indicator[data-release-type="fix"] {
+  border-color: rgba(255, 200, 87, 0.34);
+  color: var(--amber);
 }
 
 .brand img,
@@ -1401,6 +1425,11 @@ footer p {
   .contact-section .section-heading {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .brand-cluster {
+    width: 100%;
+    justify-content: space-between;
   }
 
   nav {

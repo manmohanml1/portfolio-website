@@ -71,4 +71,16 @@ The published website reads public GitHub repository metadata and appends newly 
 
 ## Contribution Flow
 
-The initial project is established on `main`. Future improvements should be developed on a short-lived feature branch, validated through GitHub Actions, recorded under `Unreleased` in the changelog, and merged through a pull request.
+The initial project is established on `main`. Future improvements should be developed on a short-lived feature branch, validated through GitHub Actions, recorded in the changelog, and merged through a pull request.
+
+## Release Versioning
+
+The small badge beside the site name identifies the currently deployed release. Its source of truth is `src/config/release.js`.
+
+| Change Type | Pull Request Prefix | Version Change | Example |
+| --- | --- | --- | --- |
+| New user-facing feature | `feat:` | Minor version | `v1.0.0` -> `v1.1.0` |
+| Small fix or polish update | `fix:` | Patch version | `v1.1.0` -> `v1.1.1` |
+| Significant overhaul | `feat:` with a major-release note | Major version | `v1.11.0` -> `v2.0.0` |
+
+Pull request titles are checked automatically and must begin with either `feat: ` or `fix: `.
