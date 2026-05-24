@@ -1360,13 +1360,19 @@ footer p {
 }
 
 @media (max-width: 980px) {
-  .hero,
   .project-grid,
   .skill-grid {
     grid-template-columns: 1fr 1fr;
   }
 
-  .profile-panel,
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-panel {
+    grid-column: auto;
+  }
+
   .project-card.featured {
     grid-column: span 2;
   }
