@@ -1,5 +1,6 @@
 import { projects } from "../data/portfolio.js";
-import { qs, qsa, tagsTemplate } from "../utils/dom.js";
+import { fetchOptInProjects } from "../services/github-projects.js";
+import { escapeHtml, qs, qsa, safeExternalUrl, tagsTemplate } from "../utils/dom.js";
 
 export const PROJECT_FILTERS = ["all", "frontend", "backend", "data", "ai"];
 const FILTER_LABELS = {
@@ -10,25 +11,37 @@ const FILTER_LABELS = {
   ai: "AI projects",
 };
 
-export function getProjectsForFilter(filter = "all") {
+export function getProjectsForFilter(filter = "all", availableProjects = projects) {
   if (!PROJECT_FILTERS.includes(filter) || filter === "all") {
-    return projects;
+    return availableProjects;
   }
 
-  return projects.filter((project) => project.category === filter);
+  return availableProjects.filter((project) => project.category === filter);
 }
 
 export function getFilterLabel(filter = "all") {
   return FILTER_LABELS[filter] || FILTER_LABELS.all;
 }
 
+export function mergeProjects(curatedProjects, discoveredProjects) {
+  const curatedUrls = new Set(curatedProjects.map((project) => project.repo.toLowerCase()));
+  return [
+    ...curatedProjects,
+    ...discoveredProjects.filter((project) => !curatedUrls.has(project.repo.toLowerCase())),
+  ];
+}
+
 export function setupProjectFilters({ onCardsRendered } = {}) {
   const grid = qs("#project-grid");
   const filters = qsa(".filter");
   const projectCount = qs("#project-count");
+  const githubProjectStatus = qs("#github-project-status");
+  let availableProjects = projects;
+  let activeFilter = "all";
 
   function renderProjects(filter = "all") {
-    const visibleProjects = getProjectsForFilter(filter);
+    activeFilter = filter;
+    const visibleProjects = getProjectsForFilter(filter, availableProjects);
     const filterLabel = getFilterLabel(filter);
 
     grid.innerHTML = visibleProjects
@@ -36,20 +49,20 @@ export function setupProjectFilters({ onCardsRendered } = {}) {
         (project) => `
           <article class="project-card ${project.featured ? "featured" : ""}">
             <div class="project-visual" aria-hidden="true">
-              <span style="--project-accent: ${project.accent}">${project.visual}</span>
+              <span style="--project-accent: ${escapeHtml(project.accent)}">${escapeHtml(project.visual)}</span>
             </div>
             <div class="project-topline">
-              <span class="project-type">${project.type}</span>
-              <span class="repo-size">${project.size}</span>
+              <span class="project-type">${escapeHtml(project.type)}</span>
+              <span class="repo-size">${escapeHtml(project.size)}</span>
             </div>
-            <h3>${project.title}</h3>
-            <p>${project.description}</p>
-            <div class="tags" aria-label="${project.title} technologies">
+            <h3>${escapeHtml(project.title)}</h3>
+            <p>${escapeHtml(project.description)}</p>
+            <div class="tags" aria-label="${escapeHtml(project.title)} technologies">
               ${tagsTemplate(project.tags)}
             </div>
             <div class="project-links">
-              <a class="external-link" href="${project.repo}">Repository</a>
-              ${project.live ? `<a class="external-link" href="${project.live}">Live app</a>` : ""}
+              <a class="external-link" href="${escapeHtml(safeExternalUrl(project.repo))}">Repository</a>
+              ${project.live ? `<a class="external-link" href="${escapeHtml(safeExternalUrl(project.live))}">Live app</a>` : ""}
             </div>
           </article>
         `,
@@ -75,4 +88,18 @@ export function setupProjectFilters({ onCardsRendered } = {}) {
   });
 
   renderProjects();
+
+  fetchOptInProjects()
+    .then((discoveredProjects) => {
+      availableProjects = mergeProjects(projects, discoveredProjects);
+      const addedProjects = availableProjects.length - projects.length;
+      githubProjectStatus.textContent =
+        addedProjects > 0
+          ? `${addedProjects} tagged GitHub project${addedProjects === 1 ? "" : "s"} added live`
+          : "Curated selection · live GitHub additions enabled";
+      renderProjects(activeFilter);
+    })
+    .catch(() => {
+      githubProjectStatus.textContent = "Curated projects shown; GitHub additions unavailable";
+    });
 }

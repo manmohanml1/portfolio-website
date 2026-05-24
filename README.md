@@ -8,6 +8,7 @@ Personal portfolio website presenting frontend, AI, and systems work in a spatia
 - Ten visual modes, including spatial, interstellar, light, dark, and terminal themes.
 - Responsive navigation, accessible theme selector, and back-to-top control.
 - Portfolio content separated from UI behavior for easier updates.
+- Optional live inclusion of newly selected GitHub repositories through a repository topic.
 - Automated validation across development, staging, and production environment rules.
 
 ## Local Preview
@@ -41,6 +42,7 @@ src/config/        Runtime environment rules
 src/data/          Portfolio content and theme catalog
 src/features/      User interaction behavior
 src/render/        Section and project rendering
+src/services/      Public GitHub portfolio additions
 src/utils/         Shared DOM helpers
 tests/             Automated behavior and content checks
 .github/workflows/ CI and release candidate packaging
@@ -55,6 +57,17 @@ Production deployment is hosted on Vercel:
 - Live site: [portfolio-website-pearl-eight-44.vercel.app](https://portfolio-website-pearl-eight-44.vercel.app)
 
 The site remains a static deployment without a backend runtime. Setup notes and the deployment workflow are captured in [DEPLOYMENT.md](DEPLOYMENT.md).
+
+## Add A New Project
+
+New public GitHub repositories can be included without editing or redeploying the website:
+
+1. Open the repository on GitHub and edit its **About** topics.
+2. Add the topic `portfolio-showcase`.
+3. Optionally add one classification topic: `portfolio-frontend`, `portfolio-backend`, `portfolio-data`, or `portfolio-ai`.
+4. Add a description, homepage URL, language, and relevant technology topics so the project card is informative.
+
+The published website reads public GitHub repository metadata and appends newly tagged projects to the curated project list. Untagged repositories remain private to your GitHub profile rather than appearing in the portfolio automatically.
 
 ## Contribution Flow
 

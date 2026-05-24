@@ -1,30 +1,11 @@
-import { caseStudies, credentials, experiences, skills, stackItems } from "../data/portfolio.js";
-import { qs, tagsTemplate } from "../utils/dom.js";
+import { credentials, experiences, skills, stackItems } from "../data/portfolio.js";
+import { qs } from "../utils/dom.js";
 
 export function renderStackStrip() {
   const stackTrack = qs("#stack-track");
   const doubledStack = [...stackItems, ...stackItems];
 
   stackTrack.innerHTML = doubledStack.map((item) => `<span>${item}</span>`).join("");
-}
-
-export function renderCaseStudies() {
-  const caseStudyGrid = qs("#case-study-grid");
-
-  caseStudyGrid.innerHTML = caseStudies
-    .map(
-      (item) => `
-        <article class="case-study-card reveal">
-          <span>${item.eyebrow}</span>
-          <h3>${item.title}</h3>
-          <p>${item.description}</p>
-          <ul>
-            ${item.outcomes.map((outcome) => `<li>${outcome}</li>`).join("")}
-          </ul>
-        </article>
-      `,
-    )
-    .join("");
 }
 
 export function renderJourney() {

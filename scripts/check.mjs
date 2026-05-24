@@ -6,6 +6,7 @@ const files = [
   "src/config/environment.js",
   "src/data/portfolio.js",
   "src/data/themes.js",
+  "src/services/github-projects.js",
   "src/features/interactions.js",
   "src/features/theme-switcher.js",
   "src/render/projects.js",

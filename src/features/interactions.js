@@ -28,7 +28,7 @@ export function setupCursorLight() {
   });
 }
 
-export function setupTiltCards(selector = ".project-card, .case-study-card") {
+export function setupTiltCards(selector = ".project-card") {
   qsa(selector).forEach((card) => {
     if (card.dataset.tiltReady) {
       return;

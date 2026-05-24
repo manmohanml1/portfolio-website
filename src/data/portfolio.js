@@ -100,72 +100,22 @@ export const projects = [
   },
 ];
 
-export const backendHighlights = [
-  {
-    title: "Typed service architecture",
-    description:
-      "TypeScript monorepo work with Express APIs, Next.js web surfaces, and Turborepo scripts for build, lint, and development flows.",
-    tags: ["TypeScript", "Express", "Next.js", "Turborepo"],
-  },
-  {
-    title: "Java and test discipline",
-    description:
-      "Java problem-solving workspace using Maven and JUnit 5, paired with TypeScript/Jest and Python/Pytest for multi-language validation.",
-    tags: ["Java", "Maven", "JUnit 5", "Jest", "Pytest"],
-  },
-  {
-    title: "Distributed data systems",
-    description:
-      "Kafka producers/consumers, AWS Kinesis streaming, PostgreSQL partitioning, Docker, and Kubernetes health checks/autoscaling.",
-    tags: ["Kafka", "Kinesis", "PostgreSQL", "Docker", "Kubernetes"],
-  },
-  {
-    title: "Software design patterns",
-    description:
-      "Message broadcasting architecture built around Observer and Composite patterns for hierarchical communication flows.",
-    tags: ["Observer", "Composite", "System Design"],
-  },
-];
-
 export const stackItems = [
   "TypeScript",
   "Java",
   "Express",
   "REST APIs",
-  "Maven",
-  "JUnit 5",
-  "Jest",
+  "React",
+  "AWS",
   "Kafka",
-  "AWS Kinesis",
   "PostgreSQL",
   "Docker",
   "Kubernetes",
+  "Jest",
+  "JUnit 5",
+  "Maven",
   "LangChain",
-  "React",
-];
-
-export const caseStudies = [
-  {
-    title: "Backend foundation",
-    eyebrow: "TypeScript + Java",
-    description:
-      "The portfolio now foregrounds tested backend practice: TypeScript/Jest, Java/Maven/JUnit 5, GitHub Actions CI, smart test selection, and service-oriented API work.",
-    outcomes: ["Multi-language test discipline", "Typed service architecture", "CI-backed engineering habits"],
-  },
-  {
-    title: "Cloud data pipeline",
-    eyebrow: "Kafka + Kubernetes",
-    description:
-      "The scalable data project communicates systems thinking through stream ingestion, partitioned PostgreSQL storage, containerization, and Kubernetes deployment primitives.",
-    outcomes: ["Kafka producer/consumer flow", "AWS Kinesis integration", "Kubernetes health and scaling"],
-  },
-  {
-    title: "Product delivery",
-    eyebrow: "React + APIs",
-    description:
-      "Frontend projects show user-facing delivery with React, Material UI, routing, deployed Netlify hosting, and API-facing application patterns.",
-    outcomes: ["Deployed app experience", "Responsive interface work", "Project links that open cleanly"],
-  },
+  "OpenGL",
 ];
 
 export const experiences = [

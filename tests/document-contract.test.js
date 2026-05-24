@@ -19,3 +19,10 @@ test("document includes accessible controls for theme and back-to-top actions", 
   assert.match(html, /aria-label="Change visual style"/);
   assert.match(html, /aria-label="Back to top"/);
 });
+
+test("document emphasizes backend work without the removed proof section", () => {
+  assert.match(html, /<span>Backend<\/span>/);
+  assert.match(html, /TypeScript \+ Java/);
+  assert.doesNotMatch(html, /Proof of work/);
+  assert.doesNotMatch(html, /Built like real systems/);
+});

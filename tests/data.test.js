@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { caseStudies, credentials, experiences, projects, skills, stackItems } from "../src/data/portfolio.js";
+import { credentials, experiences, projects, skills, stackItems } from "../src/data/portfolio.js";
 import { DEFAULT_THEME, resolveTheme, themes } from "../src/data/themes.js";
 
 test("portfolio data has project basics needed by renderers", () => {
@@ -45,7 +45,6 @@ test("theme resolver uses supported themes and safely falls back", () => {
 });
 
 test("supporting sections have enough content to render", () => {
-  assert.ok(caseStudies.length >= 3);
   assert.ok(experiences.length >= 3);
   assert.ok(credentials.length >= 4);
   assert.ok(skills.length >= 4);
