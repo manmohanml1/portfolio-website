@@ -50,9 +50,12 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for extension guidance and [CHANGELOG.md]
 
 ## Deployment
 
-This is a static site, so it can be hosted on a free static hosting platform without a backend runtime. Recommended options and initial setup notes are captured in [DEPLOYMENT.md](DEPLOYMENT.md).
+Production deployment is hosted on Vercel:
+
+- Live site: [portfolio-website-pearl-eight-44.vercel.app](https://portfolio-website-pearl-eight-44.vercel.app)
+
+The site remains a static deployment without a backend runtime. Setup notes and the deployment workflow are captured in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Contribution Flow
 
 The initial project is established on `main`. Future improvements should be developed on a short-lived feature branch, validated through GitHub Actions, recorded under `Unreleased` in the changelog, and merged through a pull request.
-

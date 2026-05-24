@@ -6,9 +6,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Published the initial production portfolio deployment on Vercel Hobby.
+
 ### Planned
 
-- Connect the validated deployment artifact to the selected free hosting provider.
+- Enable automatic Vercel preview and production deploys after authorizing the GitHub login connection in Vercel.
 - Add deeper case-study pages as portfolio content grows.
 
 ## [0.1.0] - 2026-05-24
@@ -26,4 +30,3 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 [Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/manmohanml1/portfolio-website/releases/tag/v0.1.0
-

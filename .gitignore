@@ -7,4 +7,3 @@ node_modules/
 .netlify/
 server.out.log
 server.err.log
-

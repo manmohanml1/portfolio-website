@@ -1,19 +1,22 @@
-# Deployment Options
+# Vercel Deployment
 
 This portfolio is a static application: it needs only `index.html`, `styles.css`, and `src/` to deploy. No server, database, or paid build runtime is required.
 
-## Good Free Hosts
+## Production
 
-| Provider | Best Fit | Initial Setup |
-| --- | --- | --- |
-| Vercel Hobby | Fastest GitHub-connected previews and simple custom domain setup for a personal project | Import the GitHub repository; set no build command and deploy the repository root |
-| Cloudflare Pages Free | Strong static-site delivery and room for a lightweight long-lived portfolio | Connect the GitHub repository; deploy the repository root as static assets |
-| Netlify Free | Simple Git deploys and deploy previews | Import from GitHub; publish the repository root with no build command |
-| GitHub Pages | Fewest moving parts once the code is on GitHub | Enable Pages from the `main` branch root or add a Pages workflow |
+- Provider: Vercel Hobby
+- Project: `portfolio-website`
+- Production URL: [portfolio-website-pearl-eight-44.vercel.app](https://portfolio-website-pearl-eight-44.vercel.app)
+- Production branch: `main`
 
-## Recommendation
+## Git Deployment Connection
 
-Start with **Cloudflare Pages** for a durable static portfolio, or **Vercel Hobby** if the most important experience is automatic preview URLs for each iteration. Both work naturally with this repository's static output.
+The initial production deployment has been published through the Vercel CLI. Automatic deploys from GitHub still require adding GitHub as a Vercel login connection, then connecting:
+
+- GitHub repository: [manmohanml1/portfolio-website](https://github.com/manmohanml1/portfolio-website)
+- Vercel project: `portfolio-website`
+
+After the GitHub connection is authorized in Vercel, pushes to `main` should deploy production and feature branches or pull requests should generate preview deployments.
 
 ## Environments
 
@@ -25,7 +28,7 @@ The current quality pipeline validates three logical environments:
 | `staging` | Preview deployment reviewed before publishing |
 | `production` | Public portfolio on the primary domain |
 
-Once the hosting provider is selected, connect its preview deployment to pull requests and its production deployment to `main`.
+Connect Vercel preview deployments to pull requests and production deployment to `main` after the GitHub login connection is available.
 
 ## Release Habit
 
@@ -35,10 +38,8 @@ Once the hosting provider is selected, connect its preview deployment to pull re
 4. Merge to `main` after review and deploy to production.
 5. At a milestone, move `Unreleased` entries into a dated version and create a GitHub release tag.
 
-## Official Plan References
+## Official References
 
 - [Vercel Hobby Plan](https://vercel.com/docs/accounts/plans/hobby)
-- [Cloudflare Pages Limits](https://developers.cloudflare.com/pages/platform/limits/)
-- [Netlify Pricing](https://www.netlify.com/pricing/)
-- [GitHub Pages Documentation](https://docs.github.com/en/pages/getting-started-with-github-pages)
-
+- [Vercel Deployments](https://vercel.com/docs/deployments)
+- [Vercel GitHub Integration](https://vercel.com/docs/git/vercel-for-github)
