@@ -50,7 +50,7 @@ tests/             Automated behavior and content checks
 .github/workflows/ CI and release candidate packaging
 ```
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for extension guidance, [ROADMAP.md](ROADMAP.md) for planned interactive additions, and [CHANGELOG.md](CHANGELOG.md) for project history.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for extension guidance, [ROADMAP.md](ROADMAP.md) for shipped and planned interactive additions, and [CHANGELOG.md](CHANGELOG.md) for project history.
 
 ## Deployment
 
@@ -93,7 +93,7 @@ The current GlassTube detail view uses a small version of its committed reposito
 
 ## Contribution Flow
 
-The initial project is established on `main`. Future improvements should be developed on a short-lived feature branch, validated through GitHub Actions, recorded in the changelog, and merged through a pull request.
+The initial project is established on `main`. Future improvements should be developed on a short-lived feature branch, validated through GitHub Actions, recorded in the changelog and roadmap where applicable, and merged through a pull request. Each production version should finish with a matching GitHub Release tag and a quick public-site verification.
 
 ## Release Versioning
 

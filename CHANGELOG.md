@@ -6,13 +6,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-05-25
+
+### Fixed
+
+- Corrected roadmap delivery statuses for the case study, architecture explorer, and private feedback features shipped in `v1.2.0`.
+- Expanded release checklists to cover roadmap promotion, preview review, production verification, and GitHub release tagging.
+
 ## [1.2.0] - 2026-05-25
 
 ### Added
 
 - Added expanded project detail dialogs with purpose and engineering notes, safe external actions, and a compact published GlassTube preview image.
 - Added a viewer-controlled reduced-motion setting alongside the visual theme control.
-- Added a product roadmap for interactive portfolio additions, with case-study and architecture exploration features entering local review.
+- Added a product roadmap for interactive portfolio additions, with case-study and architecture exploration features shipped in this release.
 - Added curated case-study content and interactive architecture exploration for selected projects.
 - Added a private visitor-feedback dialog with contextual project suggestions and Formspree delivery without domain or DNS setup.
 
@@ -66,7 +73,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Published the initial production portfolio deployment on Vercel Hobby.
 - Connected the GitHub repository to Vercel for automatic production and preview deployments.
 
-[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/manmohanml1/portfolio-website/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/manmohanml1/portfolio-website/releases/tag/v1.0.0

@@ -37,10 +37,12 @@ The current theme registry chooses visible worlds and persists a viewer preferen
 3. Keep rendering logic in `src/render/`.
 4. Keep interaction logic in `src/features/`.
 5. Record meaningful user-visible changes under `Unreleased` in `CHANGELOG.md`.
-6. Update `src/config/release.js` according to the versioning policy.
-7. Title the pull request with `feat:` or `fix:`.
-8. Run `node scripts/check.mjs` and `node --test`.
-9. Preview in browser at desktop and mobile widths.
+6. Promote delivered feature status in `ROADMAP.md` when applicable.
+7. Update `src/config/release.js` according to the versioning policy.
+8. Title the pull request with `feat:` or `fix:`.
+9. Run `node scripts/check.mjs` and `node --test`.
+10. Preview in browser at desktop and mobile widths.
+11. After production deployment, create the matching GitHub release tag and confirm the public badge and release records agree.
 
 ## Environments
 
