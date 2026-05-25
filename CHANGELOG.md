@@ -30,6 +30,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Limited full case-study treatment to projects with enough verified material, while simplifying lighter project details.
 - Omitted the preview area for projects without a published screenshot instead of showing empty visual space.
 - Removed the unnecessary hero interface-status label and made external project/profile actions open in a new tab.
+- Refined private feedback delivery with a completed submission state and cleaner inbox labels for Formspree notifications.
 
 ### Fixed
 

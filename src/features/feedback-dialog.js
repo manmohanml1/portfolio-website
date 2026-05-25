@@ -34,7 +34,16 @@ export function setupFeedbackDialog() {
     status.dataset.state = type;
   }
 
+  function setCompletedState(isCompleted) {
+    form.classList.toggle("is-submitted", isCompleted);
+    [...form.elements].forEach((field) => {
+      field.disabled = isCompleted;
+    });
+    submitButton.textContent = isCompleted ? "Sent privately" : "Send privately";
+  }
+
   function openFeedbackDialog({ project = "" } = {}) {
+    setCompletedState(false);
     form.reset();
     projectInput.value = project;
     projectLabel.hidden = !project;
@@ -81,11 +90,10 @@ export function setupFeedbackDialog() {
 
     try {
       const result = await sendFeedback(payload);
-      form.reset();
+      setCompletedState(true);
       setStatus(result.message || "Thanks. Your suggestion was sent privately.", "success");
     } catch (error) {
       setStatus(error.message, "error");
-    } finally {
       submitButton.disabled = false;
     }
   });

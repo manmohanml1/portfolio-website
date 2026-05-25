@@ -1489,6 +1489,23 @@ section[id] {
   color: var(--green);
 }
 
+.feedback-form.is-submitted .feedback-fields {
+  opacity: 0.58;
+}
+
+.feedback-form.is-submitted .feedback-footer .button,
+.feedback-footer .button:disabled {
+  cursor: default;
+  opacity: 0.8;
+  transform: none;
+}
+
+.feedback-form.is-submitted .feedback-footer .button {
+  border-color: var(--green);
+  background: var(--chip-bg);
+  color: var(--green);
+}
+
 .feedback-footer .button {
   flex: 0 0 auto;
 }
