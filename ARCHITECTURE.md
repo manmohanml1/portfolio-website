@@ -1,6 +1,6 @@
 # Portfolio Architecture
 
-This portfolio is a static, no-build site with modular ES modules. It is intentionally lighter than a full Next.js or Astro app, while still leaving room for future features.
+This portfolio is a static, no-build site with modular ES modules and a hosted Formspree delivery endpoint for private feedback. It is intentionally lighter than a full Next.js or Astro app, while still leaving room for future features.
 
 ## Structure
 
@@ -11,13 +11,15 @@ This portfolio is a static, no-build site with modular ES modules. It is intenti
 - `src/config/environment.js`: runtime environment resolution for local, staging/preview, and production hosts.
 - `src/config/release.js`: visible production release version and release type badge metadata.
 - `src/services/github-projects.js`: opt-in public GitHub repository discovery via `portfolio-showcase` topic.
+- `src/services/feedback.js`: private suggestion requests from the browser to the configured Formspree endpoint.
 - `src/render/`: DOM rendering modules for content sections.
-- `src/features/`: interactive features such as theme switching, reveal animation, card tilt, cursor light, and back-to-top.
+- `src/features/`: interactive features such as theme switching, motion preference, project and feedback dialogs, card tilt, and back-to-top.
 - `src/utils/`: small shared utilities.
 - `tests/`: data integrity tests that catch broken projects, missing themes, and incomplete section content.
 - `.github/workflows/quality.yml`: CI quality gate and deployable static artifact packaging.
 - `.github/workflows/release-candidate.yml`: manually packages a validated artifact for a selected environment.
 - `CHANGELOG.md`: user-visible project history and the next release queue.
+- `ROADMAP.md`: interaction ideas and delivery status for future portfolio expansion.
 - `DEPLOYMENT.md`: static hosting choices and release flow.
 
 ## Why This Shape
@@ -25,6 +27,8 @@ This portfolio is a static, no-build site with modular ES modules. It is intenti
 The nearby Codex projects use a similar separation of concerns: configs, services, components, security/helpers, and tests. For a portfolio, the equivalent is data, renderers, interactions, and verification.
 
 This is not as heavy as a framework, but it avoids the worst static-site problem: one giant file where every future change risks unrelated behavior.
+
+The current theme registry chooses visible worlds and persists a viewer preference. Ambient artwork is opt-in for an individual world, so a scene such as Interstellar's black hole does not leak into cleaner modes. The visual rules still live in CSS because they alter composition, atmosphere, typography, and responsive behavior rather than merely tokens.
 
 ## Update Checklist
 
@@ -56,14 +60,27 @@ Live application links for fetched projects require the additional `portfolio-li
 
 Wearable entries are intentionally different from normal web-app cards. A Meta Display project should identify its glasses-first interaction, constrained 600 x 600 presentation, and focus/D-pad navigation in its repository metadata; the portfolio can then communicate the device work instead of presenting it as generic JavaScript.
 
+Each fetched repository gets a baseline details view from stable GitHub metadata. Rich summaries and preview images are opt-in enrichments defined alongside curated project data or known-display presentation mapping, and should reference only published repository assets. Missing images are omitted instead of rendered as placeholders. This avoids making live-page rendering dependent on fragile README parsing or unverified image selection.
+
+## Visitor Feedback
+
+Phase 1 keeps suggestions private and deliberately small in scope:
+
+1. Contact and project dialogs open the same accessible feedback form.
+2. The client sends a category, optional project context, suggestion, and optional consented reply email to Formspree.
+3. Formspree forwards accepted submissions privately and applies its hosted spam filtering; the form includes its `_gotcha` honeypot field.
+4. Nothing is rendered publicly or saved to a database.
+
+The Formspree endpoint is public by design and does not require a custom domain, DNS records, or Vercel secrets. A private database and manually approved testimonials are possible later, but are intentionally outside Phase 1.
+
 ## Pipeline
 
 The GitHub Actions quality workflow runs on pull requests, pushes to `main`/`develop`, and manual dispatch:
 
 1. Test all three environments on Node.js 20 and 22.
 2. Syntax-check every application module.
-3. Run automated test coverage for data integrity, themes, filters, environment resolution, and HTML accessibility contracts.
-4. Package a static deployment artifact after every matrix check passes.
+3. Run automated test coverage for data integrity, themes, filters, feedback form contracts, environment resolution, and HTML accessibility contracts.
+4. Package static deployment assets after every matrix check passes.
 
 The manual `Prepare Release Candidate` workflow selects a GitHub Environment (`development`, `staging`, or `production`) and packages a validated artifact. Configure required reviewers for the `production` environment in repository settings.
 
@@ -98,7 +115,7 @@ For the current one-page portfolio, this no-build modular setup is a practical m
 
 ## Next Structural Extraction
 
-The JavaScript is now split by responsibility. The main remaining large file is `styles.css`, because ten visual themes and their scene artwork share the same component surfaces. If theme work continues, split it into:
+The JavaScript is now split by responsibility. The main remaining large file is `styles.css`, because five visual worlds and their scene artwork share the same component surfaces. If theme work continues, split it into:
 
 - `src/styles/tokens.css`: shared spacing, typography, and surface tokens,
 - `src/styles/themes.css`: theme-specific variable overrides and ambient scenes,

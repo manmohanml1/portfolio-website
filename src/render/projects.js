@@ -12,6 +12,14 @@ const FILTER_LABELS = {
   wearable: "Wearable projects",
 };
 
+export function getProjectActionLabel(project) {
+  if (project.details?.caseStudy) {
+    return "Case study";
+  }
+
+  return project.details?.preview ? "Preview" : "Details";
+}
+
 export function getProjectsForFilter(filter = "all", availableProjects = projects) {
   if (!PROJECT_FILTERS.includes(filter) || filter === "all") {
     return availableProjects;
@@ -32,7 +40,7 @@ export function mergeProjects(curatedProjects, discoveredProjects) {
   ];
 }
 
-export function setupProjectFilters({ onCardsRendered } = {}) {
+export function setupProjectFilters({ onCardsRendered, onOpenProject } = {}) {
   const grid = qs("#project-grid");
   const filters = qsa(".filter");
   const projectCount = qs("#project-count");
@@ -48,14 +56,13 @@ export function setupProjectFilters({ onCardsRendered } = {}) {
 
     grid.innerHTML = visibleProjects
       .map(
-        (project) => `
-          <article class="project-card ${project.featured ? "featured" : ""}">
-            <div class="project-visual" aria-hidden="true">
+        (project, index) => `
+          <article class="project-card ${project.featured ? "featured" : ""}" data-project-index="${index}">
+            <button class="project-visual project-open" type="button" data-open-project="${index}" aria-label="View details for ${escapeHtml(project.title)}">
               <span style="--project-accent: ${escapeHtml(project.accent)}">${escapeHtml(project.visual)}</span>
-            </div>
+            </button>
             <div class="project-topline">
               <span class="project-type">${escapeHtml(project.type)}</span>
-              <span class="repo-size">${escapeHtml(project.size)}</span>
             </div>
             <h3>${escapeHtml(project.title)}</h3>
             <p>${escapeHtml(project.description)}</p>
@@ -63,8 +70,9 @@ export function setupProjectFilters({ onCardsRendered } = {}) {
               ${tagsTemplate(project.tags)}
             </div>
             <div class="project-links">
-              <a class="external-link" href="${escapeHtml(safeExternalUrl(project.repo))}">Repository</a>
-              ${project.live ? `<a class="external-link" href="${escapeHtml(safeExternalUrl(project.live))}">Live app</a>` : ""}
+              <button class="details-link" type="button" data-open-project="${index}">${getProjectActionLabel(project)}</button>
+              <a class="external-link" href="${escapeHtml(safeExternalUrl(project.repo))}" target="_blank" rel="noopener noreferrer">Repository</a>
+              ${project.live ? `<a class="external-link" href="${escapeHtml(safeExternalUrl(project.live))}" target="_blank" rel="noopener noreferrer">Live app</a>` : ""}
             </div>
           </article>
         `,
@@ -87,6 +95,20 @@ export function setupProjectFilters({ onCardsRendered } = {}) {
       button.classList.add("active");
       renderProjects(button.dataset.filter);
     });
+  });
+
+  grid.addEventListener("click", (event) => {
+    const trigger = event.target.closest("[data-open-project]");
+    const card = event.target.closest(".project-card");
+
+    if (trigger) {
+      onOpenProject?.(getProjectsForFilter(activeFilter, availableProjects)[Number(trigger.dataset.openProject)]);
+      return;
+    }
+
+    if (card && !event.target.closest("a, button")) {
+      onOpenProject?.(getProjectsForFilter(activeFilter, availableProjects)[Number(card.dataset.projectIndex)]);
+    }
   });
 
   renderProjects();

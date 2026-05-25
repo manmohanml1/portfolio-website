@@ -1,5 +1,5 @@
 import { credentials, experiences, skills, stackItems } from "../data/portfolio.js";
-import { qs } from "../utils/dom.js";
+import { escapeHtml, qs } from "../utils/dom.js";
 
 export function renderStackStrip() {
   const stackTrack = qs("#stack-track");
@@ -16,9 +16,22 @@ export function renderJourney() {
     .map(
       (item) => `
         <article class="timeline-item reveal">
-          <span>${item.org}</span>
-          <h4>${item.role}</h4>
-          <p>${item.detail}</p>
+          <span>${escapeHtml(item.org)}</span>
+          <h4>${escapeHtml(item.role)}</h4>
+          <p class="timeline-meta">${escapeHtml(item.period)} · ${escapeHtml(item.location)}</p>
+          <p>${escapeHtml(item.detail)}</p>
+          ${
+            item.highlights.length
+              ? `
+                <details class="career-detail">
+                  <summary>Highlights</summary>
+                  <ul>
+                    ${item.highlights.map((highlight) => `<li>${escapeHtml(highlight)}</li>`).join("")}
+                  </ul>
+                </details>
+              `
+              : ""
+          }
         </article>
       `,
     )
@@ -27,9 +40,10 @@ export function renderJourney() {
   credentialGrid.innerHTML = credentials
     .map(
       (item) => `
-        <article class="credential-card reveal">
-          <span>${item.label}</span>
-          <strong>${item.value}</strong>
+        <article class="credential-card ${item.featured ? "featured" : ""} reveal">
+          <span>${escapeHtml(item.label)}</span>
+          <strong>${escapeHtml(item.value)}</strong>
+          ${item.detail ? `<p>${escapeHtml(item.detail)}</p>` : ""}
         </article>
       `,
     )

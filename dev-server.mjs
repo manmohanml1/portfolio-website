@@ -19,6 +19,7 @@ const types = {
 
 createServer((request, response) => {
   const url = new URL(request.url || "/", `http://localhost:${port}`);
+
   const requested = url.pathname === "/" ? "/index.html" : decodeURIComponent(url.pathname);
   const filePath = normalize(join(root, requested));
 

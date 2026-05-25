@@ -1,6 +1,6 @@
 # Vercel Deployment
 
-This portfolio is a static application: it needs only `index.html`, `styles.css`, and `src/` to deploy. No server, database, or paid build runtime is required.
+This portfolio is a static application: it needs only `index.html`, `styles.css`, and `src/` to deploy. Private feedback is forwarded through Formspree, so no database, server function, email domain, or paid build runtime is required.
 
 ## Production
 
@@ -29,6 +29,18 @@ The current quality pipeline validates three logical environments:
 | `production` | Public portfolio on the primary domain |
 
 Vercel preview deployments are connected to feature branches and pull requests, while production deployments are connected to `main`.
+
+## Private Feedback Setup
+
+The feedback modal posts privately to the Formspree form configured in `src/services/feedback.js`:
+
+```text
+https://formspree.io/f/mwvzrbpb
+```
+
+There are no Vercel environment variables for this setup. In Formspree, verify the notification inbox for the `Portfolio Feedback` form and manage submission notifications there. The page includes the `_gotcha` honeypot field recognized by Formspree, and no submissions are exposed as a public reviews feed.
+
+After deploying the feature to a Vercel Preview URL, submit one test suggestion and confirm that Formspree delivers it to your configured inbox before merging to production.
 
 ## Release Habit
 

@@ -15,7 +15,6 @@ const selectedRepository = {
   description: "A typed service.",
   language: "TypeScript",
   topics: [PORTFOLIO_TOPIC, "portfolio-backend", "express"],
-  size: 82,
   archived: false,
   fork: false,
 };
@@ -27,7 +26,7 @@ test("tagged GitHub repositories map into filterable portfolio cards", () => {
   assert.equal(project.category, "backend");
   assert.equal(project.type, "Backend");
   assert.deepEqual(project.tags, ["TypeScript", "Express"]);
-  assert.equal(project.size, "82 KB");
+  assert.equal(project.size, undefined);
   assert.equal(project.live, undefined);
 });
 
@@ -57,7 +56,6 @@ test("Meta Display apps receive wearable presentation from public descriptions",
     name: "glass-search-meta-display",
     description: "Voice and handwriting-first browser for Meta Ray-Ban Display glasses",
     topics: [PORTFOLIO_TOPIC],
-    size: 1548,
   });
 
   assert.equal(wearable.title, "Glass Search");
@@ -65,7 +63,27 @@ test("Meta Display apps receive wearable presentation from public descriptions",
   assert.equal(wearable.type, "Meta Display");
   assert.equal(wearable.visual, "Search UI");
   assert.deepEqual(wearable.tags, ["TypeScript", "Meta Display"]);
-  assert.equal(wearable.size, "1.5 MB");
+  assert.equal(wearable.size, undefined);
+  assert.match(wearable.details.build, /600 x 600/);
+});
+
+test("published project previews are surfaced only for explicitly curated apps", () => {
+  const glassTube = mapGitHubRepository({
+    ...selectedRepository,
+    name: "glass-tube",
+    description: "YouTube viewer prototype for Meta Ray-Ban Display glasses",
+    topics: [PORTFOLIO_TOPIC],
+  });
+  const travelGuide = mapGitHubRepository({
+    ...selectedRepository,
+    name: "autonomous-travel-guide-mrbd",
+    description: "Glasses-first travel guide",
+    topics: [PORTFOLIO_TOPIC],
+  });
+
+  assert.match(glassTube.details.preview.src, /glass-tube-player\.png$/);
+  assert.equal(travelGuide.details.preview, undefined);
+  assert.match(travelGuide.details.purpose, /guidance/);
 });
 
 test("live app links require an explicit verified-live topic", () => {

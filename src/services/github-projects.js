@@ -11,9 +11,52 @@ const CATEGORY_TOPICS = {
 };
 
 const DISPLAY_APPS = {
-  "autonomous-travel-guide-mrbd": { title: "Autonomous Travel Guide", visual: "Travel guide" },
-  "glass-tube": { title: "GlassTube", visual: "Video viewer" },
-  "glass-search-meta-display": { title: "Glass Search", visual: "Search UI" },
+  "autonomous-travel-guide-mrbd": {
+    title: "Autonomous Travel Guide",
+    visual: "Travel guide",
+    details: {
+      summary: "A glasses-first travel companion that presents live destination context in a compact wearable interface.",
+      purpose:
+        "Turns arrival in an unfamiliar place into glanceable guidance: local conditions, landmarks, useful phrases, exchange rates, and daily spending context.",
+      build:
+        "Built as a 600 x 600 D-pad navigable web app with public travel, weather, air-quality, translation, and currency providers plus local persistence.",
+      engineering:
+        "Provider responses are normalized for a constrained display, key travel state is cached locally, and core flows remain navigable through directional controls.",
+      highlights: ["Live travel APIs", "D-pad navigation", "Local trip state", "Meta Display UX"],
+    },
+  },
+  "glass-tube": {
+    title: "GlassTube",
+    visual: "Video viewer",
+    details: {
+      summary: "A focused YouTube viewing prototype designed for the Meta Ray-Ban Display form factor.",
+      purpose:
+        "Tests how familiar video consumption can be reduced to a fast, readable glasses interaction without pretending to replace YouTube.",
+      build:
+        "Built around a 600 x 600 focus-driven interface, official YouTube embedding, recent-view storage, and guarded outbound navigation.",
+      engineering:
+        "Known videos work without an API key; optional search remains local during prototyping, while external navigation is restricted to trusted YouTube HTTPS hosts.",
+      highlights: ["YouTube embed", "Focus navigation", "Safe outbound links", "Local history"],
+      preview: {
+        src: "https://raw.githubusercontent.com/manmohanml1/glass-tube/main/assets/glass-tube-player.png",
+        alt: "GlassTube video player interface for a wearable display",
+      },
+    },
+  },
+  "glass-search-meta-display": {
+    title: "Glass Search",
+    visual: "Search UI",
+    details: {
+      summary: "A voice and handwriting-first search surface designed to remain glanceable on display glasses.",
+      purpose:
+        "Explores search when a keyboard is inconvenient, emphasizing short queries, nearby-place intent, and device-native navigation handoff.",
+      build:
+        "Built with query intent handling, provider adapters, local recent state, conditional GPS access, and native map handoff behind a 600 x 600 UI.",
+      engineering:
+        "Location is requested only for relevant intents, and the provider boundary can be replaced later without redesigning screens or interaction flows.",
+      highlights: ["Voice input", "Handwriting flow", "Map handoff", "Provider adapters"],
+    },
+  },
 };
 
 function humanizeTopic(topic) {
@@ -40,14 +83,6 @@ function formatRepositoryTitle(name) {
       return part.charAt(0).toUpperCase() + part.slice(1);
     })
     .join(" ");
-}
-
-function formatRepositorySize(size = 0) {
-  if (size >= 1024) {
-    return `${(size / 1024).toFixed(1)} MB`;
-  }
-
-  return `${size} KB`;
 }
 
 function isDisplayApp(repository) {
@@ -77,11 +112,11 @@ export function mapGitHubRepository(repository) {
     live: topics.includes(LIVE_PROJECT_TOPIC) && repository.homepage ? repository.homepage : undefined,
     type: presentation.type,
     category: presentation.category,
-    size: formatRepositorySize(repository.size),
     description: repository.description || "A newly selected project from my public GitHub portfolio.",
     tags: tags.length >= 2 ? tags : [...tags, "Selected Work"].slice(0, 2),
     visual: displayApp?.visual || presentation.visual,
     accent: presentation.accent,
+    details: displayApp?.details,
     discovered: true,
   };
 }
