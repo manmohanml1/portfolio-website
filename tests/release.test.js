@@ -7,7 +7,7 @@ const qualityWorkflow = await readFile(new URL("../.github/workflows/quality.yml
 
 test("current release identifies the deployed feature version", () => {
   assert.match(release.version, /^v\d+\.\d+\.\d+$/);
-  assert.equal(release.version, "v1.1.0");
+  assert.equal(release.version, "v1.2.0");
   assert.equal(release.type, "feat");
   assert.equal(release.label, "Feature release");
 });

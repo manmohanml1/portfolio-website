@@ -12,19 +12,13 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="cursor-light" aria-hidden="true"></div>
     <div class="page-shell" aria-hidden="true">
       <div class="grid-layer"></div>
       <div class="star-field"></div>
       <div class="theme-scene">
         <span class="scene-object scene-one"></span>
         <span class="scene-object scene-two"></span>
-        <span class="scene-object scene-three"></span>
       </div>
-      <div class="orbit orbit-one"></div>
-      <div class="orbit orbit-two"></div>
-      <div class="light-beam light-beam-one"></div>
-      <div class="light-beam light-beam-two"></div>
     </div>
 
     <header class="site-header" id="top">
@@ -70,10 +64,6 @@
             Kafka, PostgreSQL, Docker, and Kubernetes, with earlier work across UI,
             graphics, design patterns, and AI experiments.
           </p>
-          <div class="spatial-status" aria-label="Portfolio mode">
-            <span></span>
-            <strong>Spatial portfolio interface active</strong>
-          </div>
           <div class="hero-word-row" aria-label="Engineering focus areas">
             <span>Backend</span>
             <span>TypeScript</span>
@@ -82,20 +72,19 @@
             <span>Kafka</span>
           </div>
           <div class="hero-actions" aria-label="Profile links">
-            <a class="button primary external-link" href="https://github.com/manmohanml1">
+            <a class="button primary external-link" href="https://github.com/manmohanml1" target="_blank" rel="noopener noreferrer">
               GitHub
             </a>
             <a class="button external-link" href="#work">
               View work
             </a>
-            <a class="button ghost external-link" href="https://linkedin.com/in/mml8050">
+            <a class="button ghost external-link" href="https://linkedin.com/in/mml8050" target="_blank" rel="noopener noreferrer">
               LinkedIn
             </a>
           </div>
         </div>
 
         <aside class="profile-panel" aria-label="Profile summary">
-          <div class="holo-ring" aria-hidden="true"></div>
           <div class="profile-card-top">
             <img
               class="profile-photo"
@@ -160,7 +149,7 @@ ship: github -> vercel</code></pre>
           </article>
           <article class="bento-tile reveal">
             <span class="metric">1</span>
-            <p>deployed React fitness application available to explore</p>
+            <p>curated React fitness application repository to explore</p>
           </article>
         </div>
       </section>
@@ -180,6 +169,7 @@ ship: github -> vercel</code></pre>
           <button class="filter" type="button" data-filter="backend">Backend</button>
           <button class="filter" type="button" data-filter="data">Data</button>
           <button class="filter" type="button" data-filter="ai">AI</button>
+          <button class="filter" type="button" data-filter="wearable" hidden>Wearables</button>
         </div>
 
         <div class="project-toolbar" aria-live="polite">
@@ -193,10 +183,10 @@ ship: github -> vercel</code></pre>
         <div class="section-heading">
           <div>
             <p class="eyebrow">Career signal</p>
-            <h2 id="journey-title">Experience, education, and profile highlights.</h2>
+            <h2 id="journey-title">Experience, education, and verified highlights.</h2>
           </div>
           <p class="section-copy">
-            Carefully pulled from public GitHub and LinkedIn-visible details, with conservative wording.
+            Selected evidence from LinkedIn experience, education, recommendations, and repository-backed engineering work.
           </p>
         </div>
         <div class="journey-grid">
@@ -205,7 +195,7 @@ ship: github -> vercel</code></pre>
             <div class="timeline" id="experience-list"></div>
           </div>
           <div>
-            <h3>Education & achievements</h3>
+            <h3>Education & professional signal</h3>
             <div class="credential-grid" id="credential-grid"></div>
           </div>
         </div>
@@ -253,11 +243,66 @@ ship: github -> vercel</code></pre>
           >
             Email
           </a>
-          <a class="button external-link" href="https://github.com/manmohanml1">GitHub</a>
-          <a class="button external-link" href="https://linkedin.com/in/mml8050">LinkedIn</a>
+          <a class="button external-link" href="https://github.com/manmohanml1" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a class="button external-link" href="https://linkedin.com/in/mml8050" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <button class="button feedback-trigger" type="button" data-open-feedback>Suggest an improvement</button>
         </div>
       </section>
     </main>
+
+    <dialog class="project-dialog" id="project-dialog" aria-labelledby="project-dialog-title">
+      <button class="dialog-close" type="button" aria-label="Close project details">×</button>
+      <div id="project-dialog-body"></div>
+    </dialog>
+
+    <dialog class="feedback-dialog" id="feedback-dialog" aria-labelledby="feedback-title">
+      <button class="dialog-close" type="button" aria-label="Close feedback form">×</button>
+      <form class="feedback-form" id="feedback-form">
+        <p class="eyebrow">Private feedback</p>
+        <h2 id="feedback-title">Suggest an improvement</h2>
+        <p class="feedback-intro">Share what would make this portfolio clearer, stronger, or more useful.</p>
+        <p class="feedback-project" id="feedback-project" hidden></p>
+        <input type="hidden" name="project" id="feedback-project-input" value="" />
+        <div class="feedback-fields">
+          <label class="feedback-field">
+            <span>Category</span>
+            <select name="category" required>
+              <option value="project">Project</option>
+              <option value="design">Design</option>
+              <option value="content">Content</option>
+              <option value="bug">Bug</option>
+              <option value="opportunity">Opportunity</option>
+            </select>
+          </label>
+          <label class="feedback-field feedback-message">
+            <span>Suggestion</span>
+            <textarea
+              name="message"
+              maxlength="800"
+              rows="5"
+              required
+              placeholder="What should be improved?"
+            ></textarea>
+          </label>
+          <label class="feedback-field">
+            <span>Email <small>Optional</small></span>
+            <input type="email" name="email" autocomplete="email" placeholder="For a private reply" />
+          </label>
+          <label class="feedback-consent">
+            <input type="checkbox" name="replyConsent" />
+            <span>You may email me about this suggestion.</span>
+          </label>
+          <label class="feedback-trap" aria-hidden="true">
+            Leave blank
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+          </label>
+        </div>
+        <div class="feedback-footer">
+          <p class="feedback-status" id="feedback-status" role="status" aria-live="polite"></p>
+          <button class="button primary" type="submit">Send privately</button>
+        </div>
+      </form>
+    </dialog>
 
     <footer>
       <p>Designed from public GitHub project data and LinkedIn profile metadata.</p>

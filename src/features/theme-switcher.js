@@ -17,7 +17,12 @@ export function renderThemeOptions() {
         </button>
       `,
     )
-    .join("");
+    .join("") + `
+      <button class="motion-trigger theme-option" type="button" aria-label="Reduce motion" aria-pressed="false" title="Reduce motion">
+        <span class="motion-symbol" aria-hidden="true">≋</span>
+        <span class="motion-label">Reduce motion</span>
+      </button>
+    `;
 }
 
 export function applyTheme(themeId) {
@@ -46,7 +51,7 @@ export function setupThemeMenu() {
   themeOptions.addEventListener("click", (event) => {
     const option = event.target.closest(".theme-option");
 
-    if (!option) {
+    if (!option || !option.dataset.theme) {
       return;
     }
 

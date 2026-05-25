@@ -16,18 +16,6 @@ export function setupRevealAnimation() {
   qsa(".reveal").forEach((element) => revealObserver.observe(element));
 }
 
-export function setupCursorLight() {
-  const cursorLight = qs(".cursor-light");
-
-  if (!cursorLight || window.matchMedia("(pointer: coarse)").matches) {
-    return;
-  }
-
-  window.addEventListener("pointermove", (event) => {
-    cursorLight.style.transform = `translate(${event.clientX}px, ${event.clientY}px)`;
-  });
-}
-
 export function setupTiltCards(selector = ".project-card") {
   qsa(selector).forEach((card) => {
     if (card.dataset.tiltReady) {

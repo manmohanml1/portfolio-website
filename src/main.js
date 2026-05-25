@@ -1,5 +1,8 @@
 import { setupEnvironment } from "./config/environment.js";
-import { setupBackToTop, setupCursorLight, setupRevealAnimation, setupTiltCards } from "./features/interactions.js";
+import { setupBackToTop, setupRevealAnimation, setupTiltCards } from "./features/interactions.js";
+import { setupMotionPreference } from "./features/motion-preference.js";
+import { setupFeedbackDialog } from "./features/feedback-dialog.js";
+import { setupProjectDialog } from "./features/project-dialog.js";
 import { setupThemeMenu } from "./features/theme-switcher.js";
 import { setupProjectFilters } from "./render/projects.js";
 import { renderReleaseIndicator } from "./render/release.js";
@@ -11,10 +14,12 @@ function bootPortfolio() {
   renderStackStrip();
   renderJourney();
   renderSkills();
-  setupProjectFilters({ onCardsRendered: () => setupTiltCards(".project-card") });
+  const openFeedbackDialog = setupFeedbackDialog();
+  const openProjectDialog = setupProjectDialog({ onFeedback: openFeedbackDialog });
+  setupProjectFilters({ onCardsRendered: () => setupTiltCards(".project-card"), onOpenProject: openProjectDialog });
   setupThemeMenu();
+  setupMotionPreference();
   setupRevealAnimation();
-  setupCursorLight();
   setupTiltCards();
   setupBackToTop();
 }
