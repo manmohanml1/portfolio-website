@@ -64,10 +64,20 @@ New public GitHub repositories can be included without editing or redeploying th
 
 1. Open the repository on GitHub and edit its **About** topics.
 2. Add the topic `portfolio-showcase`.
-3. Optionally add one classification topic: `portfolio-frontend`, `portfolio-backend`, `portfolio-data`, or `portfolio-ai`.
-4. Add a description, homepage URL, language, and relevant technology topics so the project card is informative.
+3. Optionally add one classification topic: `portfolio-frontend`, `portfolio-backend`, `portfolio-data`, `portfolio-ai`, or `portfolio-wearable`.
+4. Add a description, language, and relevant technology topics so the project card is informative.
+5. Add `portfolio-live` only after verifying that the repository homepage points to a working deployed app.
 
-The published website reads public GitHub repository metadata and appends newly tagged projects to the curated project list. Untagged repositories remain private to your GitHub profile rather than appearing in the portfolio automatically.
+The published website reads public GitHub repository metadata and appends newly tagged projects to the curated project list. Untagged repositories remain on your GitHub profile rather than appearing in the portfolio automatically. Repositories described as Meta Ray-Ban Display or glasses-first apps are also presented as wearable projects, because their interaction and display constraints differ from ordinary web apps.
+
+### Meta Display App Criteria
+
+For a Meta Ray-Ban Display project, add `portfolio-showcase` and `portfolio-wearable`, then describe the device-specific user experience in the repository description. These projects should demonstrate:
+
+- a 600 x 600 glasses-first display layout with readable high-contrast surfaces,
+- focus and D-pad or gesture-driven navigation rather than touch-only interaction,
+- lightweight, resilient loading behavior suitable for wearable hardware,
+- `portfolio-live` only when a public HTTPS device-test or demo URL is currently working.
 
 ## Contribution Flow
 

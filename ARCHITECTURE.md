@@ -50,9 +50,11 @@ For local testing only, load `?env=staging` or `?env=production` to exercise an 
 
 ## GitHub Project Inclusion
 
-Curated flagship projects remain in `src/data/portfolio.js`. Additional public repositories are fetched from GitHub at runtime and rendered only when explicitly tagged `portfolio-showcase`. Optional category topics (`portfolio-frontend`, `portfolio-backend`, `portfolio-data`, `portfolio-ai`) place a project into the matching filter.
+Curated flagship projects remain in `src/data/portfolio.js`. Additional public repositories are fetched from GitHub at runtime and rendered only when explicitly tagged `portfolio-showcase`. Optional category topics (`portfolio-frontend`, `portfolio-backend`, `portfolio-data`, `portfolio-ai`, `portfolio-wearable`) place a project into the matching filter. Descriptions that clearly identify a Meta Ray-Ban Display or glasses-first application also map to the wearable presentation automatically.
 
-This keeps inclusion intentional and avoids requiring a deployment for each new selected repository. If the public GitHub API is temporarily unavailable or rate limited, the curated project set continues to render.
+Live application links for fetched projects require the additional `portfolio-live` topic, so a stale GitHub homepage does not advertise an unavailable demo. This keeps inclusion intentional and avoids requiring a deployment for each new selected repository. If the public GitHub API is temporarily unavailable or rate limited, the curated project set continues to render.
+
+Wearable entries are intentionally different from normal web-app cards. A Meta Display project should identify its glasses-first interaction, constrained 600 x 600 presentation, and focus/D-pad navigation in its repository metadata; the portfolio can then communicate the device work instead of presenting it as generic JavaScript.
 
 ## Pipeline
 

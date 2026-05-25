@@ -27,3 +27,8 @@ test("document emphasizes backend work without the removed proof section", () =>
   assert.doesNotMatch(html, /Proof of work/);
   assert.doesNotMatch(html, /Built like real systems/);
 });
+
+test("document reserves an opt-in filter for wearable display projects", () => {
+  assert.match(html, /data-filter="wearable" hidden>Wearables/);
+  assert.doesNotMatch(html, /deployed React fitness/i);
+});

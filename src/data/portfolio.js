@@ -2,14 +2,13 @@ export const projects = [
   {
     title: "Fitness Exercises App",
     repo: "https://github.com/manmohanml1/Fitness-exercises-app",
-    live: "https://manmohan-gym-exercises-demo.netlify.app/",
     type: "Frontend",
     category: "frontend",
     size: "1.1 MB",
     featured: true,
     description:
-      "A deployed React fitness application with exercise discovery, routing, Material UI components, loaders, and horizontal content browsing.",
-    tags: ["React", "Material UI", "React Router", "Netlify"],
+      "A React fitness application with exercise discovery, routing, Material UI components, loaders, and horizontal content browsing.",
+    tags: ["React", "Material UI", "React Router", "API UI"],
     visual: "React UI",
     accent: "#36d6c4",
   },

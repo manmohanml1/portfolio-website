@@ -2,13 +2,14 @@ import { projects } from "../data/portfolio.js";
 import { fetchOptInProjects } from "../services/github-projects.js";
 import { escapeHtml, qs, qsa, safeExternalUrl, tagsTemplate } from "../utils/dom.js";
 
-export const PROJECT_FILTERS = ["all", "frontend", "backend", "data", "ai"];
+export const PROJECT_FILTERS = ["all", "frontend", "backend", "data", "ai", "wearable"];
 const FILTER_LABELS = {
   all: "all projects",
   frontend: "Frontend projects",
   backend: "Backend projects",
   data: "Data projects",
   ai: "AI projects",
+  wearable: "Wearable projects",
 };
 
 export function getProjectsForFilter(filter = "all", availableProjects = projects) {
@@ -36,6 +37,7 @@ export function setupProjectFilters({ onCardsRendered } = {}) {
   const filters = qsa(".filter");
   const projectCount = qs("#project-count");
   const githubProjectStatus = qs("#github-project-status");
+  const wearableFilter = qs('[data-filter="wearable"]');
   let availableProjects = projects;
   let activeFilter = "all";
 
@@ -93,9 +95,10 @@ export function setupProjectFilters({ onCardsRendered } = {}) {
     .then((discoveredProjects) => {
       availableProjects = mergeProjects(projects, discoveredProjects);
       const addedProjects = availableProjects.length - projects.length;
+      wearableFilter.hidden = !availableProjects.some((project) => project.category === "wearable");
       githubProjectStatus.textContent =
         addedProjects > 0
-          ? `${addedProjects} tagged GitHub project${addedProjects === 1 ? "" : "s"} added live`
+          ? `${addedProjects} selected GitHub project${addedProjects === 1 ? "" : "s"} synced`
           : "Curated selection · live GitHub additions enabled";
       renderProjects(activeFilter);
     })

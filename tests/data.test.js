@@ -25,6 +25,13 @@ test("project filters have visible content", () => {
   }
 });
 
+test("curated projects do not advertise an unavailable Fitness live app", () => {
+  const fitnessApp = projects.find((project) => project.title === "Fitness Exercises App");
+
+  assert.equal(fitnessApp.live, undefined);
+  assert.ok(!fitnessApp.tags.includes("Netlify"));
+});
+
 test("theme config includes spatial default and unique ids", () => {
   const ids = themes.map((theme) => theme.id);
 

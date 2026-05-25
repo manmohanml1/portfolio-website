@@ -4,13 +4,13 @@ import { projects } from "../src/data/portfolio.js";
 import { getFilterLabel, getProjectsForFilter, mergeProjects, PROJECT_FILTERS } from "../src/render/projects.js";
 
 test("all declared project filters produce projects", () => {
-  for (const filter of PROJECT_FILTERS) {
+  for (const filter of PROJECT_FILTERS.filter((item) => item !== "wearable")) {
     assert.ok(getProjectsForFilter(filter).length > 0, `${filter} should produce cards`);
   }
 });
 
 test("specific filters return only matching projects", () => {
-  for (const filter of PROJECT_FILTERS.filter((item) => item !== "all")) {
+  for (const filter of PROJECT_FILTERS.filter((item) => !["all", "wearable"].includes(item))) {
     const filtered = getProjectsForFilter(filter);
     assert.ok(filtered.every((project) => project.category === filter));
   }
@@ -22,6 +22,7 @@ test("all and invalid filters safely render full portfolio", () => {
   assert.equal(getFilterLabel("invalid"), "all projects");
   assert.equal(getFilterLabel("backend"), "Backend projects");
   assert.equal(getFilterLabel("ai"), "AI projects");
+  assert.equal(getFilterLabel("wearable"), "Wearable projects");
 });
 
 test("live discovered projects are appended without duplicating curated repositories", () => {
@@ -31,4 +32,11 @@ test("live discovered projects are appended without duplicating curated reposito
 
   assert.equal(merged.length, projects.length + 1);
   assert.equal(merged.at(-1).title, "New project");
+});
+
+test("wearable projects can be added and filtered after GitHub discovery", () => {
+  const wearable = { ...projects[0], repo: "https://github.com/manmohanml1/display-app", category: "wearable" };
+  const merged = mergeProjects(projects, [wearable]);
+
+  assert.deepEqual(getProjectsForFilter("wearable", merged), [wearable]);
 });

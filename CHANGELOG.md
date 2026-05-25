@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Fixed
+
+- Normalized auto-added GitHub project titles, sizes, categories, and tags for consistent project cards.
+- Classified Meta Ray-Ban Display applications as wearable projects with their own project filter.
+- Removed the unavailable Fitness Exercises live-demo link and required explicit live-link opt-in for future fetched projects.
+
 ## [1.1.0] - 2026-05-24
 
 ### Added
