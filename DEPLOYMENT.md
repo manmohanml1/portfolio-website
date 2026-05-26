@@ -46,9 +46,12 @@ After deploying the feature to a Vercel Preview URL, submit one test suggestion 
 
 1. Create a feature branch for each meaningful improvement.
 2. Add the user-visible change to `CHANGELOG.md` under `Unreleased`.
-3. Open a pull request and allow the validation workflow to complete.
-4. Merge to `main` after review and deploy to production.
-5. At a milestone, move `Unreleased` entries into a dated version and create a GitHub release tag.
+3. Update `ROADMAP.md` when a planned or in-review capability is included in the release.
+4. Update `src/config/release.js`, open a `feat:` or `fix:` pull request, and allow validation to complete.
+5. Review the Vercel Preview at desktop and mobile sizes; exercise integrations such as feedback when they changed.
+6. Merge to `main` after review and verify the Vercel production deployment and public release badge.
+7. Create the matching GitHub release tag on the production merge commit.
+8. Confirm the pull request checklist, changelog, roadmap status, live badge, and GitHub release page tell the same release story.
 
 ## Official References
 
