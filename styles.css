@@ -110,8 +110,8 @@
 :root[data-theme="brutalist"] {
   color-scheme: light;
   --bg: #ffe34f;
-  --panel: #fffdf3;
-  --panel-strong: #fffdf3;
+  --panel: #f3e6a8;
+  --panel-strong: #f8edc2;
   --line: #111111;
   --ink: #111111;
   --muted: #292929;
@@ -122,9 +122,9 @@
   --green: #3764ff;
   --shadow: 6px 6px 0 #111111;
   --nav-bg: #ffe34f;
-  --button-bg: #fffdf3;
+  --button-bg: #f8edc2;
   --soft-panel: #ffe34f;
-  --chip-bg: #ffffff;
+  --chip-bg: #fff4cc;
   --visual-bg: #3764ff;
   --page-background:
     linear-gradient(135deg, rgba(17, 17, 17, 0.055) 25%, transparent 25%) 0 0 / 32px 32px,
@@ -1096,6 +1096,7 @@ section[id] {
   background: transparent;
   box-shadow: none;
   overflow: visible;
+  cursor: default;
 }
 
 :root[data-project-layout="list"] .project-visual {
@@ -2061,7 +2062,7 @@ footer p {
 :root[data-theme="brutalist"] .project-toolbar {
   border: 3px solid #111111;
   border-radius: 0;
-  background: #fffdf3;
+  background: var(--panel);
   box-shadow: 6px 6px 0 #111111;
 }
 
@@ -2100,6 +2101,20 @@ footer p {
 :root[data-theme="brutalist"] .button.primary {
   background: #3764ff;
   color: #ffffff;
+}
+
+:root[data-theme="brutalist"] .project-dialog {
+  border: 3px solid #111111;
+  border-radius: 0;
+  background: var(--panel-strong);
+  box-shadow: 8px 8px 0 #111111;
+}
+
+:root[data-theme="brutalist"] .project-dialog .dialog-close,
+:root[data-theme="brutalist"] .project-dialog .architecture-explorer {
+  border: 2px solid #111111;
+  border-radius: 0;
+  background: #f3e6a8;
 }
 
 /* List rows must not inherit the decorative card surfaces declared by themes. */
@@ -2143,7 +2158,7 @@ footer p {
 :root[data-theme="brutalist"][data-project-layout="list"] .project-card .project-links > * {
   border: 2px solid #111111;
   border-radius: 0;
-  background: #fffdf3;
+  background: var(--panel-strong);
   box-shadow: 2px 2px 0 #111111;
 }
 

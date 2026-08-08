@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [1.5.2] - 2026-08-08
+
+### Fixed
+
+- Restored whole-card pointer access to project details in Cards view while preserving Repository, Live app, and explicit details actions.
+- Kept List rows non-clickable outside their explicit actions and removed the misleading row-level pointer cursor.
+- Replaced bright Neo Brutalist card and project-dialog whites with softer paper surfaces while preserving its borders, shadows, and accent colors.
+
 ## [1.5.1] - 2026-08-08
 
 ### Fixed
@@ -130,7 +138,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Published the initial production portfolio deployment on Vercel Hobby.
 - Connected the GitHub repository to Vercel for automatic production and preview deployments.
 
-[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.5.1...HEAD
+[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.5.2...HEAD
+[1.5.2]: https://github.com/manmohanml1/portfolio-website/compare/v1.5.1...v1.5.2
 [1.5.1]: https://github.com/manmohanml1/portfolio-website/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.3.0...v1.4.0

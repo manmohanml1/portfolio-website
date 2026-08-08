@@ -22,6 +22,10 @@ export function getProjectActionLabel(project) {
   return project.details?.preview ? "Preview" : "Details";
 }
 
+export function canOpenProjectCard(layout, hasInteractiveTarget = false) {
+  return layout === "cards" && !hasInteractiveTarget;
+}
+
 export function getProjectsForFilter(filter = "all", availableProjects = projects) {
   if (!PROJECT_FILTERS.includes(filter) || filter === "all") {
     return availableProjects;
@@ -83,7 +87,7 @@ export function mergeProjects(curatedProjects, discoveredProjects) {
 
 export function createProjectCardTemplate(project, index, { allowDetails = true } = {}) {
   return `
-    <article class="project-card ${project.featured ? "featured" : ""}">
+    <article class="project-card ${project.featured ? "featured" : ""}"${allowDetails ? ` data-project-card-index="${index}"` : ""}>
       ${
         allowDetails
           ? `<button class="project-visual project-open" type="button" data-open-project="${index}" aria-label="View details for ${escapeHtml(project.title)}">
@@ -184,8 +188,12 @@ export function setupProjectFilters({
       return;
     }
 
-    if (card && onOpenProject && !event.target.closest("a, button")) {
-      onOpenProject?.(getVisibleProjects()[Number(card.dataset.projectIndex)]);
+    if (
+      card
+      && onOpenProject
+      && canOpenProjectCard(document.documentElement.dataset.projectLayout, Boolean(event.target.closest("a, button")))
+    ) {
+      onOpenProject?.(getVisibleProjects()[Number(card.dataset.projectCardIndex)]);
     }
   });
 
