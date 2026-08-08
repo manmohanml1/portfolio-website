@@ -9,12 +9,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ### Added
 
 - Added a server-only Neon configuration store with independent development, staging, and production feature values.
+- Added a dedicated shared feature-configuration connection so all Vercel Previews follow the same staging flags while retaining isolated databases for future schema testing.
 - Added idempotent database migrations, 18 seeded flag records, and automatic change auditing for future admin updates.
 - Added tests for database fallback, query parameterization, source-aware caching, and SQL schema contracts.
 
 ### Changed
 
 - Updated local configuration loading to read Neon when configured while preserving localhost-only URL overrides.
+- Prioritized `FEATURE_CONFIG_DATABASE_URL` over Neon's deployment-specific `DATABASE_URL` to prevent Preview branches from fragmenting flag control.
 - Updated CI and release-candidate artifacts to install locked dependencies and include API and database assets.
 - Kept Neon Auth disabled until authenticated admin controls can ship with explicit owner authorization.
 - Advanced the visible feature candidate to `v1.4.0`.

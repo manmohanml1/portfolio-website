@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { mergeDatabaseFlags, readFeatureConfig } from "../api/_lib/feature-store.js";
+import {
+  mergeDatabaseFlags,
+  readFeatureConfig,
+  resolveFeatureConfigConnectionString,
+} from "../api/_lib/feature-store.js";
 import { DEFAULT_FEATURE_FLAGS, FEATURE_FLAG_KEYS } from "../src/config/feature-defaults.js";
 
 test("database rows override only registered Boolean flags", () => {
@@ -29,6 +33,21 @@ test("missing database credentials fail open without opening a connection", asyn
   assert.equal(connected, false);
   assert.equal(result.source, "defaults");
   assert.deepEqual(result.flags, DEFAULT_FEATURE_FLAGS);
+});
+
+test("shared feature configuration takes priority over an isolated deployment database", () => {
+  assert.equal(
+    resolveFeatureConfigConnectionString({
+      FEATURE_CONFIG_DATABASE_URL: "postgresql://shared-control-plane",
+      DATABASE_URL: "postgresql://isolated-preview-branch",
+    }),
+    "postgresql://shared-control-plane",
+  );
+  assert.equal(
+    resolveFeatureConfigConnectionString({ DATABASE_URL: "postgresql://legacy-connection" }),
+    "postgresql://legacy-connection",
+  );
+  assert.equal(resolveFeatureConfigConnectionString({}), "");
 });
 
 test("database reads are parameterized by environment and registered keys", async () => {

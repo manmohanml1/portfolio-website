@@ -6,7 +6,7 @@ This portfolio has a static, no-build frontend with modular ES modules, one read
 
 - `index.html`: semantic page shell and persistent layout anchors.
 - `api/config.js`: public allow-listed feature configuration endpoint.
-- `api/_lib/feature-store.js`: server-only Neon reader, timeout, validation, and defaults fallback.
+- `api/_lib/feature-store.js`: server-only shared-control-plane Neon reader, connection precedence, timeout, validation, and defaults fallback.
 - `db/`: idempotent schema migration and environment-specific seed data.
 - `styles.css`: current visual system, responsive layout, theme variables, and animations.
 - `src/data/portfolio.js`: editable curated portfolio content, skills, and journey sections.
@@ -66,9 +66,9 @@ Repeated `flag=key:false` parameters can override registered flags only on local
 
 ## Runtime Feature Configuration
 
-Portfolio startup resolves the environment, loads `/api/config`, validates only registered Boolean flags, applies section/control visibility, and then initializes enabled renderers and interactions. The endpoint reads environment-specific Neon rows when `DATABASE_URL` is configured and otherwise returns checked-in defaults. Database responses receive a short edge-cache window; fallback responses are not cached so recovery is immediate.
+Portfolio startup resolves the environment, loads `/api/config`, validates only registered Boolean flags, applies section/control visibility, and then initializes enabled renderers and interactions. The endpoint reads environment-specific Neon rows when `FEATURE_CONFIG_DATABASE_URL` is configured and otherwise falls back to `DATABASE_URL`, then checked-in defaults. Database responses receive a short edge-cache window; fallback responses are not cached so recovery is immediate.
 
-Neon is a separate managed resource, not part of the browser application. Vercel Functions access it through a server-only connection string. The schema keeps development, staging, and production values independent and records inserts or updates automatically in `feature_audit`. Direct SQL control is suitable for this phase; authenticated admin writes remain isolated as a later feature.
+Neon is a separate managed resource, not part of the browser application. Vercel Functions access its persistent configuration branch through the server-only `FEATURE_CONFIG_DATABASE_URL`. Vercel Preview deployments may retain isolated Neon branches through `DATABASE_URL` for future schema and application-data tests, but those branches do not control feature availability. The schema keeps development, staging, and production values independent and records inserts or updates automatically in `feature_audit`. Direct SQL control is suitable for this phase; authenticated admin writes remain isolated as a later feature.
 
 Neon Auth is intentionally disabled during this phase. Anonymous visitor preferences remain in browser storage, while a future Admin Control Center can introduce authentication together with explicit owner authorization, restricted registration, trusted domains, and server-side token validation.
 

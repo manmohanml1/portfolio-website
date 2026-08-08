@@ -7,6 +7,10 @@ import {
 
 export const FEATURE_STORE_TIMEOUT_MS = 2000;
 
+export function resolveFeatureConfigConnectionString(environment = process.env) {
+  return environment.FEATURE_CONFIG_DATABASE_URL || environment.DATABASE_URL || "";
+}
+
 export function mergeDatabaseFlags(rows = []) {
   const flags = { ...DEFAULT_FEATURE_FLAGS };
   let acceptedRows = 0;
@@ -26,7 +30,7 @@ export function mergeDatabaseFlags(rows = []) {
 
 export async function readFeatureConfig({
   environment,
-  connectionString = process.env.DATABASE_URL,
+  connectionString = resolveFeatureConfigConnectionString(),
   createSql = neon,
   timeoutMs = FEATURE_STORE_TIMEOUT_MS,
 } = {}) {

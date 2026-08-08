@@ -25,7 +25,7 @@ The current quality pipeline validates three logical environments:
 | Application Environment | Use |
 | --- | --- |
 | `development` | Local changes and early experimentation |
-| `staging` | Preview deployment reviewed before publishing |
+| `staging` | Shared configuration scope used by Vercel Preview deployments |
 | `production` | Public portfolio on the primary domain |
 
 Vercel preview deployments are connected to feature branches and pull requests, while production deployments are connected to `main`.
@@ -38,11 +38,12 @@ Vercel preview deployments are connected to feature branches and pull requests, 
 
 1. Add Neon from the Vercel Marketplace and select its free plan. Keep it as a separate managed resource connected to the `portfolio-website` project, and leave optional Neon Auth disabled until the Admin Control Center phase.
 2. In the Neon SQL Editor, run `db/migrations/001_create_feature_config.sql`, then `db/seeds/001_feature_flags.sql`.
-3. Confirm that Vercel created `DATABASE_URL`. It must be enabled for Preview and Production and must never be prefixed with `VITE_` or exposed in browser code.
-4. Redeploy the Preview. Its `/api/config` response should report `"environment":"staging"` and `"source":"database"`.
-5. Change only the intended staging row in Neon, verify the Preview, and restore it before production promotion.
+3. Copy the connection string for Neon's persistent `main` branch into a server-only Vercel variable named `FEATURE_CONFIG_DATABASE_URL`. Enable it for Preview and Production; never prefix it with `VITE_` or expose it in browser code.
+4. Keep Neon's integration-managed `DATABASE_URL` if Preview database branches are useful for future schema or application-data testing. `/api/config` deliberately prefers `FEATURE_CONFIG_DATABASE_URL`, so those isolated branches do not fragment feature-flag control.
+5. Redeploy the Preview. Its `/api/config` response should report `"environment":"staging"` and `"source":"database"`.
+6. Change only the intended staging row on the persistent Neon branch, verify every Preview follows it after the short cache window, and restore it before production promotion.
 
-The initial schema stores all three environment scopes in one database. A unique `(key, environment)` constraint keeps their values separate. Neon database branches can be introduced later if isolated preview data becomes useful; they are not required for six Boolean flags.
+The schema stores all three environment scopes in one persistent configuration database. A unique `(key, environment)` constraint keeps their values separate. Neon may still create isolated database branches for Vercel Previews, but those branches are intentionally ignored by the configuration reader when `FEATURE_CONFIG_DATABASE_URL` is present.
 
 Use parameterized SQL to control values directly during this phase:
 
@@ -55,7 +56,7 @@ WHERE key = 'features.feedback.enabled'
 
 Every insert or meaningful update creates a `feature_audit` record automatically. The future Admin Control Center will provide authenticated writes without changing the public read contract.
 
-The current deployment should expose `DATABASE_URL` but not `NEON_AUTH_BASE_URL` or `VITE_NEON_AUTH_URL`. Authentication will be added only when its owner allowlist, registration policy, trusted domains, and token verification can ship together.
+The current deployment should expose `FEATURE_CONFIG_DATABASE_URL` server-side. It may also expose Neon's integration-managed `DATABASE_URL`, but should not expose `NEON_AUTH_BASE_URL` or `VITE_NEON_AUTH_URL`. Authentication will be added only when its owner allowlist, registration policy, trusted domains, and token verification can ship together.
 
 ## Private Feedback Setup
 
