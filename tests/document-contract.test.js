@@ -36,8 +36,8 @@ test("visitor customization is rollout-gated and supports audience lenses and pr
   assert.match(html, /data-audience-evidence="backend"/);
   assert.match(styles, /data-audience="general"/);
   assert.match(styles, /data-project-layout="list"/);
-  assert.match(styles, /counter\(project-index, decimal-leading-zero\)/);
-  assert.match(styles, /grid-template-columns: 56px minmax\(0, 1fr\) minmax\(160px, 0\.28fr\)/);
+  assert.doesNotMatch(styles, /counter\(project-index/);
+  assert.match(styles, /grid-template-columns: minmax\(0, 1fr\) minmax\(160px, 0\.28fr\)/);
   assert.match(styles, /\.project-card \.project-links/);
   assert.match(styles, /data-audience="general"\]\) \.filter-bar/);
 });

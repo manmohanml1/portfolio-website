@@ -83,7 +83,7 @@ export function mergeProjects(curatedProjects, discoveredProjects) {
 
 export function createProjectCardTemplate(project, index, { allowDetails = true } = {}) {
   return `
-    <article class="project-card ${project.featured ? "featured" : ""}" data-project-index="${index}">
+    <article class="project-card ${project.featured ? "featured" : ""}">
       ${
         allowDetails
           ? `<button class="project-visual project-open" type="button" data-open-project="${index}" aria-label="View details for ${escapeHtml(project.title)}">
