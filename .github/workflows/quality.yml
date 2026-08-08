@@ -73,6 +73,8 @@ jobs:
           path: |
             api
             db
+            admin.html
+            admin.css
             index.html
             package.json
             package-lock.json

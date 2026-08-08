@@ -29,7 +29,7 @@ export function normalizeFeatureConfig(payload, environment = "development") {
     }
   });
 
-  const knownSources = new Set(["database", "defaults", "local-overrides", "remote"]);
+  const knownSources = new Set(["database", "defaults", "local-memory", "local-overrides", "remote"]);
 
   return Object.freeze({
     version: FEATURE_CONFIG_VERSION,

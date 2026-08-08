@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+const adminHtml = await readFile(new URL("../admin.html", import.meta.url), "utf8");
 const styles = await readFile(new URL("../styles.css", import.meta.url), "utf8");
 const mainSource = await readFile(new URL("../src/main.js", import.meta.url), "utf8");
 
@@ -60,6 +61,16 @@ test("career section presents verified professional signal wording", () => {
 test("document reserves an opt-in filter for wearable display projects", () => {
   assert.match(html, /data-filter="wearable" hidden>Wearables/);
   assert.doesNotMatch(html, /deployed React fitness/i);
+});
+
+test("admin control center is unlinked, no-index, and uses a dedicated module", () => {
+  assert.doesNotMatch(html, /href=["']\/admin\.html/);
+  assert.match(adminHtml, /name="robots" content="noindex, nofollow"/);
+  assert.match(adminHtml, /src="\/src\/admin\/main\.js"/);
+  assert.match(adminHtml, /role="group" aria-label="Configuration environment"/);
+  assert.match(adminHtml, /role="tablist" aria-label="Control Center views"/);
+  assert.match(adminHtml, /id="flags-panel" role="tabpanel"/);
+  assert.match(adminHtml, /id="audit-panel" role="tabpanel"/);
 });
 
 test("public profile links open outside the portfolio tab", () => {

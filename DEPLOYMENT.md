@@ -1,6 +1,6 @@
 # Vercel Deployment
 
-This portfolio uses a static browser application plus `api/config.js`, a read-only Vercel Function that serves validated runtime feature values. Private feedback is forwarded through Formspree. Neon is optional and its free plan is sufficient for this configuration workload; a missing database connection safely restores checked-in defaults.
+This portfolio uses a static browser application plus Vercel Functions for public configuration reads and authenticated owner updates. Private feedback is forwarded through Formspree. Neon is optional for the public portfolio and its free plan is sufficient for this configuration workload; a missing database connection safely restores checked-in defaults.
 
 ## Production
 
@@ -36,7 +36,7 @@ Vercel preview deployments are connected to feature branches and pull requests, 
 
 ### Neon Setup
 
-1. Add Neon from the Vercel Marketplace and select its free plan. Keep it as a separate managed resource connected to the `portfolio-website` project, and leave optional Neon Auth disabled until the Admin Control Center phase.
+1. Add Neon from the Vercel Marketplace and select its free plan. Keep it as a separate managed resource connected to the `portfolio-website` project.
 2. In the Neon SQL Editor, run migrations in numeric order, then `db/seeds/001_feature_flags.sql`. Existing v1.4 databases should run `db/migrations/002_add_visitor_customization_flag.sql` for the v1.5 rollout flag.
 3. Copy the connection string for Neon's persistent `main` branch into a server-only Vercel variable named `FEATURE_CONFIG_DATABASE_URL`. Enable it for Preview and Production; never prefix it with `VITE_` or expose it in browser code.
 4. Keep Neon's integration-managed `DATABASE_URL` if Preview database branches are useful for future schema or application-data testing. `/api/config` deliberately prefers `FEATURE_CONFIG_DATABASE_URL`, so those isolated branches do not fragment feature-flag control.
@@ -54,9 +54,22 @@ WHERE key = 'features.feedback.enabled'
   AND environment = 'staging';
 ```
 
-Every insert or meaningful update creates a `feature_audit` record automatically. The future Admin Control Center will provide authenticated writes without changing the public read contract.
+Every insert or meaningful update creates a `feature_audit` record automatically. The Admin Control Center provides authenticated writes without changing the public read contract.
 
-The current deployment should expose `FEATURE_CONFIG_DATABASE_URL` server-side. It may also expose Neon's integration-managed `DATABASE_URL`, but should not expose `NEON_AUTH_BASE_URL` or `VITE_NEON_AUTH_URL`. Authentication will be added only when its owner allowlist, registration policy, trusted domains, and token verification can ship together.
+The deployment should expose `FEATURE_CONFIG_DATABASE_URL` server-side. It may also expose Neon's integration-managed `DATABASE_URL`; neither connection string belongs in browser code.
+
+### Admin Control Center Setup
+
+1. Enable Neon Auth for the portfolio's Neon project and create the single owner identity.
+2. Disable public registration in Neon Auth. Keep every non-owner identity unauthorized even if registration is temporarily enabled for setup.
+3. Add the production portfolio URL and the Vercel Preview domains you intend to test as trusted Neon Auth origins.
+4. Add `NEON_AUTH_URL`, `NEON_AUTH_JWKS_URL`, and `NEON_AUTH_ISSUER` to Vercel Preview and Production. Add `NEON_AUTH_AUDIENCE` only if the issued token declares a required audience.
+5. Add the exact identity to `ADMIN_OWNER_EMAILS` or `ADMIN_OWNER_IDS`. IDs are preferred when the Neon Auth subject is stable; email remains supported as an exact, case-normalized allowlist.
+6. Add the production and intended Preview origins to `ADMIN_TRUSTED_ORIGINS`, separated by commas. Vercel's current deployment and production hostnames are also trusted automatically from their system variables.
+7. Do not add `ADMIN_LOCAL_TOKEN` to Vercel. It is a local-development credential and is rejected whenever `VERCEL_ENV` is present or `NODE_ENV=production`.
+8. Open `/admin.html`, sign in as the owner, change one staging flag, confirm the audit entry, and verify a Preview follows the new value after the public configuration cache expires.
+
+The page is unlinked and marked `noindex`, but access control comes from server-side JWT verification and the exact owner allowlist. Each admin read and write repeats authorization. Production mutations also require a confirmation in the UI and stale updates receive a `409` conflict.
 
 ## Private Feedback Setup
 

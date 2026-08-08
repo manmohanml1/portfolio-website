@@ -1,11 +1,13 @@
 # Portfolio Architecture
 
-This portfolio has a static, no-build frontend with modular ES modules, one read-only Vercel Function backed optionally by Neon, and a hosted Formspree delivery endpoint for private feedback. It remains lighter than a full Next.js or Astro app while keeping database access behind a server boundary.
+This portfolio has a static, no-build frontend with modular ES modules, read-only and owner-only Vercel Functions backed optionally by Neon, and a hosted Formspree delivery endpoint for private feedback. It remains lighter than a full Next.js or Astro app while keeping database access behind a server boundary.
 
 ## Structure
 
 - `index.html`: semantic page shell and persistent layout anchors.
 - `api/config.js`: public allow-listed feature configuration endpoint.
+- `api/admin/`: owner-only authentication bootstrap and feature-management endpoint.
+- `api/_lib/admin-auth.js`: local-development isolation, Neon JWT verification, exact owner authorization, and mutation-origin checks.
 - `api/_lib/feature-store.js`: server-only shared-control-plane Neon reader, connection precedence, timeout, validation, and defaults fallback.
 - `db/`: idempotent schema migration and environment-specific seed data.
 - `styles.css`: current visual system, responsive layout, theme variables, and animations.
@@ -21,6 +23,7 @@ This portfolio has a static, no-build frontend with modular ES modules, one read
 - `src/features/feature-availability.js`: section and control visibility rules for registered flags.
 - `src/render/`: DOM rendering modules for content sections.
 - `src/features/`: interactive features such as theme switching, motion preference, project and feedback dialogs, card tilt, and back-to-top.
+- `admin.html`, `admin.css`, and `src/admin/`: unlinked owner workspace for environment flags and audit history.
 - `src/utils/`: small shared utilities.
 - `tests/`: data integrity tests that catch broken projects, missing themes, and incomplete section content.
 - `.github/workflows/quality.yml`: CI quality gate and deployable static artifact packaging.
@@ -35,7 +38,7 @@ The nearby Codex projects use a similar separation of concerns: configs, service
 
 This is not as heavy as a framework, but it avoids the worst static-site problem: one giant file where every future change risks unrelated behavior.
 
-The configuration boundary is intentionally read-only. The browser receives only seven allow-listed Boolean values, never credentials or arbitrary database records. Invalid, missing, timed-out, and non-success responses restore checked-in defaults so configuration cannot take the public portfolio offline.
+The public configuration boundary remains intentionally read-only. The browser receives only seven allow-listed Boolean values, never credentials or arbitrary database records. Invalid, missing, timed-out, and non-success responses restore checked-in defaults so configuration cannot take the public portfolio offline. Admin writes use a separate authenticated endpoint and never change this public contract.
 
 The current theme registry chooses visible worlds and persists a viewer preference. Ambient artwork is opt-in for an individual world, so a scene such as Interstellar's black hole does not leak into cleaner modes. The visual rules still live in CSS because they alter composition, atmosphere, typography, and responsive behavior rather than merely tokens.
 
@@ -71,7 +74,13 @@ Portfolio startup resolves the environment, loads `/api/config`, validates only 
 
 Neon is a separate managed resource, not part of the browser application. Vercel Functions access its persistent configuration branch through the server-only `FEATURE_CONFIG_DATABASE_URL`. Vercel Preview deployments may retain isolated Neon branches through `DATABASE_URL` for future schema and application-data tests, but those branches do not control feature availability. The schema keeps development, staging, and production values independent and records inserts or updates automatically in `feature_audit`. Direct SQL control is suitable for this phase; authenticated admin writes remain isolated as a later feature.
 
-Neon Auth is intentionally disabled during this phase. Anonymous visitor preferences remain in browser storage, while a future Admin Control Center can introduce authentication together with explicit owner authorization, restricted registration, trusted domains, and server-side token validation.
+Neon Auth is used only by the owner Control Center. The browser obtains a short-lived token from Neon Auth, while every admin API independently verifies its signature, issuer, optional audience, exact owner email or subject id, and trusted mutation origin. Public registration must remain disabled. Anonymous visitor preferences continue to live only in browser storage.
+
+## Admin Control Center
+
+`/admin.html` is deliberately absent from public navigation and marked `noindex`; obscurity is not treated as security. The page loads public auth bootstrap metadata, authenticates through Neon Auth, and sends a bearer token to `/api/admin/features`. The API authorizes the exact owner on every read and write, validates environment and flag keys, and uses `updated_at` as an optimistic version so stale sessions receive a conflict instead of overwriting newer changes.
+
+Database mutations set `app.changed_by` inside the update statement, allowing the existing trigger to attribute `feature_audit` entries to the authenticated owner. Production saves require a second UI confirmation. Local development can use `ADMIN_LOCAL_TOKEN`; that path is disabled whenever `VERCEL_ENV` exists or `NODE_ENV=production`, and the token is never returned by the bootstrap endpoint.
 
 ## Visitor Preferences
 

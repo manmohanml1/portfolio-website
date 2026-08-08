@@ -2,9 +2,16 @@ import { spawnSync } from "node:child_process";
 
 const files = [
   "api/config.js",
+  "api/admin/auth-config.js",
+  "api/admin/features.js",
+  "api/_lib/admin-auth.js",
   "api/_lib/feature-store.js",
   "dev-server.mjs",
   "src/main.js",
+  "src/admin/api.js",
+  "src/admin/auth-client.js",
+  "src/admin/main.js",
+  "src/admin/render.js",
   "src/config/environment.js",
   "src/config/feature-defaults.js",
   "src/config/release.js",

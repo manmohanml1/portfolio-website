@@ -6,6 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Added an unlinked, no-index owner Control Center for switching development, staging, and production feature flags and reviewing environment audit history.
+- Separated flag management and audit history into keyboard-accessible owner workspace tabs that retain the selected environment.
+- Added a protected admin feature API with server-side Neon Auth JWT verification, exact owner allowlists, trusted mutation origins, optimistic update checks, and owner-attributed database changes.
+- Added a development-only local owner-token flow and in-memory control-plane preview that cannot activate on Vercel.
+- Added focused automated coverage for authorization boundaries, admin reads and writes, conflict handling, secret-safe bootstrap configuration, and audit queries.
+
+### Changed
+
+- Advanced the local and Preview release candidate to `v1.6.0`; production remains `v1.5.2` until the reviewed feature is approved and merged.
+
 ## [1.5.2] - 2026-08-08
 
 ### Fixed
