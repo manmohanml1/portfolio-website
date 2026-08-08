@@ -60,16 +60,19 @@ The deployment should expose `FEATURE_CONFIG_DATABASE_URL` server-side. It may a
 
 ### Admin Control Center Setup
 
-1. Enable Neon Auth for the portfolio's Neon project and create the single owner identity.
-2. Disable public registration in Neon Auth. Keep every non-owner identity unauthorized even if registration is temporarily enabled for setup.
-3. Add the production portfolio URL and the Vercel Preview domains you intend to test as trusted Neon Auth origins.
-4. Add `NEON_AUTH_URL`, `NEON_AUTH_JWKS_URL`, and `NEON_AUTH_ISSUER` to Vercel Preview and Production. Add `NEON_AUTH_AUDIENCE` only if the issued token declares a required audience.
-5. Add the exact identity to `ADMIN_OWNER_EMAILS` or `ADMIN_OWNER_IDS`. IDs are preferred when the Neon Auth subject is stable; email remains supported as an exact, case-normalized allowlist.
-6. Add the production and intended Preview origins to `ADMIN_TRUSTED_ORIGINS`, separated by commas. Vercel's current deployment and production hostnames are also trusted automatically from their system variables.
-7. Do not add `ADMIN_LOCAL_TOKEN` to Vercel. It is a local-development credential and is rejected whenever `VERCEL_ENV` is present or `NODE_ENV=production`.
-8. Open `/admin.html`, sign in as the owner, change one staging flag, confirm the audit entry, and verify a Preview follows the new value after the public configuration cache expires.
+1. In the Neon Console, select the intended persistent branch, open **Auth**, and enable Managed Better Auth with email/password authentication.
+2. Create the single owner identity. Neon currently allows sign-up by default, so do not publish a sign-up interface. Every non-owner account remains unauthorized by the portfolio APIs through the exact owner allowlist.
+3. Add the production portfolio URL and the stable Vercel Preview domains you intend to test as trusted Neon Auth origins. Auth users and settings are branch-specific; use a stable staging Auth branch for Preview and the production branch for Production.
+4. Copy the full Neon Auth URL into `NEON_AUTH_URL` for each Vercel environment. The client accepts the endpoint with or without its trailing `/auth` path.
+5. Add the exact `NEON_AUTH_JWKS_URL` and `NEON_AUTH_ISSUER` shown by the Auth configuration for that branch. Add `NEON_AUTH_AUDIENCE` only if the issued token declares a required audience.
+6. Add the exact identity to `ADMIN_OWNER_IDS` and optionally `ADMIN_OWNER_EMAILS`. The immutable Auth user id is preferred; email remains supported as an exact, case-normalized allowlist.
+7. Add the production and intended Preview origins to `ADMIN_TRUSTED_ORIGINS`, separated by commas. Vercel's current deployment and production hostnames are also trusted automatically from their system variables.
+8. Do not add `ADMIN_LOCAL_TOKEN` to Vercel. It is a local-development credential and is rejected whenever `VERCEL_ENV` is present or `NODE_ENV=production`.
+9. Redeploy, open `/admin.html`, sign in as the owner, change one staging flag, confirm the audit entry, and verify a Preview follows the new value after the public configuration cache expires.
 
 The page is unlinked and marked `noindex`, but access control comes from server-side JWT verification and the exact owner allowlist. Each admin read and write repeats authorization. Production mutations also require a confirmation in the UI and stale updates receive a `409` conflict.
+
+Neon's current Managed Better Auth service does not yet provide a built-in restricted-signup switch. The portfolio therefore exposes sign-in only and treats the API allowlist as the authorization boundary. Enable email verification when available, use `ADMIN_OWNER_IDS` for the owner, and remove any unexpected Auth users from Neon.
 
 ## Private Feedback Setup
 
@@ -101,3 +104,5 @@ After deploying the feature to a Vercel Preview URL, submit one test suggestion 
 - [Vercel GitHub Integration](https://vercel.com/docs/git/vercel-for-github)
 - [Neon Vercel Integration](https://vercel.com/marketplace/neon)
 - [Neon Serverless Driver](https://neon.com/docs/serverless/serverless-driver)
+- [Neon Auth](https://neon.com/docs/neon-auth)
+- [Neon Auth Flow](https://neon.com/docs/auth/authentication-flow)

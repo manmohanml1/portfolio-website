@@ -25,7 +25,7 @@ This list tracks additions that make the site useful to explore, not simply more
 - A persistent Neon control-plane branch stores independent development, staging, and production values behind the existing read-only API contract.
 - Vercel Preview databases remain isolated for safe future schema testing, while all Previews read the shared staging feature flags.
 - Database changes are recorded automatically in `feature_audit`; the v1.6 owner workspace reads that history and uses optimistic writes to prevent stale updates.
-- Neon Auth is introduced only for the v1.6 owner workspace with exact email/subject allowlists, trusted origins, server-side JWT verification, and public registration disabled.
+- Neon Auth is introduced only for the v1.6 owner workspace with exact email/subject allowlists, trusted origins, and server-side JWT verification. The public site exposes no signup UI; the allowlist denies every non-owner identity while Neon Managed Better Auth permits signup by default.
 - Audit history has its own Control Center tab; analytics remains a separate v1.7 integration so v1.6 can validate authentication and writes without also introducing a Vercel API token.
 - Visitor preferences stay anonymous and device-local; theme, motion, audience lens, and project layout never enter Neon.
 - General retains the complete portfolio; specialized audience lenses remove irrelevant evidence and replace page-wide positioning, while shareable `?view=` links open each curated variant without visitor accounts.

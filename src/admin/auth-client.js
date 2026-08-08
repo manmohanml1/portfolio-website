@@ -7,6 +7,12 @@ async function readJson(response) {
   return body;
 }
 
+function getAuthEndpoint(authUrl, path) {
+  const baseUrl = authUrl.replace(/\/+$/, "");
+  const authBaseUrl = baseUrl.endsWith("/auth") ? baseUrl : `${baseUrl}/auth`;
+  return `${authBaseUrl}/${path}`;
+}
+
 export async function loadAdminAuthConfig() {
   return readJson(await fetch("/api/admin/auth-config", { cache: "no-store" }));
 }
@@ -34,32 +40,30 @@ export function createAdminHeaders(credential) {
     : { Authorization: `Bearer ${credential.value}` };
 }
 
-export async function signInOwner(config, { email, password, localToken }) {
+export async function signInOwner(config, { email, password, localToken }, fetchImpl = globalThis.fetch) {
   if (config.mode === "local-token") {
     if (!localToken) throw new Error("Enter the local owner token");
     return { mode: "local-token", value: localToken };
   }
 
   if (!config.authUrl) throw new Error("Neon Auth is not configured");
-  await readJson(await fetch(`${config.authUrl}/sign-in/email`, {
+  const signInResponse = await readJson(await fetchImpl(getAuthEndpoint(config.authUrl, "sign-in/email"), {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   }));
-  const tokenResponse = await readJson(await fetch(`${config.authUrl}/token`, {
-    credentials: "include",
-    cache: "no-store",
-  }));
-  const token = tokenResponse.token || tokenResponse.data?.token;
+  const token = signInResponse.data?.session?.access_token
+    || signInResponse.session?.access_token
+    || signInResponse.data?.session?.accessToken;
   if (!token) throw new Error("Neon Auth did not return an access token");
   return { mode: "neon-auth", value: token };
 }
 
-export async function signOutOwner(config) {
+export async function signOutOwner(config, fetchImpl = globalThis.fetch) {
   clearCredentials();
   if (config?.mode === "neon-auth" && config.authUrl) {
-    await fetch(`${config.authUrl}/sign-out`, {
+    await fetchImpl(getAuthEndpoint(config.authUrl, "sign-out"), {
       method: "POST",
       credentials: "include",
     }).catch(() => {});
