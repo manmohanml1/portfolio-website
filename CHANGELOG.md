@@ -6,6 +6,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-08-08
+
 ### Added
 
 - Added a server-only Neon configuration store with independent development, staging, and production feature values.
@@ -102,7 +104,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Published the initial production portfolio deployment on Vercel Hobby.
 - Connected the GitHub repository to Vercel for automatic production and preview deployments.
 
-[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/manmohanml1/portfolio-website/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.1.0...v1.2.0

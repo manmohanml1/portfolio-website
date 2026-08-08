@@ -26,9 +26,9 @@ test("roadmap marks shipped v1.2 capabilities as delivered", () => {
   }
 });
 
-test("roadmap records runtime configuration and identifies Neon as the Preview candidate", () => {
+test("roadmap records the shipped runtime and Neon configuration releases", () => {
   assert.match(roadmap, /\| Runtime Feature Configuration .*\| Shipped in v1\.3\.0 \|/);
-  assert.match(roadmap, /\| Neon Configuration Store .*\| In preview review for v1\.4\.0 \|/);
+  assert.match(roadmap, /\| Neon Configuration Store .*\| Shipped in v1\.4\.0 \|/);
 });
 
 test("release checklists protect roadmap promotion and GitHub release tagging", () => {

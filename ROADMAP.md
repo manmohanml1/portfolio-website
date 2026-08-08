@@ -7,7 +7,7 @@ This list tracks additions that make the site useful to explore, not simply more
 | Addition | Purpose | Status |
 | --- | --- | --- |
 | Runtime Feature Configuration | Separate deployment from availability through validated, fail-open configuration flags. | Shipped in v1.3.0 |
-| Neon Configuration Store | Persist environment-specific flags and audit history without exposing database credentials to the browser. | In preview review for v1.4.0 |
+| Neon Configuration Store | Persist environment-specific flags and audit history without exposing database credentials to the browser. | Shipped in v1.4.0 |
 | Admin Control Center | Let the portfolio owner update production flags through an authenticated interface. | Planned |
 | Visitor Customization | Let viewers personalize presentation preferences locally within admin-enabled capabilities. | Planned |
 | Project Case Study Mode | Let viewers understand the problem, implementation choices, and result behind selected work. | Shipped in v1.2.0 |
