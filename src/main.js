@@ -5,10 +5,12 @@ import { setupMotionPreference } from "./features/motion-preference.js";
 import { setupFeedbackDialog } from "./features/feedback-dialog.js";
 import { setupProjectDialog } from "./features/project-dialog.js";
 import { setupThemeMenu } from "./features/theme-switcher.js";
+import { applyViewDensity, setupVisitorCustomization } from "./features/visitor-customization.js";
 import { setupProjectFilters } from "./render/projects.js";
 import { renderReleaseIndicator } from "./render/release.js";
 import { renderJourney, renderSkills, renderStackStrip } from "./render/sections.js";
 import { isFeatureEnabled, loadFeatureConfig } from "./services/feature-config.js";
+import { readVisitorPreferences, updateVisitorPreferences } from "./services/visitor-preferences.js";
 
 async function bootPortfolio() {
   const environment = setupEnvironment();
@@ -21,6 +23,13 @@ async function bootPortfolio() {
   const projectDialogsEnabled = isFeatureEnabled(featureConfig, "features.projectDialogs.enabled");
   const projectFiltersEnabled = isFeatureEnabled(featureConfig, "features.projectFilters.enabled");
   const tiltCardsEnabled = isFeatureEnabled(featureConfig, "effects.tiltCards.enabled");
+  const visitorCustomizationEnabled = isFeatureEnabled(
+    featureConfig,
+    "features.visitorCustomization.enabled",
+  );
+  const visitorPreferences = readVisitorPreferences();
+
+  if (visitorCustomizationEnabled) applyViewDensity(visitorPreferences.density);
 
   renderReleaseIndicator();
   renderStackStrip();
@@ -34,11 +43,18 @@ async function bootPortfolio() {
 
   setupProjectFilters({
     filtersEnabled: projectFiltersEnabled,
+    initialFilter: visitorCustomizationEnabled && projectFiltersEnabled
+      ? visitorPreferences.projectFocus
+      : "all",
+    onFilterChange: visitorCustomizationEnabled && projectFiltersEnabled
+      ? (projectFocus) => updateVisitorPreferences({ projectFocus })
+      : undefined,
     onCardsRendered: tiltCardsEnabled ? () => setupTiltCards(".project-card") : undefined,
     onOpenProject: openProjectDialog,
   });
-  setupThemeMenu();
+  setupThemeMenu({ customizationEnabled: visitorCustomizationEnabled });
   setupMotionPreference();
+  if (visitorCustomizationEnabled) setupVisitorCustomization();
   setupRevealAnimation();
   if (tiltCardsEnabled) setupTiltCards();
   setupBackToTop();

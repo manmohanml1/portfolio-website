@@ -9,7 +9,7 @@ This list tracks additions that make the site useful to explore, not simply more
 | Runtime Feature Configuration | Separate deployment from availability through validated, fail-open configuration flags. | Shipped in v1.3.0 |
 | Neon Configuration Store | Persist environment-specific flags and audit history without exposing database credentials to the browser. | Shipped in v1.4.0 |
 | Admin Control Center | Let the portfolio owner update production flags through an authenticated interface. | Planned |
-| Visitor Customization | Let viewers personalize presentation preferences locally within admin-enabled capabilities. | Planned |
+| Visitor Customization | Let viewers personalize presentation preferences locally within admin-enabled capabilities. | In local review for v1.5.0 |
 | Project Case Study Mode | Let viewers understand the problem, implementation choices, and result behind selected work. | Shipped in v1.2.0 |
 | Architecture Explorer | Make backend, data, and product-system flows inspectable stage by stage. | Shipped in v1.2.0 |
 | Role-Based Viewing | Reorder the strongest evidence for recruiters, backend engineers, frontend reviewers, or AI-focused visitors. | Planned |
@@ -20,11 +20,12 @@ This list tracks additions that make the site useful to explore, not simply more
 
 ## Delivery Notes
 
-- Runtime configuration begins with six Boolean flags and checked-in defaults; variants and targeting remain deliberately out of scope.
+- Runtime configuration currently exposes seven Boolean flags and checked-in defaults; variants and targeting remain deliberately out of scope.
 - A persistent Neon control-plane branch stores independent development, staging, and production values behind the existing read-only API contract.
 - Vercel Preview databases remain isolated for safe future schema testing, while all Previews read the shared staging feature flags.
 - Database changes are recorded automatically in `feature_audit`; a dedicated admin interface remains a separate later feature.
 - Neon Auth remains disabled until the Admin Control Center includes explicit owner authorization and restricted account creation.
+- Visitor preferences stay anonymous and device-local; theme, motion, density, and project focus never enter Neon.
 - Configuration failures must preserve the complete portfolio, and local URL overrides must never affect remote deployments.
 - Database credentials and admin writes must remain behind Vercel Functions rather than browser code.
 - Case studies remain curated for accuracy instead of being generated from incomplete repository metadata.

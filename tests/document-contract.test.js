@@ -4,6 +4,7 @@ import test from "node:test";
 
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 const styles = await readFile(new URL("../styles.css", import.meta.url), "utf8");
+const mainSource = await readFile(new URL("../src/main.js", import.meta.url), "utf8");
 
 test("document exposes stable section navigation targets", () => {
   for (const id of ["top", "work", "journey", "skills", "contact"]) {
@@ -27,6 +28,12 @@ test("document includes accessible controls for theme, project details, and back
 
 test("hidden feature controls cannot be made visible by component display styles", () => {
   assert.match(styles, /\[hidden\]\s*\{\s*display:\s*none\s*!important;/);
+});
+
+test("visitor customization is rollout-gated and supports a compact document state", () => {
+  assert.match(mainSource, /features\.visitorCustomization\.enabled/);
+  assert.match(mainSource, /setupVisitorCustomization/);
+  assert.match(styles, /data-density="compact"/);
 });
 
 test("document emphasizes backend work without the removed proof section", () => {

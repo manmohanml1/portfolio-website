@@ -1,9 +1,8 @@
 import { DEFAULT_THEME, resolveTheme, themes } from "../data/themes.js";
+import { readVisitorPreferences, updateVisitorPreferences } from "../services/visitor-preferences.js";
 import { qs, qsa } from "../utils/dom.js";
 
-const STORAGE_KEY = "portfolio-theme";
-
-export function renderThemeOptions() {
+export function renderThemeOptions({ customizationEnabled = false } = {}) {
   const themeOptions = qs("#theme-options");
 
   themeOptions.innerHTML = themes
@@ -22,6 +21,18 @@ export function renderThemeOptions() {
         <span class="motion-symbol" aria-hidden="true">≋</span>
         <span class="motion-label">Reduce motion</span>
       </button>
+      ${
+        customizationEnabled
+          ? `<button class="density-trigger theme-option" type="button" aria-label="Use compact layout" aria-pressed="false" title="Use compact layout">
+              <span class="preference-symbol" aria-hidden="true">&#8645;</span>
+              <span class="density-label">Compact layout</span>
+            </button>
+            <button class="preferences-reset theme-option" type="button">
+              <span class="preference-symbol" aria-hidden="true">&#8634;</span>
+              <span>Reset view</span>
+            </button>`
+          : ""
+      }
     `;
 }
 
@@ -29,19 +40,19 @@ export function applyTheme(themeId) {
   const theme = resolveTheme(themeId);
 
   document.documentElement.dataset.theme = theme;
-  localStorage.setItem(STORAGE_KEY, theme);
+  updateVisitorPreferences({ theme });
 
   qsa(".theme-option").forEach((option) => {
     option.classList.toggle("active", option.dataset.theme === theme);
   });
 }
 
-export function setupThemeMenu() {
+export function setupThemeMenu({ customizationEnabled = false } = {}) {
   const themeTrigger = qs(".theme-trigger");
   const themeOptions = qs("#theme-options");
 
-  renderThemeOptions();
-  applyTheme(localStorage.getItem(STORAGE_KEY) || DEFAULT_THEME);
+  renderThemeOptions({ customizationEnabled });
+  applyTheme(readVisitorPreferences().theme || DEFAULT_THEME);
 
   themeTrigger.addEventListener("click", () => {
     const isOpen = themeTrigger.getAttribute("aria-expanded") === "true";

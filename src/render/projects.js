@@ -1,5 +1,6 @@
 import { projects } from "../data/portfolio.js";
 import { fetchOptInProjects } from "../services/github-projects.js";
+import { PROJECT_FOCUS_OPTIONS } from "../services/visitor-preferences.js";
 import { escapeHtml, qs, qsa, safeExternalUrl, tagsTemplate } from "../utils/dom.js";
 
 export const PROJECT_FILTERS = ["all", "frontend", "backend", "data", "ai", "wearable"];
@@ -69,14 +70,24 @@ export function createProjectCardTemplate(project, index, { allowDetails = true 
   `;
 }
 
-export function setupProjectFilters({ filtersEnabled = true, onCardsRendered, onOpenProject } = {}) {
+export function setupProjectFilters({
+  filtersEnabled = true,
+  initialFilter = "all",
+  onCardsRendered,
+  onFilterChange,
+  onOpenProject,
+} = {}) {
   const grid = qs("#project-grid");
   const filters = qsa(".filter");
   const projectCount = qs("#project-count");
   const githubProjectStatus = qs("#github-project-status");
   const wearableFilter = qs('[data-filter="wearable"]');
   let availableProjects = projects;
-  let activeFilter = "all";
+  let activeFilter = PROJECT_FOCUS_OPTIONS.includes(initialFilter) ? initialFilter : "all";
+
+  function syncFilterControls(filter) {
+    filters.forEach((item) => item.classList.toggle("active", item.dataset.filter === filter));
+  }
 
   function renderProjects(filter = "all") {
     activeFilter = filter;
@@ -100,9 +111,9 @@ export function setupProjectFilters({ filtersEnabled = true, onCardsRendered, on
   if (filtersEnabled) {
     filters.forEach((button) => {
       button.addEventListener("click", () => {
-        filters.forEach((item) => item.classList.remove("active"));
-        button.classList.add("active");
+        syncFilterControls(button.dataset.filter);
         renderProjects(button.dataset.filter);
+        onFilterChange?.(button.dataset.filter);
       });
     });
   }
@@ -121,7 +132,8 @@ export function setupProjectFilters({ filtersEnabled = true, onCardsRendered, on
     }
   });
 
-  renderProjects();
+  syncFilterControls(activeFilter);
+  renderProjects(activeFilter);
 
   fetchOptInProjects()
     .then((discoveredProjects) => {

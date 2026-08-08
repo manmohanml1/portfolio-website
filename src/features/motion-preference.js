@@ -1,12 +1,11 @@
 import { qs } from "../utils/dom.js";
-
-const STORAGE_KEY = "portfolio-reduce-motion";
+import { readVisitorPreferences, updateVisitorPreferences } from "../services/visitor-preferences.js";
 
 export function setupMotionPreference() {
   const toggle = qs(".motion-trigger");
   const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const storedPreference = localStorage.getItem(STORAGE_KEY);
-  let isReduced = storedPreference === null ? mediaQuery.matches : storedPreference === "true";
+  const storedPreference = readVisitorPreferences().reduceMotion;
+  let isReduced = storedPreference === null ? mediaQuery.matches : storedPreference;
 
   function applyPreference() {
     const label = qs(".motion-label", toggle);
@@ -20,7 +19,7 @@ export function setupMotionPreference() {
 
   toggle.addEventListener("click", () => {
     isReduced = !isReduced;
-    localStorage.setItem(STORAGE_KEY, String(isReduced));
+    updateVisitorPreferences({ reduceMotion: isReduced });
     applyPreference();
   });
 

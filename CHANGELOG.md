@@ -6,6 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Added versioned, validated local visitor preferences for theme, motion, layout density, and project focus without accounts or server-side profile data.
+- Added a compact layout control, remembered project filters, and a single reset-view action inside the existing visual-style menu.
+- Added a database-backed rollout flag and idempotent migration for visitor customization.
+- Added tests for legacy preference migration, malformed and blocked storage, reset behavior, density validation, and rollout wiring.
+
+### Changed
+
+- Consolidated the existing theme and reduced-motion storage keys behind a resilient preference service.
+- Advanced the visible feature candidate to `v1.5.0`.
+
 ## [1.4.0] - 2026-08-08
 
 ### Added
