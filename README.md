@@ -1,6 +1,6 @@
 # Manmohan Lonawat Portfolio
 
-Personal portfolio website presenting frontend, AI, and systems work in a theme-switchable interface. The site is built as a static web application with modular JavaScript, so it is lightweight to host and straightforward to extend.
+Personal portfolio website presenting frontend, AI, and systems work in a theme-switchable interface. The frontend uses modular JavaScript and a small read-only Vercel Function provides validated runtime feature configuration.
 
 ## Highlights
 
@@ -12,6 +12,7 @@ Personal portfolio website presenting frontend, AI, and systems work in a theme-
 - Portfolio content separated from UI behavior for easier updates.
 - Optional live inclusion of newly selected GitHub repositories through a repository topic.
 - Automated validation across development, staging, and production environment rules.
+- Fail-open runtime feature configuration that separates deployment from feature availability.
 
 ## Local Preview
 
@@ -28,6 +29,13 @@ http://localhost:4173/?env=staging
 http://localhost:4173/?env=production
 ```
 
+Local feature overrides use repeated `flag` parameters and are ignored outside localhost:
+
+```text
+http://localhost:4173/?flag=sections.journey.enabled:false
+http://localhost:4173/?flag=features.feedback.enabled:false&flag=features.projectFilters.enabled:false
+```
+
 ## Verification
 
 ```bash
@@ -40,6 +48,7 @@ GitHub Actions repeats these checks across supported Node versions and environme
 ## Project Structure
 
 ```text
+api/               Read-only Vercel configuration function
 src/config/        Runtime environment rules
 src/data/          Portfolio content and theme catalog
 src/features/      User interaction behavior
@@ -58,7 +67,7 @@ Production deployment is hosted on Vercel:
 
 - Live site: [portfolio-website-pearl-eight-44.vercel.app](https://portfolio-website-pearl-eight-44.vercel.app)
 
-The site remains a static deployment; private visitor feedback is delivered through Formspree. Setup notes and the deployment workflow are captured in [DEPLOYMENT.md](DEPLOYMENT.md).
+The browser application remains static, with a small read-only Vercel Function for runtime configuration. Private visitor feedback continues through Formspree. Setup notes and the deployment workflow are captured in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Add A New Project
 

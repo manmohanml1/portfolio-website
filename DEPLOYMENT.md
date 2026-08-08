@@ -1,6 +1,6 @@
 # Vercel Deployment
 
-This portfolio is a static application: it needs only `index.html`, `styles.css`, and `src/` to deploy. Private feedback is forwarded through Formspree, so no database, server function, email domain, or paid build runtime is required.
+This portfolio uses a static browser application plus `api/config.js`, a read-only Vercel Function that serves validated runtime feature defaults. Private feedback is forwarded through Formspree. The current configuration foundation does not yet require a database, email domain, or paid build runtime.
 
 ## Production
 
@@ -29,6 +29,12 @@ The current quality pipeline validates three logical environments:
 | `production` | Public portfolio on the primary domain |
 
 Vercel preview deployments are connected to feature branches and pull requests, while production deployments are connected to `main`.
+
+## Runtime Configuration
+
+`GET /api/config` returns the six public feature flags used during portfolio startup. The endpoint supports only `GET`, exposes no secrets, and uses a short edge-cache window. If the request fails or returns malformed data, the browser enables the complete checked-in experience.
+
+The next infrastructure slice will connect this endpoint to Neon through a server-only `DATABASE_URL`. Until that change ships, there are no configuration environment variables to add in Vercel.
 
 ## Private Feedback Setup
 

@@ -2430,3 +2430,6 @@ footer p {
     font-size: 0.82rem;
   }
 }
+[hidden] {
+  display: none !important;
+}

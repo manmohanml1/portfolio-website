@@ -2,7 +2,14 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { projects } from "../src/data/portfolio.js";
 import { createProjectDetailTemplate } from "../src/features/project-dialog.js";
-import { getFilterLabel, getProjectActionLabel, getProjectsForFilter, mergeProjects, PROJECT_FILTERS } from "../src/render/projects.js";
+import {
+  createProjectCardTemplate,
+  getFilterLabel,
+  getProjectActionLabel,
+  getProjectsForFilter,
+  mergeProjects,
+  PROJECT_FILTERS,
+} from "../src/render/projects.js";
 
 test("all declared project filters produce projects", () => {
   for (const filter of PROJECT_FILTERS.filter((item) => item !== "wearable")) {
@@ -52,6 +59,15 @@ test("project detail dialog presents safely separated repository actions", () =>
   assert.doesNotMatch(template, /repo-size|[KMG]B/);
   assert.doesNotMatch(template, />Live app</);
   assert.doesNotMatch(template, /dialog-preview/);
+});
+
+test("disabled project dialogs leave repository access without dead detail controls", () => {
+  const card = createProjectCardTemplate(projects[0], 0, { allowDetails: false });
+  const detail = createProjectDetailTemplate(projects[0], { allowFeedback: false });
+
+  assert.match(card, />Repository<\/a>/);
+  assert.doesNotMatch(card, /data-open-project|details-link|project-open/);
+  assert.doesNotMatch(detail, /data-feedback-project|Suggest improvement/);
 });
 
 test("curated system case studies render interactive architecture stages", () => {

@@ -6,6 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Added a strict six-flag runtime configuration registry for Journey, Skills, Feedback, project dialogs, project filters, and card tilt.
+- Added a read-only Vercel configuration endpoint with local development overrides and short-lived edge caching.
+- Added fail-open configuration loading so unavailable or malformed configuration preserves the complete portfolio experience.
+- Added automated coverage for configuration validation, API method safety, UI visibility, disabled project controls, and local-only overrides.
+
+### Changed
+
+- Updated portfolio startup to initialize rendering and interactions only when their registered features are enabled.
+- Included Vercel API functions in the validated deployment artifact in preparation for Neon-backed configuration.
+
 ## [1.2.1] - 2026-05-25
 
 ### Fixed

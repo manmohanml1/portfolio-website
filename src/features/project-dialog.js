@@ -63,7 +63,7 @@ function renderArchitecture(details) {
   `;
 }
 
-export function createProjectDetailTemplate(project) {
+export function createProjectDetailTemplate(project, { allowFeedback = true } = {}) {
   const details = project.details || {};
   const highlights = details.highlights || project.tags;
   const isCaseStudy = details.caseStudy === true;
@@ -116,7 +116,7 @@ export function createProjectDetailTemplate(project) {
         <div class="project-links dialog-actions">
           ${externalLink(project.repo, "Repository")}
           ${project.live ? externalLink(project.live, "Live app") : ""}
-          <button class="button feedback-action" type="button" data-feedback-project="${escapeHtml(project.title)}">Suggest improvement</button>
+          ${allowFeedback ? `<button class="button feedback-action" type="button" data-feedback-project="${escapeHtml(project.title)}">Suggest improvement</button>` : ""}
         </div>
       </div>
       ${renderPreview(project)}
@@ -163,7 +163,7 @@ export function setupProjectDialog({ onFeedback } = {}) {
   });
 
   return function openProjectDialog(project) {
-    body.innerHTML = createProjectDetailTemplate(project);
+    body.innerHTML = createProjectDetailTemplate(project, { allowFeedback: Boolean(onFeedback) });
     if (window.matchMedia("(max-width: 720px)").matches) {
       body.querySelectorAll(".dialog-detail").forEach((section) => section.removeAttribute("open"));
       body.querySelectorAll(".architecture-explorer").forEach((explorer) => explorer.removeAttribute("open"));

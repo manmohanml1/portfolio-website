@@ -40,7 +40,36 @@ export function mergeProjects(curatedProjects, discoveredProjects) {
   ];
 }
 
-export function setupProjectFilters({ onCardsRendered, onOpenProject } = {}) {
+export function createProjectCardTemplate(project, index, { allowDetails = true } = {}) {
+  return `
+    <article class="project-card ${project.featured ? "featured" : ""}" data-project-index="${index}">
+      ${
+        allowDetails
+          ? `<button class="project-visual project-open" type="button" data-open-project="${index}" aria-label="View details for ${escapeHtml(project.title)}">
+              <span style="--project-accent: ${escapeHtml(project.accent)}">${escapeHtml(project.visual)}</span>
+            </button>`
+          : `<div class="project-visual" aria-hidden="true">
+              <span style="--project-accent: ${escapeHtml(project.accent)}">${escapeHtml(project.visual)}</span>
+            </div>`
+      }
+      <div class="project-topline">
+        <span class="project-type">${escapeHtml(project.type)}</span>
+      </div>
+      <h3>${escapeHtml(project.title)}</h3>
+      <p>${escapeHtml(project.description)}</p>
+      <div class="tags" aria-label="${escapeHtml(project.title)} technologies">
+        ${tagsTemplate(project.tags)}
+      </div>
+      <div class="project-links">
+        ${allowDetails ? `<button class="details-link" type="button" data-open-project="${index}">${getProjectActionLabel(project)}</button>` : ""}
+        <a class="external-link" href="${escapeHtml(safeExternalUrl(project.repo))}" target="_blank" rel="noopener noreferrer">Repository</a>
+        ${project.live ? `<a class="external-link" href="${escapeHtml(safeExternalUrl(project.live))}" target="_blank" rel="noopener noreferrer">Live app</a>` : ""}
+      </div>
+    </article>
+  `;
+}
+
+export function setupProjectFilters({ filtersEnabled = true, onCardsRendered, onOpenProject } = {}) {
   const grid = qs("#project-grid");
   const filters = qsa(".filter");
   const projectCount = qs("#project-count");
@@ -55,28 +84,7 @@ export function setupProjectFilters({ onCardsRendered, onOpenProject } = {}) {
     const filterLabel = getFilterLabel(filter);
 
     grid.innerHTML = visibleProjects
-      .map(
-        (project, index) => `
-          <article class="project-card ${project.featured ? "featured" : ""}" data-project-index="${index}">
-            <button class="project-visual project-open" type="button" data-open-project="${index}" aria-label="View details for ${escapeHtml(project.title)}">
-              <span style="--project-accent: ${escapeHtml(project.accent)}">${escapeHtml(project.visual)}</span>
-            </button>
-            <div class="project-topline">
-              <span class="project-type">${escapeHtml(project.type)}</span>
-            </div>
-            <h3>${escapeHtml(project.title)}</h3>
-            <p>${escapeHtml(project.description)}</p>
-            <div class="tags" aria-label="${escapeHtml(project.title)} technologies">
-              ${tagsTemplate(project.tags)}
-            </div>
-            <div class="project-links">
-              <button class="details-link" type="button" data-open-project="${index}">${getProjectActionLabel(project)}</button>
-              <a class="external-link" href="${escapeHtml(safeExternalUrl(project.repo))}" target="_blank" rel="noopener noreferrer">Repository</a>
-              ${project.live ? `<a class="external-link" href="${escapeHtml(safeExternalUrl(project.live))}" target="_blank" rel="noopener noreferrer">Live app</a>` : ""}
-            </div>
-          </article>
-        `,
-      )
+      .map((project, index) => createProjectCardTemplate(project, index, { allowDetails: Boolean(onOpenProject) }))
       .join("");
 
     projectCount.textContent = `Showing ${visibleProjects.length} ${filterLabel}`;
@@ -89,24 +97,26 @@ export function setupProjectFilters({ onCardsRendered, onOpenProject } = {}) {
     });
   }
 
-  filters.forEach((button) => {
-    button.addEventListener("click", () => {
-      filters.forEach((item) => item.classList.remove("active"));
-      button.classList.add("active");
-      renderProjects(button.dataset.filter);
+  if (filtersEnabled) {
+    filters.forEach((button) => {
+      button.addEventListener("click", () => {
+        filters.forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+        renderProjects(button.dataset.filter);
+      });
     });
-  });
+  }
 
   grid.addEventListener("click", (event) => {
     const trigger = event.target.closest("[data-open-project]");
     const card = event.target.closest(".project-card");
 
-    if (trigger) {
+    if (trigger && onOpenProject) {
       onOpenProject?.(getProjectsForFilter(activeFilter, availableProjects)[Number(trigger.dataset.openProject)]);
       return;
     }
 
-    if (card && !event.target.closest("a, button")) {
+    if (card && onOpenProject && !event.target.closest("a, button")) {
       onOpenProject?.(getProjectsForFilter(activeFilter, availableProjects)[Number(card.dataset.projectIndex)]);
     }
   });

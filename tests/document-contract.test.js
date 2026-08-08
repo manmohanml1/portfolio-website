@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+const styles = await readFile(new URL("../styles.css", import.meta.url), "utf8");
 
 test("document exposes stable section navigation targets", () => {
   for (const id of ["top", "work", "journey", "skills", "contact"]) {
@@ -22,6 +23,10 @@ test("document includes accessible controls for theme, project details, and back
   assert.match(html, /data-open-feedback>Suggest an improvement/);
   assert.match(html, /aria-label="Back to top"/);
   assert.match(html, /id="release-indicator"/);
+});
+
+test("hidden feature controls cannot be made visible by component display styles", () => {
+  assert.match(styles, /\[hidden\]\s*\{\s*display:\s*none\s*!important;/);
 });
 
 test("document emphasizes backend work without the removed proof section", () => {

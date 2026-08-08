@@ -8,11 +8,11 @@ const pullRequestTemplate = await readFile(new URL("../.github/PULL_REQUEST_TEMP
 const deployment = await readFile(new URL("../DEPLOYMENT.md", import.meta.url), "utf8");
 const roadmap = await readFile(new URL("../ROADMAP.md", import.meta.url), "utf8");
 
-test("current release identifies the deployed patch version", () => {
+test("current release identifies the feature configuration candidate", () => {
   assert.match(release.version, /^v\d+\.\d+\.\d+$/);
-  assert.equal(release.version, "v1.2.1");
-  assert.equal(release.type, "fix");
-  assert.equal(release.label, "Patch release");
+  assert.equal(release.version, "v1.3.0");
+  assert.equal(release.type, "feat");
+  assert.equal(release.label, "Feature release");
 });
 
 test("pull request quality workflow enforces change-type title prefixes", () => {
@@ -24,8 +24,10 @@ test("roadmap marks shipped v1.2 capabilities as delivered", () => {
   for (const feature of ["Project Case Study Mode", "Architecture Explorer", "Visitor Feedback Channel"]) {
     assert.match(roadmap, new RegExp(`\\| ${feature} .*\\| Shipped in v1\\.2\\.0 \\|`));
   }
+});
 
-  assert.doesNotMatch(roadmap, /In local review/);
+test("roadmap identifies runtime feature configuration as the active candidate", () => {
+  assert.match(roadmap, /\| Runtime Feature Configuration .*\| In local review for v1\.3\.0 \|/);
 });
 
 test("release checklists protect roadmap promotion and GitHub release tagging", () => {
