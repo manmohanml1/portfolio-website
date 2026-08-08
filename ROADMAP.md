@@ -9,10 +9,10 @@ This list tracks additions that make the site useful to explore, not simply more
 | Runtime Feature Configuration | Separate deployment from availability through validated, fail-open configuration flags. | Shipped in v1.3.0 |
 | Neon Configuration Store | Persist environment-specific flags and audit history without exposing database credentials to the browser. | Shipped in v1.4.0 |
 | Admin Control Center | Let the portfolio owner update production flags through an authenticated interface. | Planned |
-| Visitor Customization | Let viewers choose an audience lens and project layout locally within admin-enabled capabilities. | In preview review for v1.5.0 |
+| Visitor Customization | Let viewers choose an audience lens and project layout locally within admin-enabled capabilities. | Shipped in v1.5.0 |
 | Project Case Study Mode | Let viewers understand the problem, implementation choices, and result behind selected work. | Shipped in v1.2.0 |
 | Architecture Explorer | Make backend, data, and product-system flows inspectable stage by stage. | Shipped in v1.2.0 |
-| Role-Based Viewing | Curate complete hero, profile, stack, project, career, skills, metrics, and contact variants for general, backend, full-stack, cloud/data, or AI visitors. | In preview review for v1.5.0 |
+| Role-Based Viewing | Curate complete hero, profile, stack, project, career, skills, metrics, and contact variants for general, backend, full-stack, cloud/data, or AI visitors. | Shipped in v1.5.0 |
 | Command Palette | Provide fast keyboard navigation across projects, technologies, themes, and contact actions. | Planned |
 | Live Tech Filter | Let a viewer choose a technology and see every relevant project immediately. | Planned |
 | Project Timeline | Present the progression from interface work into APIs, data systems, and wearable or AI experiments. | Planned |
