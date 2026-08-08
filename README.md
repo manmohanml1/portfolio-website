@@ -7,7 +7,7 @@ Personal portfolio website presenting frontend, AI, and systems work in a theme-
 - Interactive hero and project gallery with category filtering.
 - Five distinct visual worlds: Swiss Grid, Interstellar, Studio Light, Terminal, and Neo Brutalist.
 - Responsive navigation, an accessible theme selector, reduced-motion control, and back-to-top control.
-- Anonymous device-local customization that remembers project focus and prioritizes matching evidence, with one restore-defaults action and no account requirement.
+- Anonymous device-local customization with audience-specific evidence ordering, Cards/List project layouts, shareable `?view=` links, and no account requirement.
 - Project case-study dialogs with challenge/outcome context, interactive architecture explorers for selected systems, and curated visual previews when available.
 - Private visitor suggestions from Contact or an individual project, delivered through a hosted form endpoint.
 - Portfolio content separated from UI behavior for easier updates.

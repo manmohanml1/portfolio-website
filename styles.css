@@ -414,7 +414,8 @@ nav {
 }
 
 .theme-options .motion-trigger,
-.theme-options .focus-control,
+.theme-options .audience-control,
+.theme-options .layout-control,
 .theme-options .preferences-reset {
   grid-column: 1 / -1;
   width: auto;
@@ -439,7 +440,8 @@ nav {
   color: var(--muted);
 }
 
-.focus-control {
+.audience-control,
+.layout-control {
   display: grid;
   gap: 7px;
   padding: 9px 0 2px;
@@ -453,13 +455,20 @@ nav {
   text-transform: uppercase;
 }
 
-.focus-options {
+.audience-options {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
 }
 
-.focus-options button {
+.layout-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.audience-options button,
+.layout-options button {
   min-width: 0;
   min-height: 32px;
   padding: 5px 3px;
@@ -472,9 +481,12 @@ nav {
   font-weight: 900;
 }
 
-.focus-options button:hover,
-.focus-options button.active,
-.focus-options button[aria-pressed="true"] {
+.audience-options button:hover,
+.audience-options button.active,
+.audience-options button[aria-pressed="true"],
+.layout-options button:hover,
+.layout-options button.active,
+.layout-options button[aria-pressed="true"] {
   border-color: color-mix(in srgb, var(--cyan) 52%, var(--line));
   background: var(--panel-strong);
   color: var(--ink);
@@ -1061,6 +1073,44 @@ section[id] {
   gap: 16px;
 }
 
+:root[data-project-layout="list"] .project-grid {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+:root[data-project-layout="list"] .project-card,
+:root[data-project-layout="list"] .project-card.featured {
+  display: grid;
+  grid-column: 1;
+  grid-template-columns: 150px minmax(0, 1fr);
+  width: 100%;
+  min-height: 0;
+  padding: 14px;
+}
+
+:root[data-project-layout="list"] .project-visual {
+  grid-row: 1 / span 5;
+  min-height: 132px;
+  height: 100%;
+  margin: 0 16px 0 0;
+}
+
+:root[data-project-layout="list"] .project-card > :not(.project-visual) {
+  grid-column: 2;
+}
+
+:root[data-project-layout="list"] .project-topline {
+  margin-bottom: 7px;
+}
+
+:root[data-project-layout="list"] .project-card h3 {
+  margin-bottom: 6px;
+}
+
+:root[data-project-layout="list"] .project-card p {
+  margin-bottom: 10px;
+}
+
 .project-card {
   position: relative;
   display: flex;
@@ -1628,22 +1678,53 @@ footer p {
   font-size: 0.92rem;
 }
 
-[data-focus-evidence] {
+[data-audience-evidence],
+[data-audiences] {
   transition: opacity 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 
-:root:not([data-project-focus="all"]) [data-focus-evidence] {
-  opacity: 0.58;
+:root:not([data-audience="general"]) [data-audience-evidence] {
+  opacity: 0.76;
 }
 
-:root[data-project-focus="backend"] [data-focus-evidence="backend"],
-:root[data-project-focus="frontend"] [data-focus-evidence="frontend"],
-:root[data-project-focus="data"] [data-focus-evidence="data"],
-:root[data-project-focus="ai"] [data-focus-evidence="ai"] {
+:root[data-audience="backend"] [data-audience-evidence="backend"],
+:root[data-audience="fullstack"] [data-audience-evidence="fullstack"],
+:root[data-audience="data"] [data-audience-evidence="data"],
+:root[data-audience="ai"] [data-audience-evidence="ai"] {
   order: -1;
   border-color: color-mix(in srgb, var(--cyan) 52%, var(--line));
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--cyan) 12%, transparent);
   opacity: 1;
+}
+
+:root[data-audience="backend"] [data-audiences~="backend"],
+:root[data-audience="fullstack"] [data-audiences~="fullstack"],
+:root[data-audience="data"] [data-audiences~="data"],
+:root[data-audience="ai"] [data-audiences~="ai"] {
+  border-color: color-mix(in srgb, var(--cyan) 52%, var(--line));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--cyan) 10%, transparent);
+}
+
+@media (max-width: 720px) {
+  :root[data-project-layout="list"] .project-card,
+  :root[data-project-layout="list"] .project-card.featured {
+    grid-template-columns: 92px minmax(0, 1fr);
+    padding: 10px;
+  }
+
+  :root[data-project-layout="list"] .project-visual {
+    min-height: 92px;
+    margin-right: 10px;
+  }
+
+  :root[data-project-layout="list"] .project-visual span {
+    padding: 6px;
+    font-size: 0.68rem;
+  }
+
+  :root[data-project-layout="list"] .tags {
+    display: none;
+  }
 }
 
 /* Each selectable world keeps the information architecture stable while changing its design language. */

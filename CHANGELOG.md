@@ -8,14 +8,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
-- Added versioned, validated local visitor preferences for theme, motion, and project focus without accounts or server-side profile data.
-- Added a focus control that filters projects and prioritizes matching profile and skills evidence, plus a contextual restore-defaults action.
+- Added versioned, validated local visitor preferences for theme, motion, audience lens, and project layout without accounts or server-side profile data.
+- Added General, Backend, Full Stack, Cloud/Data, and AI audience lenses that tailor the hero and reorder projects, skills, experience, and technology evidence without hiding unrelated work.
+- Added dense Cards/List project layouts and shareable `?view=backend`, `?view=fullstack`, `?view=data`, and `?view=ai` starting points.
 - Added a database-backed rollout flag and idempotent migration for visitor customization.
-- Added tests for legacy preference migration, malformed and blocked storage, contextual reset behavior, focus validation, and rollout wiring.
+- Added tests for v1 preference migration, malformed and blocked storage, URL audience resolution, evidence ordering, contextual reset behavior, and rollout wiring.
 
 ### Changed
 
 - Consolidated the existing theme and reduced-motion storage keys behind a resilient preference service.
+- Kept project category filters temporary and independent from the saved audience lens.
 - Advanced the visible feature candidate to `v1.5.0`.
 
 ## [1.4.0] - 2026-08-08

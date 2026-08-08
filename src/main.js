@@ -5,12 +5,12 @@ import { setupMotionPreference } from "./features/motion-preference.js";
 import { setupFeedbackDialog } from "./features/feedback-dialog.js";
 import { setupProjectDialog } from "./features/project-dialog.js";
 import { setupThemeMenu } from "./features/theme-switcher.js";
-import { applyProjectFocus, setupVisitorCustomization } from "./features/visitor-customization.js";
+import { applyAudienceLens, applyProjectLayout, setupVisitorCustomization } from "./features/visitor-customization.js";
 import { setupProjectFilters } from "./render/projects.js";
 import { renderReleaseIndicator } from "./render/release.js";
 import { renderJourney, renderSkills, renderStackStrip } from "./render/sections.js";
 import { isFeatureEnabled, loadFeatureConfig } from "./services/feature-config.js";
-import { readVisitorPreferences, updateVisitorPreferences } from "./services/visitor-preferences.js";
+import { readVisitorPreferences, resolveAudienceFromSearch, updateVisitorPreferences } from "./services/visitor-preferences.js";
 
 async function bootPortfolio() {
   const environment = setupEnvironment();
@@ -27,14 +27,21 @@ async function bootPortfolio() {
     featureConfig,
     "features.visitorCustomization.enabled",
   );
-  const visitorPreferences = readVisitorPreferences();
+  let visitorPreferences = readVisitorPreferences();
 
-  if (visitorCustomizationEnabled) applyProjectFocus(visitorPreferences.projectFocus);
+  if (visitorCustomizationEnabled) {
+    const audience = resolveAudienceFromSearch(globalThis.location?.search, visitorPreferences.audience);
+    if (audience !== visitorPreferences.audience) {
+      visitorPreferences = updateVisitorPreferences({ audience });
+    }
+    applyAudienceLens(visitorPreferences.audience);
+    applyProjectLayout(visitorPreferences.projectLayout);
+  }
 
   renderReleaseIndicator();
-  renderStackStrip();
-  if (journeyEnabled) renderJourney();
-  if (skillsEnabled) renderSkills();
+  renderStackStrip({ audience: visitorCustomizationEnabled ? visitorPreferences.audience : "general" });
+  if (journeyEnabled) renderJourney({ audience: visitorCustomizationEnabled ? visitorPreferences.audience : "general" });
+  if (skillsEnabled) renderSkills({ audience: visitorCustomizationEnabled ? visitorPreferences.audience : "general" });
 
   const openFeedbackDialog = feedbackEnabled ? setupFeedbackDialog() : undefined;
   const openProjectDialog = projectDialogsEnabled
@@ -43,12 +50,7 @@ async function bootPortfolio() {
 
   const projectFilterController = setupProjectFilters({
     filtersEnabled: projectFiltersEnabled,
-    initialFilter: visitorCustomizationEnabled && projectFiltersEnabled
-      ? visitorPreferences.projectFocus
-      : "all",
-    onFilterChange: visitorCustomizationEnabled && projectFiltersEnabled
-      ? (projectFocus) => updateVisitorPreferences({ projectFocus })
-      : undefined,
+    audience: visitorCustomizationEnabled ? visitorPreferences.audience : "general",
     onCardsRendered: tiltCardsEnabled ? () => setupTiltCards(".project-card") : undefined,
     onOpenProject: openProjectDialog,
   });
@@ -57,9 +59,13 @@ async function bootPortfolio() {
   if (visitorCustomizationEnabled) {
     setupVisitorCustomization({
       initialPreferences: visitorPreferences,
-      onProjectFocusChange: projectFiltersEnabled
-        ? (projectFocus) => projectFilterController.setFilter(projectFocus)
-        : undefined,
+      onAudienceChange: (audience) => {
+        projectFilterController.setAudience(audience);
+        renderStackStrip({ audience });
+        if (journeyEnabled) renderJourney({ audience });
+        if (skillsEnabled) renderSkills({ audience });
+        setupRevealAnimation();
+      },
     });
   }
   setupRevealAnimation();

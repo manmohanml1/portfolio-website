@@ -30,11 +30,12 @@ test("hidden feature controls cannot be made visible by component display styles
   assert.match(styles, /\[hidden\]\s*\{\s*display:\s*none\s*!important;/);
 });
 
-test("visitor customization is rollout-gated and supports evidence focus", () => {
+test("visitor customization is rollout-gated and supports audience lenses and project layouts", () => {
   assert.match(mainSource, /features\.visitorCustomization\.enabled/);
   assert.match(mainSource, /setupVisitorCustomization/);
-  assert.match(html, /data-focus-evidence="backend"/);
-  assert.match(styles, /data-project-focus="backend"/);
+  assert.match(html, /data-audience-evidence="backend"/);
+  assert.match(styles, /data-audience="backend"/);
+  assert.match(styles, /data-project-layout="list"/);
 });
 
 test("document emphasizes backend work without the removed proof section", () => {

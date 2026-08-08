@@ -213,6 +213,7 @@ export const stackItems = [
 export const experiences = [
   {
     role: "Full Stack Engineer",
+    audiences: ["backend", "fullstack", "data"],
     org: "Amtrak",
     period: "Jul 2025 - Present",
     location: "Baltimore, Maryland - Remote",
@@ -226,6 +227,7 @@ export const experiences = [
   },
   {
     role: "Back End Developer",
+    audiences: ["backend", "data"],
     org: "Evernorth Health Services",
     period: "Jun 2023 - Jun 2025",
     location: "Jersey City, New Jersey - Remote",
@@ -239,6 +241,7 @@ export const experiences = [
   },
   {
     role: "Back End Developer",
+    audiences: ["backend", "data"],
     org: "Squad Software Inc",
     period: "Feb 2023 - Jun 2023",
     location: "Edison, New Jersey - Remote",
@@ -251,6 +254,7 @@ export const experiences = [
   },
   {
     role: "Teaching Associate",
+    audiences: ["fullstack", "ai"],
     org: "California State University, Fresno",
     period: "Aug 2021 - Dec 2022",
     location: "United States",
@@ -262,6 +266,7 @@ export const experiences = [
   },
   {
     role: "Student Assistant",
+    audiences: ["fullstack"],
     org: "California State University, Fresno",
     period: "Jul 2021 - Dec 2022",
     location: "United States",
@@ -299,18 +304,22 @@ export const credentials = [
 export const skills = [
   {
     title: "Frontend",
+    audiences: ["fullstack"],
     description: "React, Next.js, Tailwind CSS, Material UI, responsive product interfaces.",
   },
   {
     title: "Backend",
+    audiences: ["backend", "fullstack"],
     description: "TypeScript, Java, Express.js, REST APIs, Maven, JUnit, Jest, service design.",
   },
   {
     title: "Data & Cloud",
+    audiences: ["data", "backend"],
     description: "Kafka, AWS Kinesis, PostgreSQL, Docker, Kubernetes, autoscaling services.",
   },
   {
     title: "Applied AI",
+    audiences: ["ai"],
     description: "LangChain prototypes and experiments that connect models to web and API products.",
   },
 ];

@@ -23,14 +23,21 @@ export function renderThemeOptions({ customizationEnabled = false } = {}) {
       </button>
       ${
         customizationEnabled
-          ? `<div class="focus-control" role="group" aria-label="View focus">
-              <span class="preference-section-label">Focus</span>
-              <div class="focus-options">
-                <button type="button" data-project-focus="all" aria-pressed="true">All</button>
-                <button type="button" data-project-focus="backend" aria-pressed="false">Backend</button>
-                <button type="button" data-project-focus="frontend" aria-pressed="false">Frontend</button>
-                <button type="button" data-project-focus="data" aria-pressed="false">Data</button>
-                <button type="button" data-project-focus="ai" aria-pressed="false">AI</button>
+          ? `<div class="audience-control" role="group" aria-label="Tailor portfolio evidence">
+              <span class="preference-section-label">View for</span>
+              <div class="audience-options">
+                <button type="button" data-audience="general" aria-pressed="true">General</button>
+                <button type="button" data-audience="backend" aria-pressed="false">Backend</button>
+                <button type="button" data-audience="fullstack" aria-pressed="false">Full stack</button>
+                <button type="button" data-audience="data" aria-pressed="false">Cloud / data</button>
+                <button type="button" data-audience="ai" aria-pressed="false">AI</button>
+              </div>
+            </div>
+            <div class="layout-control" role="group" aria-label="Project layout">
+              <span class="preference-section-label">Projects</span>
+              <div class="layout-options">
+                <button type="button" data-project-layout="cards" aria-pressed="true">Cards</button>
+                <button type="button" data-project-layout="list" aria-pressed="false">List</button>
               </div>
             </div>
             <button class="preferences-reset theme-option" type="button" hidden>

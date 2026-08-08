@@ -9,7 +9,20 @@ import {
   getProjectsForFilter,
   mergeProjects,
   PROJECT_FILTERS,
+  rankProjectsForAudience,
 } from "../src/render/projects.js";
+
+test("audience lenses reorder projects without removing unrelated evidence", () => {
+  const backend = rankProjectsForAudience("backend");
+  const data = rankProjectsForAudience("data");
+  const ai = rankProjectsForAudience("ai");
+
+  assert.equal(backend.length, projects.length);
+  assert.equal(backend[0].category, "backend");
+  assert.equal(data[0].category, "data");
+  assert.equal(ai[0].category, "ai");
+  assert.deepEqual(rankProjectsForAudience("general"), projects);
+});
 
 test("all declared project filters produce projects", () => {
   for (const filter of PROJECT_FILTERS.filter((item) => item !== "wearable")) {

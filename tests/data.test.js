@@ -69,6 +69,8 @@ test("supporting sections have enough content to render", () => {
   assert.ok(credentials.length >= 4);
   assert.ok(skills.length >= 4);
   assert.ok(stackItems.length >= 10);
+  assert.ok(experiences.every((item) => item.audiences?.length > 0));
+  assert.ok(skills.every((item) => item.audiences?.length > 0));
 });
 
 test("career signal uses supplied professional evidence instead of weak profile counters", () => {

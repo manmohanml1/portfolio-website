@@ -1,6 +1,6 @@
 import { projects } from "../data/portfolio.js";
 import { fetchOptInProjects } from "../services/github-projects.js";
-import { PROJECT_FOCUS_OPTIONS } from "../services/visitor-preferences.js";
+import { AUDIENCE_OPTIONS } from "../services/visitor-preferences.js";
 import { escapeHtml, qs, qsa, safeExternalUrl, tagsTemplate } from "../utils/dom.js";
 
 export const PROJECT_FILTERS = ["all", "frontend", "backend", "data", "ai", "wearable"];
@@ -27,6 +27,31 @@ export function getProjectsForFilter(filter = "all", availableProjects = project
   }
 
   return availableProjects.filter((project) => project.category === filter);
+}
+
+const AUDIENCE_CATEGORY_ORDER = Object.freeze({
+  general: [],
+  backend: ["backend", "data", "ai", "frontend", "wearable"],
+  fullstack: ["frontend", "backend", "data", "ai", "wearable"],
+  data: ["data", "backend", "ai", "frontend", "wearable"],
+  ai: ["ai", "backend", "frontend", "data", "wearable"],
+});
+
+export function rankProjectsForAudience(audience = "general", availableProjects = projects) {
+  const resolvedAudience = AUDIENCE_OPTIONS.includes(audience) ? audience : "general";
+  const order = AUDIENCE_CATEGORY_ORDER[resolvedAudience];
+  if (order.length === 0) return [...availableProjects];
+
+  return availableProjects
+    .map((project, index) => ({ project, index }))
+    .sort((left, right) => {
+      const leftRank = order.indexOf(left.project.category);
+      const rightRank = order.indexOf(right.project.category);
+      return (leftRank === -1 ? order.length : leftRank)
+        - (rightRank === -1 ? order.length : rightRank)
+        || left.index - right.index;
+    })
+    .map(({ project }) => project);
 }
 
 export function getFilterLabel(filter = "all") {
@@ -72,9 +97,8 @@ export function createProjectCardTemplate(project, index, { allowDetails = true 
 
 export function setupProjectFilters({
   filtersEnabled = true,
-  initialFilter = "all",
+  audience = "general",
   onCardsRendered,
-  onFilterChange,
   onOpenProject,
 } = {}) {
   const grid = qs("#project-grid");
@@ -83,22 +107,26 @@ export function setupProjectFilters({
   const githubProjectStatus = qs("#github-project-status");
   const wearableFilter = qs('[data-filter="wearable"]');
   let availableProjects = projects;
-  let activeFilter = PROJECT_FOCUS_OPTIONS.includes(initialFilter) ? initialFilter : "all";
+  let activeFilter = "all";
+  let activeAudience = AUDIENCE_OPTIONS.includes(audience) ? audience : "general";
+
+  function getVisibleProjects() {
+    return getProjectsForFilter(activeFilter, rankProjectsForAudience(activeAudience, availableProjects));
+  }
 
   function syncFilterControls(filter) {
     filters.forEach((item) => item.classList.toggle("active", item.dataset.filter === filter));
   }
 
-  function selectFilter(filter, { notify = false } = {}) {
+  function selectFilter(filter) {
     const resolvedFilter = PROJECT_FILTERS.includes(filter) ? filter : "all";
     syncFilterControls(resolvedFilter);
     renderProjects(resolvedFilter);
-    if (notify) onFilterChange?.(resolvedFilter);
   }
 
   function renderProjects(filter = "all") {
     activeFilter = filter;
-    const visibleProjects = getProjectsForFilter(filter, availableProjects);
+    const visibleProjects = getVisibleProjects();
     const filterLabel = getFilterLabel(filter);
 
     grid.innerHTML = visibleProjects
@@ -118,7 +146,7 @@ export function setupProjectFilters({
   if (filtersEnabled) {
     filters.forEach((button) => {
       button.addEventListener("click", () => {
-        selectFilter(button.dataset.filter, { notify: true });
+        selectFilter(button.dataset.filter);
       });
     });
   }
@@ -128,12 +156,12 @@ export function setupProjectFilters({
     const card = event.target.closest(".project-card");
 
     if (trigger && onOpenProject) {
-      onOpenProject?.(getProjectsForFilter(activeFilter, availableProjects)[Number(trigger.dataset.openProject)]);
+      onOpenProject?.(getVisibleProjects()[Number(trigger.dataset.openProject)]);
       return;
     }
 
     if (card && onOpenProject && !event.target.closest("a, button")) {
-      onOpenProject?.(getProjectsForFilter(activeFilter, availableProjects)[Number(card.dataset.projectIndex)]);
+      onOpenProject?.(getVisibleProjects()[Number(card.dataset.projectIndex)]);
     }
   });
 
@@ -156,8 +184,9 @@ export function setupProjectFilters({
     });
 
   return Object.freeze({
-    setFilter(filter) {
-      selectFilter(filter);
+    setAudience(nextAudience) {
+      activeAudience = AUDIENCE_OPTIONS.includes(nextAudience) ? nextAudience : "general";
+      selectFilter("all");
     },
   });
 }

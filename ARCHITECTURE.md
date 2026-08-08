@@ -75,9 +75,9 @@ Neon Auth is intentionally disabled during this phase. Anonymous visitor prefere
 
 ## Visitor Preferences
 
-Visitor customization is a browser-only layer and does not create an identity. One versioned `portfolio-preferences-v1` record stores validated theme, reduced-motion, and project-focus values. Existing theme and motion keys migrate automatically; unavailable or malformed storage falls back to the complete default view.
+Visitor customization is a browser-only layer and does not create an identity. One versioned `portfolio-preferences-v2` record stores validated theme, reduced-motion, audience-lens, and project-layout values. Existing theme, motion, and v1 focus values migrate automatically; unavailable or malformed storage falls back to the complete default view.
 
-The `features.visitorCustomization.enabled` runtime flag controls project-focus persistence, evidence prioritization, and the restore-defaults action. Theme and motion remain available because they predate this phase. Disabling the customization flag does not delete a viewer's local choices; it simply stops applying the gated preferences until the capability is enabled again.
+The `features.visitorCustomization.enabled` runtime flag controls audience-lens persistence, evidence reordering, Cards/List layout, shareable `?view=backend`, `?view=fullstack`, `?view=data`, and `?view=ai` links, and the restore-defaults action. An audience lens changes hero positioning, technology order, project order, skills, and career evidence without hiding the rest of the portfolio. Project category filters remain temporary exploration controls and are deliberately not persisted. Theme and motion remain available because they predate this phase. Disabling the customization flag does not delete a viewer's local choices; it simply stops applying the gated preferences until the capability is enabled again.
 
 No preference is sent to Neon, Formspree, GitHub, or an analytics service. Cross-device synchronization remains intentionally deferred until visitor accounts demonstrate enough value to justify their privacy and authentication cost.
 

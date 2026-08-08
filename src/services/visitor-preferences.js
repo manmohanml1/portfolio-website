@@ -1,15 +1,18 @@
 import { DEFAULT_THEME, resolveTheme } from "../data/themes.js";
 
-export const PREFERENCES_STORAGE_KEY = "portfolio-preferences-v1";
+export const PREFERENCES_STORAGE_KEY = "portfolio-preferences-v2";
+export const LEGACY_PREFERENCES_STORAGE_KEY = "portfolio-preferences-v1";
 export const LEGACY_THEME_STORAGE_KEY = "portfolio-theme";
 export const LEGACY_MOTION_STORAGE_KEY = "portfolio-reduce-motion";
-export const PROJECT_FOCUS_OPTIONS = Object.freeze(["all", "frontend", "backend", "data", "ai"]);
+export const AUDIENCE_OPTIONS = Object.freeze(["general", "backend", "fullstack", "data", "ai"]);
+export const PROJECT_LAYOUT_OPTIONS = Object.freeze(["cards", "list"]);
 
 export const DEFAULT_VISITOR_PREFERENCES = Object.freeze({
-  version: 1,
+  version: 2,
   theme: DEFAULT_THEME,
   reduceMotion: null,
-  projectFocus: "all",
+  audience: "general",
+  projectLayout: "cards",
 });
 
 function safeStorageCall(callback, fallback) {
@@ -24,10 +27,11 @@ export function normalizeVisitorPreferences(value = {}) {
   const reduceMotion = typeof value?.reduceMotion === "boolean" ? value.reduceMotion : null;
 
   return Object.freeze({
-    version: 1,
+    version: 2,
     theme: resolveTheme(value?.theme),
     reduceMotion,
-    projectFocus: PROJECT_FOCUS_OPTIONS.includes(value?.projectFocus) ? value.projectFocus : "all",
+    audience: AUDIENCE_OPTIONS.includes(value?.audience) ? value.audience : "general",
+    projectLayout: PROJECT_LAYOUT_OPTIONS.includes(value?.projectLayout) ? value.projectLayout : "cards",
   });
 }
 
@@ -41,6 +45,29 @@ function readLegacyPreferences(storage) {
       ? reduceMotionValue === "true"
       : null,
   });
+}
+
+function readVersionOnePreferences(storage) {
+  const storedValue = safeStorageCall(() => storage?.getItem(LEGACY_PREFERENCES_STORAGE_KEY), null);
+  if (!storedValue) return null;
+
+  try {
+    const legacy = JSON.parse(storedValue);
+    const audienceMap = {
+      all: "general",
+      frontend: "fullstack",
+      backend: "backend",
+      data: "data",
+      ai: "ai",
+    };
+    return normalizeVisitorPreferences({
+      theme: legacy.theme,
+      reduceMotion: legacy.reduceMotion,
+      audience: audienceMap[legacy.projectFocus] || "general",
+    });
+  } catch {
+    return null;
+  }
 }
 
 export function writeVisitorPreferences(preferences, storage = globalThis.localStorage) {
@@ -63,6 +90,9 @@ export function readVisitorPreferences(storage = globalThis.localStorage) {
     }
   }
 
+  const versionOnePreferences = readVersionOnePreferences(storage);
+  if (versionOnePreferences) return writeVisitorPreferences(versionOnePreferences, storage);
+
   const migrated = readLegacyPreferences(storage);
   const hasLegacyPreference = safeStorageCall(
     () => Boolean(storage?.getItem(LEGACY_THEME_STORAGE_KEY) || storage?.getItem(LEGACY_MOTION_STORAGE_KEY)),
@@ -77,9 +107,16 @@ export function updateVisitorPreferences(patch, storage = globalThis.localStorag
 }
 
 export function clearVisitorPreferences(storage = globalThis.localStorage) {
-  [PREFERENCES_STORAGE_KEY, LEGACY_THEME_STORAGE_KEY, LEGACY_MOTION_STORAGE_KEY].forEach((key) => {
+  [PREFERENCES_STORAGE_KEY, LEGACY_PREFERENCES_STORAGE_KEY, LEGACY_THEME_STORAGE_KEY, LEGACY_MOTION_STORAGE_KEY].forEach((key) => {
     safeStorageCall(() => storage?.removeItem(key));
   });
 
   return DEFAULT_VISITOR_PREFERENCES;
+}
+
+export function resolveAudienceFromSearch(search = "", fallback = "general") {
+  const requested = new URLSearchParams(search).get("view");
+  return AUDIENCE_OPTIONS.includes(requested)
+    ? requested
+    : (AUDIENCE_OPTIONS.includes(fallback) ? fallback : "general");
 }

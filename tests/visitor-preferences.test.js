@@ -1,14 +1,16 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { applyProjectFocus, hasCustomizedPreferences } from "../src/features/visitor-customization.js";
+import { applyAudienceLens, applyProjectLayout, hasCustomizedPreferences } from "../src/features/visitor-customization.js";
 import {
   clearVisitorPreferences,
   DEFAULT_VISITOR_PREFERENCES,
   LEGACY_MOTION_STORAGE_KEY,
+  LEGACY_PREFERENCES_STORAGE_KEY,
   LEGACY_THEME_STORAGE_KEY,
   normalizeVisitorPreferences,
   PREFERENCES_STORAGE_KEY,
   readVisitorPreferences,
+  resolveAudienceFromSearch,
   updateVisitorPreferences,
 } from "../src/services/visitor-preferences.js";
 
@@ -36,21 +38,24 @@ test("visitor preferences validate every locally persisted field", () => {
     normalizeVisitorPreferences({
       theme: "terminal",
       reduceMotion: true,
-      projectFocus: "backend",
+      audience: "backend",
+      projectLayout: "list",
       ignored: "private",
     }),
     {
-      version: 1,
+      version: 2,
       theme: "terminal",
       reduceMotion: true,
-      projectFocus: "backend",
+      audience: "backend",
+      projectLayout: "list",
     },
   );
 
   assert.deepEqual(normalizeVisitorPreferences({
     theme: "missing",
     reduceMotion: "true",
-    projectFocus: "wearable",
+    audience: "wearable",
+    projectLayout: "tiles",
   }), DEFAULT_VISITOR_PREFERENCES);
 });
 
@@ -66,14 +71,31 @@ test("legacy theme and motion keys migrate into one versioned record", () => {
   assert.deepEqual(JSON.parse(storage.snapshot()[PREFERENCES_STORAGE_KEY]), preferences);
 });
 
+test("version one project focus migrates to the closest audience lens", () => {
+  const storage = createStorage({
+    [LEGACY_PREFERENCES_STORAGE_KEY]: JSON.stringify({
+      version: 1,
+      theme: "terminal",
+      reduceMotion: false,
+      projectFocus: "frontend",
+    }),
+  });
+
+  const preferences = readVisitorPreferences(storage);
+  assert.equal(preferences.audience, "fullstack");
+  assert.equal(preferences.projectLayout, "cards");
+  assert.deepEqual(JSON.parse(storage.snapshot()[PREFERENCES_STORAGE_KEY]), preferences);
+});
+
 test("updates preserve unrelated preferences and reset removes current and legacy keys", () => {
   const storage = createStorage();
 
-  updateVisitorPreferences({ theme: "light", projectFocus: "data" }, storage);
+  updateVisitorPreferences({ theme: "light", audience: "data", projectLayout: "list" }, storage);
   const updated = updateVisitorPreferences({ reduceMotion: true }, storage);
 
   assert.equal(updated.theme, "light");
-  assert.equal(updated.projectFocus, "data");
+  assert.equal(updated.audience, "data");
+  assert.equal(updated.projectLayout, "list");
   assert.equal(updated.reduceMotion, true);
 
   clearVisitorPreferences(storage);
@@ -99,17 +121,26 @@ test("malformed or unavailable browser storage safely restores defaults", () => 
   assert.doesNotThrow(() => clearVisitorPreferences(blocked));
 });
 
-test("project focus applies only supported document states", () => {
+test("audience and layout apply only supported document states", () => {
   const documentLike = { documentElement: { dataset: {} } };
 
-  assert.equal(applyProjectFocus("backend", documentLike), "backend");
-  assert.equal(documentLike.documentElement.dataset.projectFocus, "backend");
-  assert.equal(applyProjectFocus("unknown", documentLike), "all");
-  assert.equal(documentLike.documentElement.dataset.projectFocus, "all");
+  assert.equal(applyAudienceLens("backend", documentLike), "backend");
+  assert.equal(documentLike.documentElement.dataset.audience, "backend");
+  assert.equal(applyAudienceLens("unknown", documentLike), "general");
+  assert.equal(documentLike.documentElement.dataset.audience, "general");
+  assert.equal(applyProjectLayout("list", documentLike), "list");
+  assert.equal(applyProjectLayout("unknown", documentLike), "cards");
+});
+
+test("a valid shared view overrides local audience while invalid views do not", () => {
+  assert.equal(resolveAudienceFromSearch("?view=backend", "ai"), "backend");
+  assert.equal(resolveAudienceFromSearch("?view=unknown", "ai"), "ai");
+  assert.equal(resolveAudienceFromSearch("", "unknown"), "general");
 });
 
 test("restore defaults appears only after a meaningful preference changes", () => {
   assert.equal(hasCustomizedPreferences(DEFAULT_VISITOR_PREFERENCES), false);
   assert.equal(hasCustomizedPreferences({ ...DEFAULT_VISITOR_PREFERENCES, theme: "terminal" }), true);
-  assert.equal(hasCustomizedPreferences({ ...DEFAULT_VISITOR_PREFERENCES, projectFocus: "ai" }), true);
+  assert.equal(hasCustomizedPreferences({ ...DEFAULT_VISITOR_PREFERENCES, audience: "ai" }), true);
+  assert.equal(hasCustomizedPreferences({ ...DEFAULT_VISITOR_PREFERENCES, projectLayout: "list" }), true);
 });
