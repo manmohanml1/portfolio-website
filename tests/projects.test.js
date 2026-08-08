@@ -3,6 +3,7 @@ import test from "node:test";
 import { projects } from "../src/data/portfolio.js";
 import { createProjectDetailTemplate } from "../src/features/project-dialog.js";
 import {
+  canOpenProjectCard,
   createProjectCardTemplate,
   getFilterLabel,
   getProjectAudiences,
@@ -12,6 +13,16 @@ import {
   PROJECT_FILTERS,
   getProjectsForAudience,
 } from "../src/render/projects.js";
+
+test("whole-card project details are available only from non-interactive Card surfaces", () => {
+  assert.equal(canOpenProjectCard("cards", false), true);
+  assert.equal(canOpenProjectCard("cards", true), false);
+  assert.equal(canOpenProjectCard("list", false), false);
+  assert.equal(canOpenProjectCard("list", true), false);
+
+  const card = createProjectCardTemplate(projects[0], 3);
+  assert.match(card, /data-project-card-index="3"/);
+});
 
 test("audience lenses retain only projects relevant to the selected portfolio variant", () => {
   const backend = getProjectsForAudience("backend");
@@ -86,7 +97,7 @@ test("disabled project dialogs leave repository access without dead detail contr
   const detail = createProjectDetailTemplate(projects[0], { allowFeedback: false });
 
   assert.match(card, />Repository<\/a>/);
-  assert.doesNotMatch(card, /data-open-project|details-link|project-open/);
+  assert.doesNotMatch(card, /data-open-project|data-project-card-index|details-link|project-open/);
   assert.doesNotMatch(detail, /data-feedback-project|Suggest improvement/);
 });
 

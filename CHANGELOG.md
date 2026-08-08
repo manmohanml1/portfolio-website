@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Fixed
+
+- Restored whole-card pointer access to project details in Cards view while preserving Repository, Live app, and explicit details actions.
+- Kept List rows non-clickable outside their explicit actions and removed the misleading row-level pointer cursor.
+- Replaced bright Neo Brutalist card and project-dialog whites with softer paper surfaces while preserving its borders, shadows, and accent colors.
+
 ## [1.5.1] - 2026-08-08
 
 ### Fixed
