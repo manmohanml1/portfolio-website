@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { credentials, experiences, projects, skills, stackItems } from "../src/data/portfolio.js";
 import { DEFAULT_THEME, resolveTheme, themes } from "../src/data/themes.js";
+import { audienceLenses, selectEvidenceForAudience } from "../src/data/audience-lenses.js";
 import { readFile } from "node:fs/promises";
 
 const themeSwitcherSource = await readFile(new URL("../src/features/theme-switcher.js", import.meta.url), "utf8");
@@ -69,6 +70,32 @@ test("supporting sections have enough content to render", () => {
   assert.ok(credentials.length >= 4);
   assert.ok(skills.length >= 4);
   assert.ok(stackItems.length >= 10);
+  assert.ok(experiences.every((item) => item.audiences?.length > 0));
+  assert.ok(credentials.every((item) => item.audiences?.length > 0));
+  assert.ok(skills.every((item) => item.audiences?.length > 0));
+});
+
+test("every audience variant defines complete page-wide positioning", () => {
+  const requiredFields = [
+    "eyebrow", "title", "description", "words", "profileDetail", "signals", "monitor",
+    "buildTitle", "metrics", "workTitle", "workCopy", "projectLabel", "journeyTitle",
+    "journeyCopy", "experienceTitle", "skillsTitle", "contactCopy",
+  ];
+
+  for (const [audience, lens] of Object.entries(audienceLenses)) {
+    for (const field of requiredFields) assert.ok(lens[field], `${audience} is missing ${field}`);
+    assert.equal(lens.signals.length, 4);
+    assert.equal(lens.metrics.length, 3);
+    assert.ok(lens.words.length >= 5);
+  }
+});
+
+test("specialized variants remove unrelated career and skill evidence", () => {
+  assert.equal(selectEvidenceForAudience(experiences, "backend").length, 3);
+  assert.deepEqual(selectEvidenceForAudience(skills, "data").map((item) => item.title), ["Data & Cloud"]);
+  assert.deepEqual(selectEvidenceForAudience(skills, "ai").map((item) => item.title), ["Backend", "Applied AI"]);
+  assert.equal(selectEvidenceForAudience(credentials, "ai").length, 3);
+  assert.equal(selectEvidenceForAudience(experiences, "general").length, experiences.length);
 });
 
 test("career signal uses supplied professional evidence instead of weak profile counters", () => {

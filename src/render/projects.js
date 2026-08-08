@@ -1,5 +1,7 @@
 import { projects } from "../data/portfolio.js";
 import { fetchOptInProjects } from "../services/github-projects.js";
+import { AUDIENCE_OPTIONS } from "../services/visitor-preferences.js";
+import { getAudienceLens } from "../data/audience-lenses.js";
 import { escapeHtml, qs, qsa, safeExternalUrl, tagsTemplate } from "../utils/dom.js";
 
 export const PROJECT_FILTERS = ["all", "frontend", "backend", "data", "ai", "wearable"];
@@ -28,6 +30,45 @@ export function getProjectsForFilter(filter = "all", availableProjects = project
   return availableProjects.filter((project) => project.category === filter);
 }
 
+const AUDIENCE_CATEGORY_ORDER = Object.freeze({
+  general: [],
+  backend: ["backend", "data", "ai", "frontend", "wearable"],
+  fullstack: ["frontend", "backend", "data", "ai", "wearable"],
+  data: ["data", "backend", "ai", "frontend", "wearable"],
+  ai: ["ai", "backend", "frontend", "data", "wearable"],
+});
+
+const CATEGORY_AUDIENCES = Object.freeze({
+  frontend: ["fullstack"],
+  backend: ["backend", "fullstack"],
+  data: ["backend", "data"],
+  ai: ["ai", "fullstack"],
+  wearable: [],
+  other: [],
+});
+
+export function getProjectAudiences(project) {
+  return project.audiences || CATEGORY_AUDIENCES[project.category] || [];
+}
+
+export function getProjectsForAudience(audience = "general", availableProjects = projects) {
+  const resolvedAudience = AUDIENCE_OPTIONS.includes(audience) ? audience : "general";
+  const order = AUDIENCE_CATEGORY_ORDER[resolvedAudience];
+  if (order.length === 0) return [...availableProjects];
+
+  return availableProjects
+    .filter((project) => getProjectAudiences(project).includes(resolvedAudience))
+    .map((project, index) => ({ project, index }))
+    .sort((left, right) => {
+      const leftRank = order.indexOf(left.project.category);
+      const rightRank = order.indexOf(right.project.category);
+      return (leftRank === -1 ? order.length : leftRank)
+        - (rightRank === -1 ? order.length : rightRank)
+        || left.index - right.index;
+    })
+    .map(({ project }) => project);
+}
+
 export function getFilterLabel(filter = "all") {
   return FILTER_LABELS[filter] || FILTER_LABELS.all;
 }
@@ -42,7 +83,7 @@ export function mergeProjects(curatedProjects, discoveredProjects) {
 
 export function createProjectCardTemplate(project, index, { allowDetails = true } = {}) {
   return `
-    <article class="project-card ${project.featured ? "featured" : ""}" data-project-index="${index}">
+    <article class="project-card ${project.featured ? "featured" : ""}">
       ${
         allowDetails
           ? `<button class="project-visual project-open" type="button" data-open-project="${index}" aria-label="View details for ${escapeHtml(project.title)}">
@@ -69,25 +110,54 @@ export function createProjectCardTemplate(project, index, { allowDetails = true 
   `;
 }
 
-export function setupProjectFilters({ filtersEnabled = true, onCardsRendered, onOpenProject } = {}) {
+export function setupProjectFilters({
+  filtersEnabled = true,
+  audience = "general",
+  onCardsRendered,
+  onOpenProject,
+} = {}) {
   const grid = qs("#project-grid");
   const filters = qsa(".filter");
   const projectCount = qs("#project-count");
   const githubProjectStatus = qs("#github-project-status");
   const wearableFilter = qs('[data-filter="wearable"]');
   let availableProjects = projects;
+  let discoveredProjects = [];
   let activeFilter = "all";
+  let activeAudience = AUDIENCE_OPTIONS.includes(audience) ? audience : "general";
+
+  function getVisibleProjects() {
+    return getProjectsForFilter(activeFilter, getProjectsForAudience(activeAudience, availableProjects));
+  }
+
+  function syncFilterControls(filter) {
+    filters.forEach((item) => item.classList.toggle("active", item.dataset.filter === filter));
+  }
+
+  function selectFilter(filter) {
+    const resolvedFilter = PROJECT_FILTERS.includes(filter) ? filter : "all";
+    syncFilterControls(resolvedFilter);
+    renderProjects(resolvedFilter);
+  }
 
   function renderProjects(filter = "all") {
     activeFilter = filter;
-    const visibleProjects = getProjectsForFilter(filter, availableProjects);
-    const filterLabel = getFilterLabel(filter);
+    const visibleProjects = getVisibleProjects();
+    const filterLabel = activeAudience === "general"
+      ? getFilterLabel(filter)
+      : getAudienceLens(activeAudience).projectLabel;
 
     grid.innerHTML = visibleProjects
       .map((project, index) => createProjectCardTemplate(project, index, { allowDetails: Boolean(onOpenProject) }))
       .join("");
 
     projectCount.textContent = `Showing ${visibleProjects.length} ${filterLabel}`;
+    if (activeAudience !== "general" && discoveredProjects.length > 0) {
+      const matchingDiscoveries = getProjectsForAudience(activeAudience, discoveredProjects).length;
+      githubProjectStatus.textContent = matchingDiscoveries > 0
+        ? `${matchingDiscoveries} matching GitHub project${matchingDiscoveries === 1 ? "" : "s"} synced`
+        : "Curated audience selection";
+    }
 
     requestAnimationFrame(() => {
       qsa(".project-card").forEach((card, index) => {
@@ -100,9 +170,7 @@ export function setupProjectFilters({ filtersEnabled = true, onCardsRendered, on
   if (filtersEnabled) {
     filters.forEach((button) => {
       button.addEventListener("click", () => {
-        filters.forEach((item) => item.classList.remove("active"));
-        button.classList.add("active");
-        renderProjects(button.dataset.filter);
+        selectFilter(button.dataset.filter);
       });
     });
   }
@@ -112,21 +180,24 @@ export function setupProjectFilters({ filtersEnabled = true, onCardsRendered, on
     const card = event.target.closest(".project-card");
 
     if (trigger && onOpenProject) {
-      onOpenProject?.(getProjectsForFilter(activeFilter, availableProjects)[Number(trigger.dataset.openProject)]);
+      onOpenProject?.(getVisibleProjects()[Number(trigger.dataset.openProject)]);
       return;
     }
 
     if (card && onOpenProject && !event.target.closest("a, button")) {
-      onOpenProject?.(getProjectsForFilter(activeFilter, availableProjects)[Number(card.dataset.projectIndex)]);
+      onOpenProject?.(getVisibleProjects()[Number(card.dataset.projectIndex)]);
     }
   });
 
-  renderProjects();
+  syncFilterControls(activeFilter);
+  renderProjects(activeFilter);
 
   fetchOptInProjects()
-    .then((discoveredProjects) => {
-      availableProjects = mergeProjects(projects, discoveredProjects);
+    .then((fetchedProjects) => {
+      availableProjects = mergeProjects(projects, fetchedProjects);
       const addedProjects = availableProjects.length - projects.length;
+      // Keep the discovered subset so audience-specific sync status stays accurate.
+      discoveredProjects = availableProjects.filter((project) => project.discovered);
       wearableFilter.hidden = !availableProjects.some((project) => project.category === "wearable");
       githubProjectStatus.textContent =
         addedProjects > 0
@@ -137,4 +208,11 @@ export function setupProjectFilters({ filtersEnabled = true, onCardsRendered, on
     .catch(() => {
       githubProjectStatus.textContent = "Curated projects shown; GitHub additions unavailable";
     });
+
+  return Object.freeze({
+    setAudience(nextAudience) {
+      activeAudience = AUDIENCE_OPTIONS.includes(nextAudience) ? nextAudience : "general";
+      selectFilter("all");
+    },
+  });
 }

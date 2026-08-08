@@ -5,6 +5,7 @@ export const FEATURE_FLAG_KEYS = Object.freeze([
   "features.projectDialogs.enabled",
   "features.projectFilters.enabled",
   "effects.tiltCards.enabled",
+  "features.visitorCustomization.enabled",
 ]);
 
 export const DEFAULT_FEATURE_FLAGS = Object.freeze(

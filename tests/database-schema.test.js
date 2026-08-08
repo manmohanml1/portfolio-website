@@ -11,6 +11,10 @@ const seed = await readFile(
   new URL("../db/seeds/001_feature_flags.sql", import.meta.url),
   "utf8",
 );
+const visitorCustomizationMigration = await readFile(
+  new URL("../db/migrations/002_add_visitor_customization_flag.sql", import.meta.url),
+  "utf8",
+);
 
 test("migration creates environment-scoped flags and automatic audit history", () => {
   assert.match(migration, /CREATE TABLE IF NOT EXISTS feature_flags/);
@@ -26,4 +30,10 @@ test("seed includes every registered key and all three environments", () => {
     assert.match(seed, new RegExp(`\\('${environment}'\\)`));
   }
   assert.match(seed, /ON CONFLICT \(key, environment\) DO NOTHING/);
+});
+
+test("visitor customization can be added idempotently to an existing configuration database", () => {
+  assert.match(visitorCustomizationMigration, /features\.visitorCustomization\.enabled/);
+  assert.match(visitorCustomizationMigration, /development.*staging.*production/s);
+  assert.match(visitorCustomizationMigration, /ON CONFLICT \(key, environment\) DO NOTHING/);
 });

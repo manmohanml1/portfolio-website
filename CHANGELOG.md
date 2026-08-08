@@ -6,6 +6,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-08-08
+
+### Added
+
+- Added versioned, validated local visitor preferences for theme, motion, audience lens, and project layout without accounts or server-side profile data.
+- Added General, Backend, Full Stack, Cloud/Data, and AI portfolio variants that replace page-wide positioning and retain only explicitly relevant projects, skills, experience, credentials, signals, and technologies.
+- Added a visual Cards gallery and a clearly separate editorial List layout, plus shareable `?view=backend`, `?view=fullstack`, `?view=data`, and `?view=ai` starting points.
+- Scoped List actions to project rows and added compact, bordered, tactile dialog actions without decorative numbering.
+- Added a database-backed rollout flag and idempotent migration for visitor customization.
+- Added tests for v1 preference migration, malformed and blocked storage, URL audience resolution, evidence ordering, contextual reset behavior, and rollout wiring.
+
+### Changed
+
+- Consolidated the existing theme and reduced-motion storage keys behind a resilient preference service.
+- Kept project category filters available in General and removed them from specialized variants where they conflict with curated audience evidence.
+- Aligned Vercel `-git-` branch aliases with the staging environment used by the Preview configuration endpoint.
+- Advanced the public release to `v1.5.0`.
+
 ## [1.4.0] - 2026-08-08
 
 ### Added
@@ -104,7 +122,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Published the initial production portfolio deployment on Vercel Hobby.
 - Connected the GitHub repository to Vercel for automatic production and preview deployments.
 
-[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/manmohanml1/portfolio-website/compare/v1.2.0...v1.2.1

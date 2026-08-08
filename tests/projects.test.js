@@ -5,11 +5,31 @@ import { createProjectDetailTemplate } from "../src/features/project-dialog.js";
 import {
   createProjectCardTemplate,
   getFilterLabel,
+  getProjectAudiences,
   getProjectActionLabel,
   getProjectsForFilter,
   mergeProjects,
   PROJECT_FILTERS,
+  getProjectsForAudience,
 } from "../src/render/projects.js";
+
+test("audience lenses retain only projects relevant to the selected portfolio variant", () => {
+  const backend = getProjectsForAudience("backend");
+  const fullstack = getProjectsForAudience("fullstack");
+  const data = getProjectsForAudience("data");
+  const ai = getProjectsForAudience("ai");
+
+  assert.ok(backend.length < projects.length);
+  assert.equal(backend[0].category, "backend");
+  assert.ok(backend.every((project) => getProjectAudiences(project).includes("backend")));
+  assert.ok(fullstack.every((project) => getProjectAudiences(project).includes("fullstack")));
+  assert.equal(data[0].category, "data");
+  assert.equal(ai[0].category, "ai");
+  assert.deepEqual(getProjectsForAudience("general"), projects);
+  assert.ok(!backend.some((project) => project.category === "frontend"));
+  assert.ok(!backend.some((project) => project.title === "OpenGL GLUT Game"));
+  assert.deepEqual(ai.map((project) => project.title), ["LangChain Project"]);
+});
 
 test("all declared project filters produce projects", () => {
   for (const filter of PROJECT_FILTERS.filter((item) => item !== "wearable")) {

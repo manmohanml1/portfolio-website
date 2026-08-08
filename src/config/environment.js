@@ -28,7 +28,8 @@ export function resolveEnvironment({ hostname = "", search = "" } = {}) {
     return ENVIRONMENTS.development;
   }
 
-  if (hostname.includes("staging") || hostname.includes("preview")) {
+  const isVercelBranchPreview = hostname.endsWith(".vercel.app") && hostname.includes("-git-");
+  if (hostname.includes("staging") || hostname.includes("preview") || isVercelBranchPreview) {
     return ENVIRONMENTS.staging;
   }
 

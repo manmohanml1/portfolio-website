@@ -4,6 +4,7 @@ import test from "node:test";
 
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 const styles = await readFile(new URL("../styles.css", import.meta.url), "utf8");
+const mainSource = await readFile(new URL("../src/main.js", import.meta.url), "utf8");
 
 test("document exposes stable section navigation targets", () => {
   for (const id of ["top", "work", "journey", "skills", "contact"]) {
@@ -17,7 +18,7 @@ test("document loads the modular application entry and contact link", () => {
 });
 
 test("document includes accessible controls for theme, project details, and back-to-top actions", () => {
-  assert.match(html, /aria-label="Change visual style"/);
+  assert.match(html, /aria-label="Customize view"/);
   assert.match(html, /id="project-dialog"/);
   assert.match(html, /id="feedback-dialog"/);
   assert.match(html, /data-open-feedback>Suggest an improvement/);
@@ -27,6 +28,18 @@ test("document includes accessible controls for theme, project details, and back
 
 test("hidden feature controls cannot be made visible by component display styles", () => {
   assert.match(styles, /\[hidden\]\s*\{\s*display:\s*none\s*!important;/);
+});
+
+test("visitor customization is rollout-gated and supports audience lenses and project layouts", () => {
+  assert.match(mainSource, /features\.visitorCustomization\.enabled/);
+  assert.match(mainSource, /setupVisitorCustomization/);
+  assert.match(html, /data-audience-evidence="backend"/);
+  assert.match(styles, /data-audience="general"/);
+  assert.match(styles, /data-project-layout="list"/);
+  assert.doesNotMatch(styles, /counter\(project-index/);
+  assert.match(styles, /grid-template-columns: minmax\(0, 1fr\) minmax\(160px, 0\.28fr\)/);
+  assert.match(styles, /\.project-card \.project-links/);
+  assert.match(styles, /data-audience="general"\]\) \.filter-bar/);
 });
 
 test("document emphasizes backend work without the removed proof section", () => {

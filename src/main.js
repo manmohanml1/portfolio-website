@@ -5,10 +5,12 @@ import { setupMotionPreference } from "./features/motion-preference.js";
 import { setupFeedbackDialog } from "./features/feedback-dialog.js";
 import { setupProjectDialog } from "./features/project-dialog.js";
 import { setupThemeMenu } from "./features/theme-switcher.js";
+import { applyAudienceLens, applyProjectLayout, setupVisitorCustomization } from "./features/visitor-customization.js";
 import { setupProjectFilters } from "./render/projects.js";
 import { renderReleaseIndicator } from "./render/release.js";
 import { renderJourney, renderSkills, renderStackStrip } from "./render/sections.js";
 import { isFeatureEnabled, loadFeatureConfig } from "./services/feature-config.js";
+import { readVisitorPreferences, resolveAudienceFromSearch, updateVisitorPreferences } from "./services/visitor-preferences.js";
 
 async function bootPortfolio() {
   const environment = setupEnvironment();
@@ -21,24 +23,51 @@ async function bootPortfolio() {
   const projectDialogsEnabled = isFeatureEnabled(featureConfig, "features.projectDialogs.enabled");
   const projectFiltersEnabled = isFeatureEnabled(featureConfig, "features.projectFilters.enabled");
   const tiltCardsEnabled = isFeatureEnabled(featureConfig, "effects.tiltCards.enabled");
+  const visitorCustomizationEnabled = isFeatureEnabled(
+    featureConfig,
+    "features.visitorCustomization.enabled",
+  );
+  let visitorPreferences = readVisitorPreferences();
+
+  if (visitorCustomizationEnabled) {
+    const audience = resolveAudienceFromSearch(globalThis.location?.search, visitorPreferences.audience);
+    if (audience !== visitorPreferences.audience) {
+      visitorPreferences = updateVisitorPreferences({ audience });
+    }
+    applyAudienceLens(visitorPreferences.audience);
+    applyProjectLayout(visitorPreferences.projectLayout);
+  }
 
   renderReleaseIndicator();
-  renderStackStrip();
-  if (journeyEnabled) renderJourney();
-  if (skillsEnabled) renderSkills();
+  renderStackStrip({ audience: visitorCustomizationEnabled ? visitorPreferences.audience : "general" });
+  if (journeyEnabled) renderJourney({ audience: visitorCustomizationEnabled ? visitorPreferences.audience : "general" });
+  if (skillsEnabled) renderSkills({ audience: visitorCustomizationEnabled ? visitorPreferences.audience : "general" });
 
   const openFeedbackDialog = feedbackEnabled ? setupFeedbackDialog() : undefined;
   const openProjectDialog = projectDialogsEnabled
     ? setupProjectDialog({ onFeedback: openFeedbackDialog })
     : undefined;
 
-  setupProjectFilters({
+  const projectFilterController = setupProjectFilters({
     filtersEnabled: projectFiltersEnabled,
+    audience: visitorCustomizationEnabled ? visitorPreferences.audience : "general",
     onCardsRendered: tiltCardsEnabled ? () => setupTiltCards(".project-card") : undefined,
     onOpenProject: openProjectDialog,
   });
-  setupThemeMenu();
+  setupThemeMenu({ customizationEnabled: visitorCustomizationEnabled });
   setupMotionPreference();
+  if (visitorCustomizationEnabled) {
+    setupVisitorCustomization({
+      initialPreferences: visitorPreferences,
+      onAudienceChange: (audience) => {
+        projectFilterController.setAudience(audience);
+        renderStackStrip({ audience });
+        if (journeyEnabled) renderJourney({ audience });
+        if (skillsEnabled) renderSkills({ audience });
+        setupRevealAnimation();
+      },
+    });
+  }
   setupRevealAnimation();
   if (tiltCardsEnabled) setupTiltCards();
   setupBackToTop();

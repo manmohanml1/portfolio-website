@@ -15,6 +15,11 @@ test("local environment overrides support staging and production validation", ()
 test("remote preview and production hostnames resolve safely", () => {
   assert.equal(resolveEnvironment({ hostname: "portfolio-staging.example.com" }).name, "staging");
   assert.equal(resolveEnvironment({ hostname: "preview-123.vercel.app" }).name, "staging");
+  assert.equal(
+    resolveEnvironment({ hostname: "portfolio-website-git-cod-example.vercel.app" }).name,
+    "staging",
+  );
+  assert.equal(resolveEnvironment({ hostname: "portfolio-website-pearl-eight.vercel.app" }).name, "production");
   assert.equal(resolveEnvironment({ hostname: "portfolio.example.com" }).name, "production");
 });
 

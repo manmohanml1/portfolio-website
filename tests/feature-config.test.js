@@ -10,10 +10,11 @@ import {
   normalizeFeatureConfig,
 } from "../src/services/feature-config.js";
 
-test("feature registry starts with six enabled public flags", () => {
-  assert.equal(FEATURE_FLAG_KEYS.length, 6);
+test("feature registry exposes seven enabled public flags", () => {
+  assert.equal(FEATURE_FLAG_KEYS.length, 7);
   assert.ok(FEATURE_FLAG_KEYS.every((key) => DEFAULT_FEATURE_FLAGS[key] === true));
   assert.equal(isKnownFeatureFlag("features.feedback.enabled"), true);
+  assert.equal(isKnownFeatureFlag("features.visitorCustomization.enabled"), true);
   assert.equal(isKnownFeatureFlag("unknown.enabled"), false);
 });
 

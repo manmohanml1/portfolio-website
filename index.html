@@ -43,13 +43,13 @@
           <button
             class="theme-trigger"
             type="button"
-            aria-label="Change visual style"
+            aria-label="Customize view"
             aria-expanded="false"
             aria-controls="theme-options"
           >
             ◐
           </button>
-          <div class="theme-options" id="theme-options" role="menu" aria-label="Visual style options"></div>
+          <div class="theme-options" id="theme-options" aria-label="View customization options"></div>
         </div>
       </nav>
     </header>
@@ -57,14 +57,14 @@
     <main>
       <section class="hero" aria-labelledby="intro-title">
         <div class="hero-copy">
-          <p class="eyebrow">Backend · full-stack · cloud data · applied AI</p>
+          <p class="eyebrow" id="hero-eyebrow">Backend · full-stack · cloud data · applied AI</p>
           <h1 id="intro-title">Building reliable products from API to interface.</h1>
-          <p class="hero-text">
+          <p class="hero-text" id="hero-text">
             I’m Manmohan, building today with TypeScript, Java, REST APIs, React, AWS,
             Kafka, PostgreSQL, Docker, and Kubernetes, with earlier work across UI,
             graphics, design patterns, and AI experiments.
           </p>
-          <div class="hero-word-row" aria-label="Engineering focus areas">
+          <div class="hero-word-row" id="hero-focus-words" aria-label="Engineering focus areas">
             <span>Backend</span>
             <span>TypeScript</span>
             <span>Java</span>
@@ -95,23 +95,23 @@
             />
             <div>
               <p class="profile-name">Manmohan M. L.</p>
-              <p class="profile-detail">Backend and full-stack engineer</p>
+              <p class="profile-detail" id="profile-detail">Backend and full-stack engineer</p>
             </div>
           </div>
-          <div class="signal-grid">
-            <div class="signal-card">
+          <div class="signal-grid" id="signal-grid">
+            <div class="signal-card" data-audience-evidence="backend">
               <span>Backend</span>
               <strong>TypeScript + Java</strong>
             </div>
-            <div class="signal-card">
+            <div class="signal-card" data-audience-evidence="data">
               <span>Cloud data</span>
               <strong>Kafka + AWS</strong>
             </div>
-            <div class="signal-card">
+            <div class="signal-card" data-audience-evidence="fullstack">
               <span>Frontend</span>
               <strong>React apps</strong>
             </div>
-            <div class="signal-card">
+            <div class="signal-card" data-audience-evidence="ai">
               <span>Exploring</span>
               <strong>Applied AI</strong>
             </div>
@@ -121,7 +121,7 @@
               <span>systems check</span>
               <strong>online</strong>
             </div>
-            <pre><code>api: typescript + java
+            <pre><code id="monitor-code">api: typescript + java
 tests: jest + junit 5
 data: kafka + postgres
 ship: github -> vercel</code></pre>
@@ -137,19 +137,19 @@ ship: github -> vercel</code></pre>
         <div class="bento-grid">
           <article class="bento-tile wide reveal">
             <p class="eyebrow">What I build</p>
-            <h2>Interfaces, APIs, data pipelines, and AI workflows that connect cleanly.</h2>
+            <h2 id="build-title">Interfaces, APIs, data pipelines, and AI workflows that connect cleanly.</h2>
           </article>
           <article class="bento-tile reveal">
-            <span class="metric">8+</span>
-            <p>curated projects with opt-in GitHub additions</p>
+            <span class="metric" id="metric-1-value">8+</span>
+            <p id="metric-1-label">curated projects with opt-in GitHub additions</p>
           </article>
           <article class="bento-tile reveal">
-            <span class="metric">4</span>
-            <p>main project areas across product and infrastructure</p>
+            <span class="metric" id="metric-2-value">4</span>
+            <p id="metric-2-label">main project areas across product and infrastructure</p>
           </article>
           <article class="bento-tile reveal">
-            <span class="metric">1</span>
-            <p>curated React fitness application repository to explore</p>
+            <span class="metric" id="metric-3-value">1</span>
+            <p id="metric-3-label">connected engineering portfolio</p>
           </article>
         </div>
       </section>
@@ -157,10 +157,10 @@ ship: github -> vercel</code></pre>
       <section class="section" id="work" aria-labelledby="work-title">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">Selected GitHub work + opt-in updates</p>
+            <p class="eyebrow" id="work-eyebrow">Selected GitHub work + opt-in updates</p>
             <h2 id="work-title">Projects</h2>
           </div>
-          <p class="section-copy">Curated projects first, with newly tagged GitHub work added automatically.</p>
+          <p class="section-copy" id="work-copy">Curated projects first, with newly tagged GitHub work added automatically.</p>
         </div>
 
         <div class="filter-bar" role="group" aria-label="Filter projects">
@@ -185,13 +185,13 @@ ship: github -> vercel</code></pre>
             <p class="eyebrow">Career signal</p>
             <h2 id="journey-title">Experience, education, and verified highlights.</h2>
           </div>
-          <p class="section-copy">
+          <p class="section-copy" id="journey-copy">
             Selected evidence from LinkedIn experience, education, recommendations, and repository-backed engineering work.
           </p>
         </div>
         <div class="journey-grid">
           <div>
-            <h3>Experience</h3>
+            <h3 id="experience-title">Experience</h3>
             <div class="timeline" id="experience-list"></div>
           </div>
           <div>
@@ -209,19 +209,19 @@ ship: github -> vercel</code></pre>
           </div>
         </div>
         <div class="skill-grid">
-          <section class="reveal">
+          <section class="reveal" data-audiences="fullstack">
             <h3>Frontend</h3>
             <p>React, Next.js, Tailwind CSS, Material UI, responsive product interfaces.</p>
           </section>
-          <section class="reveal">
+          <section class="reveal" data-audiences="backend fullstack">
             <h3>Backend</h3>
             <p>Express.js, TypeScript, REST APIs, monorepo workflows, service design.</p>
           </section>
-          <section class="reveal">
+          <section class="reveal" data-audiences="data backend">
             <h3>Data & Cloud</h3>
             <p>Kafka, AWS Kinesis, PostgreSQL, Docker, Kubernetes, autoscaling services.</p>
           </section>
-          <section class="reveal">
+          <section class="reveal" data-audiences="ai">
             <h3>Applied AI</h3>
             <p>LangChain prototypes and experiments that connect models to web and API products.</p>
           </section>
@@ -234,7 +234,7 @@ ship: github -> vercel</code></pre>
             <p class="eyebrow">Let’s connect</p>
             <h2 id="contact-title">Contact</h2>
           </div>
-          <p class="contact-copy">Open to software engineering, full-stack, data, and AI opportunities.</p>
+          <p class="contact-copy" id="contact-copy">Open to software engineering, full-stack, data, and AI opportunities.</p>
         </div>
         <div class="contact-actions">
           <a

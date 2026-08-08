@@ -17,6 +17,7 @@ This portfolio has a static, no-build frontend with modular ES modules, one read
 - `src/services/github-projects.js`: opt-in public GitHub repository discovery via `portfolio-showcase` topic.
 - `src/services/feedback.js`: private suggestion requests from the browser to the configured Formspree endpoint.
 - `src/services/feature-config.js`: timeout, response validation, local override forwarding, and fallback configuration loading.
+- `src/services/visitor-preferences.js`: versioned local preference validation, legacy-key migration, safe storage access, and reset behavior.
 - `src/features/feature-availability.js`: section and control visibility rules for registered flags.
 - `src/render/`: DOM rendering modules for content sections.
 - `src/features/`: interactive features such as theme switching, motion preference, project and feedback dialogs, card tilt, and back-to-top.
@@ -34,7 +35,7 @@ The nearby Codex projects use a similar separation of concerns: configs, service
 
 This is not as heavy as a framework, but it avoids the worst static-site problem: one giant file where every future change risks unrelated behavior.
 
-The configuration boundary is intentionally read-only in its first release. The browser receives only six allow-listed Boolean values, never credentials or arbitrary database records. Invalid, missing, timed-out, and non-success responses restore checked-in defaults so configuration cannot take the public portfolio offline.
+The configuration boundary is intentionally read-only. The browser receives only seven allow-listed Boolean values, never credentials or arbitrary database records. Invalid, missing, timed-out, and non-success responses restore checked-in defaults so configuration cannot take the public portfolio offline.
 
 The current theme registry chooses visible worlds and persists a viewer preference. Ambient artwork is opt-in for an individual world, so a scene such as Interstellar's black hole does not leak into cleaner modes. The visual rules still live in CSS because they alter composition, atmosphere, typography, and responsive behavior rather than merely tokens.
 
@@ -71,6 +72,16 @@ Portfolio startup resolves the environment, loads `/api/config`, validates only 
 Neon is a separate managed resource, not part of the browser application. Vercel Functions access its persistent configuration branch through the server-only `FEATURE_CONFIG_DATABASE_URL`. Vercel Preview deployments may retain isolated Neon branches through `DATABASE_URL` for future schema and application-data tests, but those branches do not control feature availability. The schema keeps development, staging, and production values independent and records inserts or updates automatically in `feature_audit`. Direct SQL control is suitable for this phase; authenticated admin writes remain isolated as a later feature.
 
 Neon Auth is intentionally disabled during this phase. Anonymous visitor preferences remain in browser storage, while a future Admin Control Center can introduce authentication together with explicit owner authorization, restricted registration, trusted domains, and server-side token validation.
+
+## Visitor Preferences
+
+Visitor customization is a browser-only layer and does not create an identity. One versioned `portfolio-preferences-v2` record stores validated theme, reduced-motion, audience-lens, and project-layout values. Existing theme, motion, and v1 focus values migrate automatically; unavailable or malformed storage falls back to the complete default view.
+
+The `features.visitorCustomization.enabled` runtime flag controls audience-lens persistence, Cards/List layout, shareable `?view=backend`, `?view=fullstack`, `?view=data`, and `?view=ai` links, and the restore-defaults action. General remains the complete portfolio. Specialized lenses select only explicitly relevant projects, skills, experience, credentials, profile signals, and technologies, while also replacing section and contact copy so each URL behaves as a curated portfolio variant. The general project filters disappear in specialized variants because a temporary category filter would conflict with the selected audience contract. Theme and motion remain available because they predate this phase. Disabling the customization flag does not delete a viewer's local choices; it simply stops applying the gated preferences until the capability is enabled again.
+
+Cards preserve the visual gallery. List is a separate editorial project index: numbered, unframed rows replace previews and card chrome with readable summaries, inline technologies, separators, and a dedicated action column. On mobile it becomes a numbered reading sequence with actions below each entry.
+
+No preference is sent to Neon, Formspree, GitHub, or an analytics service. Cross-device synchronization remains intentionally deferred until visitor accounts demonstrate enough value to justify their privacy and authentication cost.
 
 The first registry controls Journey, Skills, Feedback, project dialogs, project filters, and card tilt. When a section is disabled, its navigation entry is disabled with it. When project dialogs are disabled, repository links remain available and detail-only controls are omitted.
 

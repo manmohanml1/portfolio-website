@@ -32,12 +32,12 @@ Vercel preview deployments are connected to feature branches and pull requests, 
 
 ## Runtime Configuration
 
-`GET /api/config` returns the six public feature flags used during portfolio startup. The endpoint supports only `GET`, exposes no secrets, and uses a short edge-cache window for database-backed responses. If the request fails or returns malformed data, the browser enables the complete checked-in experience.
+`GET /api/config` returns the seven public feature flags used during portfolio startup. The endpoint supports only `GET`, exposes no secrets, and uses a short edge-cache window for database-backed responses. If the request fails or returns malformed data, the browser enables the complete checked-in experience.
 
 ### Neon Setup
 
 1. Add Neon from the Vercel Marketplace and select its free plan. Keep it as a separate managed resource connected to the `portfolio-website` project, and leave optional Neon Auth disabled until the Admin Control Center phase.
-2. In the Neon SQL Editor, run `db/migrations/001_create_feature_config.sql`, then `db/seeds/001_feature_flags.sql`.
+2. In the Neon SQL Editor, run migrations in numeric order, then `db/seeds/001_feature_flags.sql`. Existing v1.4 databases should run `db/migrations/002_add_visitor_customization_flag.sql` for the v1.5 rollout flag.
 3. Copy the connection string for Neon's persistent `main` branch into a server-only Vercel variable named `FEATURE_CONFIG_DATABASE_URL`. Enable it for Preview and Production; never prefix it with `VITE_` or expose it in browser code.
 4. Keep Neon's integration-managed `DATABASE_URL` if Preview database branches are useful for future schema or application-data testing. `/api/config` deliberately prefers `FEATURE_CONFIG_DATABASE_URL`, so those isolated branches do not fragment feature-flag control.
 5. Redeploy the Preview. Its `/api/config` response should report `"environment":"staging"` and `"source":"database"`.
