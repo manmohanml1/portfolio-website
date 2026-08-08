@@ -1,6 +1,6 @@
 # Manmohan Lonawat Portfolio
 
-Personal portfolio website presenting frontend, AI, and systems work in a theme-switchable interface. The frontend uses modular JavaScript and a small read-only Vercel Function provides validated runtime feature configuration.
+Personal portfolio website presenting frontend, AI, and systems work in a theme-switchable interface. The frontend uses modular JavaScript and a small read-only Vercel Function provides validated runtime feature configuration from Neon or checked-in defaults.
 
 ## Highlights
 
@@ -49,6 +49,7 @@ GitHub Actions repeats these checks across supported Node versions and environme
 
 ```text
 api/               Read-only Vercel configuration function
+db/                Neon schema migration and seed data
 src/config/        Runtime environment rules
 src/data/          Portfolio content and theme catalog
 src/features/      User interaction behavior
@@ -67,7 +68,7 @@ Production deployment is hosted on Vercel:
 
 - Live site: [portfolio-website-pearl-eight-44.vercel.app](https://portfolio-website-pearl-eight-44.vercel.app)
 
-The browser application remains static, with a small read-only Vercel Function for runtime configuration. Private visitor feedback continues through Formspree. Setup notes and the deployment workflow are captured in [DEPLOYMENT.md](DEPLOYMENT.md).
+The browser application remains static, with a small read-only Vercel Function for runtime configuration. Neon is an optional separate managed database and is never accessed from browser code. Private visitor feedback continues through Formspree. Setup notes and the deployment workflow are captured in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Add A New Project
 

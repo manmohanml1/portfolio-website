@@ -6,6 +6,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-08-08
+
+### Added
+
+- Added a server-only Neon configuration store with independent development, staging, and production feature values.
+- Added a dedicated shared feature-configuration connection so all Vercel Previews follow the same staging flags while retaining isolated databases for future schema testing.
+- Added idempotent database migrations, 18 seeded flag records, and automatic change auditing for future admin updates.
+- Added tests for database fallback, query parameterization, source-aware caching, and SQL schema contracts.
+
+### Changed
+
+- Updated local configuration loading to read Neon when configured while preserving localhost-only URL overrides.
+- Prioritized `FEATURE_CONFIG_DATABASE_URL` over Neon's deployment-specific `DATABASE_URL` to prevent Preview branches from fragmenting flag control.
+- Updated CI and release-candidate artifacts to install locked dependencies and include API and database assets.
+- Kept Neon Auth disabled until authenticated admin controls can ship with explicit owner authorization.
+- Advanced the visible feature candidate to `v1.4.0`.
+
+## [1.3.0] - 2026-08-08
+
 ### Added
 
 - Added a strict six-flag runtime configuration registry for Journey, Skills, Feedback, project dialogs, project filters, and card tilt.
@@ -85,7 +104,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Published the initial production portfolio deployment on Vercel Hobby.
 - Connected the GitHub repository to Vercel for automatic production and preview deployments.
 
-[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.3.0...v1.4.0
+[1.3.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/manmohanml1/portfolio-website/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.0.0...v1.1.0
