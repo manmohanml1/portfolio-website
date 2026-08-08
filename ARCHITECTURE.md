@@ -1,17 +1,21 @@
 # Portfolio Architecture
 
-This portfolio is a static, no-build site with modular ES modules and a hosted Formspree delivery endpoint for private feedback. It is intentionally lighter than a full Next.js or Astro app, while still leaving room for future features.
+This portfolio has a static, no-build frontend with modular ES modules, one read-only Vercel Function for runtime configuration, and a hosted Formspree delivery endpoint for private feedback. It remains lighter than a full Next.js or Astro app while establishing a server boundary for future configuration storage.
 
 ## Structure
 
 - `index.html`: semantic page shell and persistent layout anchors.
+- `api/config.js`: public allow-listed feature configuration endpoint; currently serves checked-in defaults before Neon integration.
 - `styles.css`: current visual system, responsive layout, theme variables, and animations.
 - `src/data/portfolio.js`: editable curated portfolio content, skills, and journey sections.
 - `src/data/themes.js`: theme definitions used by the style switcher.
 - `src/config/environment.js`: runtime environment resolution for local, staging/preview, and production hosts.
+- `src/config/feature-defaults.js`: source of truth for supported public feature keys and fail-open defaults.
 - `src/config/release.js`: visible production release version and release type badge metadata.
 - `src/services/github-projects.js`: opt-in public GitHub repository discovery via `portfolio-showcase` topic.
 - `src/services/feedback.js`: private suggestion requests from the browser to the configured Formspree endpoint.
+- `src/services/feature-config.js`: timeout, response validation, local override forwarding, and fallback configuration loading.
+- `src/features/feature-availability.js`: section and control visibility rules for registered flags.
 - `src/render/`: DOM rendering modules for content sections.
 - `src/features/`: interactive features such as theme switching, motion preference, project and feedback dialogs, card tilt, and back-to-top.
 - `src/utils/`: small shared utilities.
@@ -27,6 +31,8 @@ This portfolio is a static, no-build site with modular ES modules and a hosted F
 The nearby Codex projects use a similar separation of concerns: configs, services, components, security/helpers, and tests. For a portfolio, the equivalent is data, renderers, interactions, and verification.
 
 This is not as heavy as a framework, but it avoids the worst static-site problem: one giant file where every future change risks unrelated behavior.
+
+The configuration boundary is intentionally read-only in its first release. The browser receives only six allow-listed Boolean values, never credentials or arbitrary database records. Invalid, missing, timed-out, and non-success responses restore checked-in defaults so configuration cannot take the public portfolio offline.
 
 The current theme registry chooses visible worlds and persists a viewer preference. Ambient artwork is opt-in for an individual world, so a scene such as Interstellar's black hole does not leak into cleaner modes. The visual rules still live in CSS because they alter composition, atmosphere, typography, and responsive behavior rather than merely tokens.
 
@@ -53,6 +59,14 @@ The static client resolves three supported environments:
 - `production`: any deployed public hostname not matching staging rules.
 
 For local testing only, load `?env=staging` or `?env=production` to exercise an environment before deployment.
+
+Repeated `flag=key:false` parameters can override registered flags only on localhost. The client strips these parameters from remote configuration requests, preventing preview or production visitors from changing feature availability through the URL.
+
+## Runtime Feature Configuration
+
+Portfolio startup resolves the environment, loads `/api/config`, validates only registered Boolean flags, applies section/control visibility, and then initializes enabled renderers and interactions. The current endpoint returns checked-in defaults with a short edge-cache window. The next infrastructure slice will replace that data source with environment-specific Neon records while preserving the same browser contract.
+
+The first registry controls Journey, Skills, Feedback, project dialogs, project filters, and card tilt. When a section is disabled, its navigation entry is disabled with it. When project dialogs are disabled, repository links remain available and detail-only controls are omitted.
 
 ## GitHub Project Inclusion
 

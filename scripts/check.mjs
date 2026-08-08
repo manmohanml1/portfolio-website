@@ -1,14 +1,18 @@
 import { spawnSync } from "node:child_process";
 
 const files = [
+  "api/config.js",
   "dev-server.mjs",
   "src/main.js",
   "src/config/environment.js",
+  "src/config/feature-defaults.js",
   "src/config/release.js",
   "src/data/portfolio.js",
   "src/data/themes.js",
   "src/services/github-projects.js",
   "src/services/feedback.js",
+  "src/services/feature-config.js",
+  "src/features/feature-availability.js",
   "src/features/interactions.js",
   "src/features/motion-preference.js",
   "src/features/feedback-dialog.js",

@@ -2,6 +2,7 @@ import { createReadStream, existsSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
+import { DEFAULT_FEATURE_FLAGS, isKnownFeatureFlag } from "./src/config/feature-defaults.js";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 const port = Number(process.env.PORT || 4173);
@@ -19,6 +20,27 @@ const types = {
 
 createServer((request, response) => {
   const url = new URL(request.url || "/", `http://localhost:${port}`);
+
+  if (url.pathname === "/api/config") {
+    const flags = { ...DEFAULT_FEATURE_FLAGS };
+
+    url.searchParams.getAll("flag").forEach((override) => {
+      const separator = override.lastIndexOf(":");
+      const key = override.slice(0, separator);
+      const value = override.slice(separator + 1);
+
+      if (separator > 0 && isKnownFeatureFlag(key) && ["true", "false"].includes(value)) {
+        flags[key] = value === "true";
+      }
+    });
+
+    response.writeHead(200, {
+      "Cache-Control": "no-store",
+      "Content-Type": "application/json; charset=utf-8",
+    });
+    response.end(JSON.stringify({ version: 1, environment: "development", flags }));
+    return;
+  }
 
   const requested = url.pathname === "/" ? "/index.html" : decodeURIComponent(url.pathname);
   const filePath = normalize(join(root, requested));
