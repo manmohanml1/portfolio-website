@@ -59,6 +59,15 @@ const DISPLAY_APPS = {
   },
 };
 
+const CATEGORY_AUDIENCES = Object.freeze({
+  frontend: ["fullstack"],
+  backend: ["backend", "fullstack"],
+  data: ["backend", "data"],
+  ai: ["ai", "fullstack"],
+  wearable: [],
+  other: [],
+});
+
 function humanizeTopic(topic) {
   return topic
     .replace(/^portfolio-/, "")
@@ -112,6 +121,7 @@ export function mapGitHubRepository(repository) {
     live: topics.includes(LIVE_PROJECT_TOPIC) && repository.homepage ? repository.homepage : undefined,
     type: presentation.type,
     category: presentation.category,
+    audiences: CATEGORY_AUDIENCES[presentation.category] || [],
     description: repository.description || "A newly selected project from my public GitHub portfolio.",
     tags: tags.length >= 2 ? tags : [...tags, "Selected Work"].slice(0, 2),
     visual: displayApp?.visual || presentation.visual,

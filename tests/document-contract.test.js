@@ -34,8 +34,10 @@ test("visitor customization is rollout-gated and supports audience lenses and pr
   assert.match(mainSource, /features\.visitorCustomization\.enabled/);
   assert.match(mainSource, /setupVisitorCustomization/);
   assert.match(html, /data-audience-evidence="backend"/);
-  assert.match(styles, /data-audience="backend"/);
+  assert.match(styles, /data-audience="general"/);
   assert.match(styles, /data-project-layout="list"/);
+  assert.match(styles, /grid-template-columns: minmax\(210px, 0\.75fr\) minmax\(0, 2fr\)/);
+  assert.match(styles, /data-audience="general"\]\) \.filter-bar/);
 });
 
 test("document emphasizes backend work without the removed proof section", () => {

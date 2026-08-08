@@ -1,6 +1,7 @@
 import { projects } from "../data/portfolio.js";
 import { fetchOptInProjects } from "../services/github-projects.js";
 import { AUDIENCE_OPTIONS } from "../services/visitor-preferences.js";
+import { getAudienceLens } from "../data/audience-lenses.js";
 import { escapeHtml, qs, qsa, safeExternalUrl, tagsTemplate } from "../utils/dom.js";
 
 export const PROJECT_FILTERS = ["all", "frontend", "backend", "data", "ai", "wearable"];
@@ -37,12 +38,26 @@ const AUDIENCE_CATEGORY_ORDER = Object.freeze({
   ai: ["ai", "backend", "frontend", "data", "wearable"],
 });
 
-export function rankProjectsForAudience(audience = "general", availableProjects = projects) {
+const CATEGORY_AUDIENCES = Object.freeze({
+  frontend: ["fullstack"],
+  backend: ["backend", "fullstack"],
+  data: ["backend", "data"],
+  ai: ["ai", "fullstack"],
+  wearable: [],
+  other: [],
+});
+
+export function getProjectAudiences(project) {
+  return project.audiences || CATEGORY_AUDIENCES[project.category] || [];
+}
+
+export function getProjectsForAudience(audience = "general", availableProjects = projects) {
   const resolvedAudience = AUDIENCE_OPTIONS.includes(audience) ? audience : "general";
   const order = AUDIENCE_CATEGORY_ORDER[resolvedAudience];
   if (order.length === 0) return [...availableProjects];
 
   return availableProjects
+    .filter((project) => getProjectAudiences(project).includes(resolvedAudience))
     .map((project, index) => ({ project, index }))
     .sort((left, right) => {
       const leftRank = order.indexOf(left.project.category);
@@ -107,11 +122,12 @@ export function setupProjectFilters({
   const githubProjectStatus = qs("#github-project-status");
   const wearableFilter = qs('[data-filter="wearable"]');
   let availableProjects = projects;
+  let discoveredProjects = [];
   let activeFilter = "all";
   let activeAudience = AUDIENCE_OPTIONS.includes(audience) ? audience : "general";
 
   function getVisibleProjects() {
-    return getProjectsForFilter(activeFilter, rankProjectsForAudience(activeAudience, availableProjects));
+    return getProjectsForFilter(activeFilter, getProjectsForAudience(activeAudience, availableProjects));
   }
 
   function syncFilterControls(filter) {
@@ -127,13 +143,21 @@ export function setupProjectFilters({
   function renderProjects(filter = "all") {
     activeFilter = filter;
     const visibleProjects = getVisibleProjects();
-    const filterLabel = getFilterLabel(filter);
+    const filterLabel = activeAudience === "general"
+      ? getFilterLabel(filter)
+      : getAudienceLens(activeAudience).projectLabel;
 
     grid.innerHTML = visibleProjects
       .map((project, index) => createProjectCardTemplate(project, index, { allowDetails: Boolean(onOpenProject) }))
       .join("");
 
     projectCount.textContent = `Showing ${visibleProjects.length} ${filterLabel}`;
+    if (activeAudience !== "general" && discoveredProjects.length > 0) {
+      const matchingDiscoveries = getProjectsForAudience(activeAudience, discoveredProjects).length;
+      githubProjectStatus.textContent = matchingDiscoveries > 0
+        ? `${matchingDiscoveries} matching GitHub project${matchingDiscoveries === 1 ? "" : "s"} synced`
+        : "Curated audience selection";
+    }
 
     requestAnimationFrame(() => {
       qsa(".project-card").forEach((card, index) => {
@@ -169,9 +193,11 @@ export function setupProjectFilters({
   renderProjects(activeFilter);
 
   fetchOptInProjects()
-    .then((discoveredProjects) => {
-      availableProjects = mergeProjects(projects, discoveredProjects);
+    .then((fetchedProjects) => {
+      availableProjects = mergeProjects(projects, fetchedProjects);
       const addedProjects = availableProjects.length - projects.length;
+      // Keep the discovered subset so audience-specific sync status stays accurate.
+      discoveredProjects = availableProjects.filter((project) => project.discovered);
       wearableFilter.hidden = !availableProjects.some((project) => project.category === "wearable");
       githubProjectStatus.textContent =
         addedProjects > 0

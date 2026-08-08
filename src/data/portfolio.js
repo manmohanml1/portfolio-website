@@ -4,6 +4,7 @@ export const projects = [
     repo: "https://github.com/manmohanml1/Fitness-exercises-app",
     type: "Frontend",
     category: "frontend",
+    audiences: ["fullstack"],
     featured: true,
     description:
       "A React fitness application with exercise discovery, routing, Material UI components, loaders, and horizontal content browsing.",
@@ -32,6 +33,7 @@ export const projects = [
     repo: "https://github.com/manmohanml1/Scalable-Data-Processing-System-for-High-Volume-Workloads",
     type: "Data",
     category: "data",
+    audiences: ["backend", "data"],
     featured: true,
     description:
       "A high-volume ingestion and processing pipeline using Kafka producers and consumers, AWS Kinesis streams, PostgreSQL partitioning, and Kubernetes deployment manifests.",
@@ -89,6 +91,7 @@ export const projects = [
     repo: "https://github.com/manmohanml1/Langchain-Project-1",
     type: "AI",
     category: "ai",
+    audiences: ["ai", "fullstack"],
     description:
       "A Turborepo monorepo with a TypeScript Express API and Next.js web app, structured for experiments that connect application code with AI workflows.",
     tags: ["LangChain", "Next.js", "Express", "TypeScript"],
@@ -140,6 +143,7 @@ export const projects = [
     repo: "https://github.com/manmohanml1/Movies-API",
     type: "Backend",
     category: "backend",
+    audiences: ["backend"],
     description:
       "A compact API-focused repository for movie data workflows, useful as a foundation for backend practice and service integration.",
     tags: ["API", "Backend", "Service Design"],
@@ -151,6 +155,7 @@ export const projects = [
     repo: "https://github.com/manmohanml1/Leetcode-Practice",
     type: "Backend",
     category: "backend",
+    audiences: ["backend"],
     description:
       "A multi-language practice repository with TypeScript, Java, and Python solutions, native test frameworks, GitHub Actions CI, and a smart Windows test runner.",
     tags: ["TypeScript", "Java", "JUnit 5", "Maven", "Jest", "CI"],
@@ -162,6 +167,7 @@ export const projects = [
     repo: "https://github.com/manmohanml1/Software-Engineering-Design-Patterns",
     type: "Backend",
     category: "backend",
+    audiences: ["backend"],
     description:
       "A message broadcasting system modeled with behavioral and structural design patterns, including Observer and Composite.",
     tags: ["Design Patterns", "Observer", "Composite", "Architecture"],
@@ -173,6 +179,7 @@ export const projects = [
     repo: "https://github.com/manmohanml1/OpenGL_Glut_Game",
     type: "Systems",
     category: "backend",
+    audiences: ["general"],
     description:
       "A CSCI term project exploring interactive graphics and game programming with OpenGL and GLUT.",
     tags: ["OpenGL", "GLUT", "C++", "Game Dev"],
@@ -184,6 +191,7 @@ export const projects = [
     repo: "https://github.com/manmohanml1/Typescript-Practice",
     type: "Frontend",
     category: "frontend",
+    audiences: ["fullstack"],
     description:
       "Focused TypeScript practice that reinforces typed JavaScript patterns for frontend and backend development.",
     tags: ["TypeScript", "JavaScript", "Practice"],
@@ -227,7 +235,7 @@ export const experiences = [
   },
   {
     role: "Back End Developer",
-    audiences: ["backend", "data"],
+    audiences: ["backend", "fullstack", "data", "ai"],
     org: "Evernorth Health Services",
     period: "Jun 2023 - Jun 2025",
     location: "Jersey City, New Jersey - Remote",
@@ -241,7 +249,7 @@ export const experiences = [
   },
   {
     role: "Back End Developer",
-    audiences: ["backend", "data"],
+    audiences: ["backend", "fullstack", "data"],
     org: "Squad Software Inc",
     period: "Feb 2023 - Jun 2023",
     location: "Edison, New Jersey - Remote",
@@ -254,7 +262,7 @@ export const experiences = [
   },
   {
     role: "Teaching Associate",
-    audiences: ["fullstack", "ai"],
+    audiences: ["ai"],
     org: "California State University, Fresno",
     period: "Aug 2021 - Dec 2022",
     location: "United States",
@@ -266,7 +274,7 @@ export const experiences = [
   },
   {
     role: "Student Assistant",
-    audiences: ["fullstack"],
+    audiences: ["general"],
     org: "California State University, Fresno",
     period: "Jul 2021 - Dec 2022",
     location: "United States",
@@ -278,21 +286,25 @@ export const experiences = [
 
 export const credentials = [
   {
+    audiences: ["backend", "fullstack", "data", "ai"],
     label: "Master of Science - Computer Science",
     value: "California State University, Fresno",
     detail: "2021 - 2022",
   },
   {
+    audiences: ["backend", "fullstack", "data", "ai"],
     label: "Bachelor of Engineering - Computer Science",
     value: "Walchand Institute of Technology, Solapur",
     detail: "2015 - 2019",
   },
   {
+    audiences: ["backend", "fullstack", "data", "ai"],
     label: "Academic recognition",
     value: "The Honor Society of Phi Kappa Phi",
     detail: "Member, Apr 2022 - Apr 2023 - distinction awarded to the top 10% of post-graduate students.",
   },
   {
+    audiences: ["backend", "fullstack", "data"],
     label: "Received recommendation",
     value: "Kent Shikama - Senior Software Engineer, Evernorth Health Services",
     detail:
@@ -309,7 +321,7 @@ export const skills = [
   },
   {
     title: "Backend",
-    audiences: ["backend", "fullstack"],
+    audiences: ["backend", "fullstack", "ai"],
     description: "TypeScript, Java, Express.js, REST APIs, Maven, JUnit, Jest, service design.",
   },
   {
@@ -319,7 +331,7 @@ export const skills = [
   },
   {
     title: "Applied AI",
-    audiences: ["ai"],
+    audiences: ["ai", "fullstack"],
     description: "LangChain prototypes and experiments that connect models to web and API products.",
   },
 ];

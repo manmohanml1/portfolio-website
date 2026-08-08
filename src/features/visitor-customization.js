@@ -1,4 +1,4 @@
-import { qs, qsa } from "../utils/dom.js";
+import { escapeHtml, qs, qsa } from "../utils/dom.js";
 import {
   AUDIENCE_OPTIONS,
   clearVisitorPreferences,
@@ -17,10 +17,43 @@ export function applyAudienceLens(audience, documentLike = document) {
   const title = documentLike.querySelector?.("#intro-title");
   const description = documentLike.querySelector?.("#hero-text");
   const words = documentLike.querySelector?.("#hero-focus-words");
+  const profileDetail = documentLike.querySelector?.("#profile-detail");
+  const signalGrid = documentLike.querySelector?.("#signal-grid");
+  const monitorCode = documentLike.querySelector?.("#monitor-code");
   if (eyebrow) eyebrow.textContent = lens.eyebrow;
   if (title) title.textContent = lens.title;
   if (description) description.textContent = lens.description;
   if (words) words.innerHTML = lens.words.map((word) => `<span>${word}</span>`).join("");
+  if (profileDetail) profileDetail.textContent = lens.profileDetail;
+  if (signalGrid) {
+    signalGrid.innerHTML = lens.signals
+      .map(([label, value]) => `<div class="signal-card"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`)
+      .join("");
+  }
+  if (monitorCode) monitorCode.textContent = lens.monitor.join("\n");
+
+  const textFields = {
+    "#build-title": lens.buildTitle,
+    "#work-eyebrow": lens.workEyebrow,
+    "#work-title": lens.workTitle,
+    "#work-copy": lens.workCopy,
+    "#journey-title": lens.journeyTitle,
+    "#journey-copy": lens.journeyCopy,
+    "#experience-title": lens.experienceTitle,
+    "#skills-title": lens.skillsTitle,
+    "#contact-copy": lens.contactCopy,
+  };
+  Object.entries(textFields).forEach(([selector, value]) => {
+    const element = documentLike.querySelector?.(selector);
+    if (element) element.textContent = value;
+  });
+  lens.metrics.forEach(([value, label], index) => {
+    const number = index + 1;
+    const valueElement = documentLike.querySelector?.(`#metric-${number}-value`);
+    const labelElement = documentLike.querySelector?.(`#metric-${number}-label`);
+    if (valueElement) valueElement.textContent = value;
+    if (labelElement) labelElement.textContent = label;
+  });
   return resolvedAudience;
 }
 
