@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Fixed
+
+- Restored consistent Cards and List composition across every theme after the v1.5 visitor-customization release.
+- Packed featured Cards without empty desktop grid cells and prevented Studio Light, Interstellar, and Neo Brutalist card surfaces from leaking into List rows.
+- Preserved compact, theme-specific List actions and dividers across desktop and mobile layouts.
+
 ## [1.5.0] - 2026-08-08
 
 ### Added

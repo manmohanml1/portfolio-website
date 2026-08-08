@@ -1071,6 +1071,8 @@ section[id] {
 .project-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-flow: dense;
+  align-items: stretch;
   gap: 16px;
 }
 
@@ -2098,6 +2100,56 @@ footer p {
 :root[data-theme="brutalist"] .button.primary {
   background: #3764ff;
   color: #ffffff;
+}
+
+/* List rows must not inherit the decorative card surfaces declared by themes. */
+:root[data-project-layout="list"][data-theme] .project-card,
+:root[data-project-layout="list"][data-theme] .project-card.featured,
+:root[data-project-layout="list"][data-theme] .project-card.show,
+:root[data-project-layout="list"][data-theme] .project-card.show:hover {
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+:root[data-project-layout="list"][data-theme] .project-card:hover {
+  border-bottom-color: var(--line);
+  background: color-mix(in srgb, var(--soft-panel) 66%, transparent);
+  box-shadow: none;
+}
+
+:root[data-theme="light"][data-project-layout="list"] .project-card:hover {
+  border-bottom-color: color-mix(in srgb, var(--blue) 42%, var(--line));
+  background: rgba(255, 255, 255, 0.58);
+}
+
+:root[data-theme="brutalist"][data-project-layout="list"] .project-grid {
+  border-top: 3px solid #111111;
+}
+
+:root[data-theme="brutalist"][data-project-layout="list"] .project-card,
+:root[data-theme="brutalist"][data-project-layout="list"] .project-card.featured,
+:root[data-theme="brutalist"][data-project-layout="list"] .project-card.show,
+:root[data-theme="brutalist"][data-project-layout="list"] .project-card.show:hover {
+  border-bottom: 3px solid #111111;
+}
+
+:root[data-theme="brutalist"][data-project-layout="list"] .project-card .project-links {
+  border-left: 3px solid #111111;
+}
+
+:root[data-theme="brutalist"][data-project-layout="list"] .project-card .project-links > * {
+  border: 2px solid #111111;
+  border-radius: 0;
+  background: #fffdf3;
+  box-shadow: 2px 2px 0 #111111;
+}
+
+:root[data-theme="brutalist"][data-project-layout="list"] .project-card .project-links > *:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .back-to-top {
