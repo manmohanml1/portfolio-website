@@ -1076,49 +1076,91 @@ section[id] {
 
 :root[data-project-layout="list"] .project-grid {
   grid-template-columns: 1fr;
-  gap: 22px;
+  gap: 0;
+  border-top: 1px solid var(--line);
+  counter-reset: project-index;
 }
 
 :root[data-project-layout="list"] .project-card,
 :root[data-project-layout="list"] .project-card.featured {
   display: grid;
   grid-column: 1;
-  grid-template-columns: minmax(210px, 0.75fr) minmax(0, 2fr);
+  grid-template-columns: 72px minmax(0, 1fr) minmax(160px, 0.28fr);
   width: 100%;
-  min-height: 250px;
-  padding: 24px;
+  min-height: 210px;
+  padding: 30px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+  counter-increment: project-index;
+}
+
+:root[data-project-layout="list"] .project-card::before {
+  content: counter(project-index, decimal-leading-zero);
+  grid-column: 1;
+  grid-row: 1 / span 5;
+  padding-top: 2px;
+  color: var(--cyan);
+  font-size: 1.15rem;
+  font-weight: 950;
+  line-height: 1;
 }
 
 :root[data-project-layout="list"] .project-visual {
-  grid-row: 1 / span 5;
-  min-height: 200px;
-  height: 100%;
-  margin: 0 28px 0 0;
+  display: none;
 }
 
-:root[data-project-layout="list"] .project-card > :not(.project-visual) {
+:root[data-project-layout="list"] .project-card > :not(.project-visual, .project-links) {
   grid-column: 2;
 }
 
 :root[data-project-layout="list"] .project-topline {
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 :root[data-project-layout="list"] .project-card h3 {
   max-width: 720px;
-  margin-bottom: 12px;
-  font-size: 1.65rem;
+  margin-bottom: 10px;
+  font-size: 1.75rem;
 }
 
 :root[data-project-layout="list"] .project-card p {
-  max-width: 760px;
-  margin-bottom: 20px;
+  max-width: 700px;
+  margin-bottom: 16px;
   font-size: 1rem;
   line-height: 1.65;
 }
 
+:root[data-project-layout="list"] .tags {
+  margin-top: 4px;
+}
+
 :root[data-project-layout="list"] .project-links {
-  margin-top: 22px;
+  grid-column: 3;
+  grid-row: 1 / span 5;
+  align-self: center;
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding-left: 28px;
+  border-left: 1px solid var(--line);
+}
+
+:root[data-project-layout="list"] .project-links > * {
+  width: fit-content;
+}
+
+:root[data-project-layout="list"] .project-card.show,
+:root[data-project-layout="list"] .project-card.show:hover {
+  transform: none;
+}
+
+:root[data-project-layout="list"] .project-card:hover {
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--soft-panel) 66%, transparent);
 }
 
 .project-card {
@@ -1700,21 +1742,20 @@ footer p {
 @media (max-width: 720px) {
   :root[data-project-layout="list"] .project-card,
   :root[data-project-layout="list"] .project-card.featured {
-    grid-template-columns: 1fr;
+    grid-template-columns: 42px minmax(0, 1fr);
     min-height: 0;
-    padding: 14px;
+    padding: 24px 0;
   }
 
-  :root[data-project-layout="list"] .project-visual {
+  :root[data-project-layout="list"] .project-card::before {
     grid-column: 1;
-    grid-row: auto;
-    min-height: 128px;
-    height: auto;
-    margin: 0 0 16px;
+    grid-row: 1 / span 6;
+    padding-top: 4px;
+    font-size: 0.82rem;
   }
 
   :root[data-project-layout="list"] .project-card > :not(.project-visual) {
-    grid-column: 1;
+    grid-column: 2;
   }
 
   :root[data-project-layout="list"] .project-card h3 {
@@ -1724,6 +1765,16 @@ footer p {
   :root[data-project-layout="list"] .project-card p {
     font-size: 0.92rem;
     line-height: 1.55;
+  }
+
+  :root[data-project-layout="list"] .project-links {
+    grid-row: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 18px;
+    padding-left: 0;
+    border-left: 0;
   }
 }
 

@@ -10,7 +10,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Added versioned, validated local visitor preferences for theme, motion, audience lens, and project layout without accounts or server-side profile data.
 - Added General, Backend, Full Stack, Cloud/Data, and AI portfolio variants that replace page-wide positioning and retain only explicitly relevant projects, skills, experience, credentials, signals, and technologies.
-- Added spacious Cards/List project layouts and shareable `?view=backend`, `?view=fullstack`, `?view=data`, and `?view=ai` starting points.
+- Added a visual Cards gallery and a clearly separate numbered List index, plus shareable `?view=backend`, `?view=fullstack`, `?view=data`, and `?view=ai` starting points.
 - Added a database-backed rollout flag and idempotent migration for visitor customization.
 - Added tests for v1 preference migration, malformed and blocked storage, URL audience resolution, evidence ordering, contextual reset behavior, and rollout wiring.
 

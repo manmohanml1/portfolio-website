@@ -79,7 +79,7 @@ Visitor customization is a browser-only layer and does not create an identity. O
 
 The `features.visitorCustomization.enabled` runtime flag controls audience-lens persistence, Cards/List layout, shareable `?view=backend`, `?view=fullstack`, `?view=data`, and `?view=ai` links, and the restore-defaults action. General remains the complete portfolio. Specialized lenses select only explicitly relevant projects, skills, experience, credentials, profile signals, and technologies, while also replacing section and contact copy so each URL behaves as a curated portfolio variant. The general project filters disappear in specialized variants because a temporary category filter would conflict with the selected audience contract. Theme and motion remain available because they predate this phase. Disabling the customization flag does not delete a viewer's local choices; it simply stops applying the gated preferences until the capability is enabled again.
 
-Cards preserve the visual gallery. List is an editorial case-study index with a spacious media column, readable text measure, and full project metadata; on mobile it becomes a single-column visual-and-content sequence rather than a compressed two-column strip.
+Cards preserve the visual gallery. List is a separate editorial project index: numbered, unframed rows replace previews and card chrome with readable summaries, inline technologies, separators, and a dedicated action column. On mobile it becomes a numbered reading sequence with actions below each entry.
 
 No preference is sent to Neon, Formspree, GitHub, or an analytics service. Cross-device synchronization remains intentionally deferred until visitor accounts demonstrate enough value to justify their privacy and authentication cost.
 
