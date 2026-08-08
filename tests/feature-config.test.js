@@ -36,6 +36,14 @@ test("remote configuration accepts known booleans and ignores unknown or malform
   assert.equal(Object.hasOwn(config.flags, "unknown.enabled"), false);
 });
 
+test("configuration preserves known server source labels", () => {
+  for (const source of ["database", "defaults", "local-overrides", "remote"]) {
+    assert.equal(normalizeFeatureConfig({ source, flags: {} }).source, source);
+  }
+
+  assert.equal(normalizeFeatureConfig({ source: "internal", flags: {} }).source, "remote");
+});
+
 test("missing and malformed payloads fall back to the complete default experience", () => {
   for (const payload of [null, [], {}, { flags: null }]) {
     assert.deepEqual(normalizeFeatureConfig(payload, "production"), createDefaultFeatureConfig("production"));
@@ -69,7 +77,7 @@ test("successful requests normalize the response and send an abort signal", asyn
       request = args;
       return {
         ok: true,
-        json: async () => ({ flags: { "features.feedback.enabled": false } }),
+        json: async () => ({ source: "database", flags: { "features.feedback.enabled": false } }),
       };
     },
     locationLike: { origin: "http://localhost:4173", hostname: "localhost", search: "" },
@@ -77,7 +85,7 @@ test("successful requests normalize the response and send an abort signal", asyn
 
   assert.equal(request[0], "/api/config");
   assert.ok(request[1].signal instanceof AbortSignal);
-  assert.equal(config.source, "remote");
+  assert.equal(config.source, "database");
   assert.equal(config.flags["features.feedback.enabled"], false);
 });
 

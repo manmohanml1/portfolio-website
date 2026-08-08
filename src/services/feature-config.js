@@ -1,7 +1,7 @@
 import { DEFAULT_FEATURE_FLAGS, FEATURE_FLAG_KEYS } from "../config/feature-defaults.js";
 
 export const FEATURE_CONFIG_VERSION = 1;
-export const FEATURE_CONFIG_TIMEOUT_MS = 1600;
+export const FEATURE_CONFIG_TIMEOUT_MS = 3000;
 
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -29,10 +29,12 @@ export function normalizeFeatureConfig(payload, environment = "development") {
     }
   });
 
+  const knownSources = new Set(["database", "defaults", "local-overrides", "remote"]);
+
   return Object.freeze({
     version: FEATURE_CONFIG_VERSION,
     environment,
-    source: "remote",
+    source: knownSources.has(payload.source) ? payload.source : "remote",
     flags: Object.freeze(flags),
   });
 }

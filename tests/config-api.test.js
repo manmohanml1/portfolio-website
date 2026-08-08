@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import handler, { createPublicFeatureConfig, resolveConfigEnvironment } from "../api/config.js";
+import handler, {
+  createConfigHandler,
+  createPublicFeatureConfig,
+  resolveConfigEnvironment,
+} from "../api/config.js";
 import { FEATURE_FLAG_KEYS } from "../src/config/feature-defaults.js";
 
 function createResponse() {
@@ -34,21 +38,38 @@ test("public configuration contains only registered flags", () => {
 
   assert.equal(config.version, 1);
   assert.equal(config.environment, "production");
+  assert.equal(config.source, "defaults");
   assert.deepEqual(Object.keys(config.flags), FEATURE_FLAG_KEYS);
 });
 
-test("config endpoint serves cacheable GET responses", () => {
+test("config endpoint caches successful database responses", async () => {
   const response = createResponse();
-  handler({ method: "GET" }, response);
+  const databaseHandler = createConfigHandler({
+    readConfig: async () => ({
+      source: "database",
+      flags: createPublicFeatureConfig().flags,
+    }),
+  });
+  await databaseHandler({ method: "GET" }, response);
 
   assert.equal(response.statusCode, 200);
   assert.match(response.headers["Cache-Control"], /s-maxage=30/);
+  assert.equal(response.body.source, "database");
   assert.deepEqual(Object.keys(response.body.flags), FEATURE_FLAG_KEYS);
 });
 
-test("config endpoint rejects write methods", () => {
+test("config endpoint does not cache fallback responses", async () => {
   const response = createResponse();
-  handler({ method: "POST" }, response);
+  await handler({ method: "GET" }, response);
+
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.headers["Cache-Control"], "no-store");
+  assert.equal(response.body.source, "defaults");
+});
+
+test("config endpoint rejects write methods", async () => {
+  const response = createResponse();
+  await handler({ method: "POST" }, response);
 
   assert.equal(response.statusCode, 405);
   assert.equal(response.headers.Allow, "GET");

@@ -8,9 +8,9 @@ const pullRequestTemplate = await readFile(new URL("../.github/PULL_REQUEST_TEMP
 const deployment = await readFile(new URL("../DEPLOYMENT.md", import.meta.url), "utf8");
 const roadmap = await readFile(new URL("../ROADMAP.md", import.meta.url), "utf8");
 
-test("current release identifies the feature configuration candidate", () => {
+test("current release identifies the Neon configuration candidate", () => {
   assert.match(release.version, /^v\d+\.\d+\.\d+$/);
-  assert.equal(release.version, "v1.3.0");
+  assert.equal(release.version, "v1.4.0");
   assert.equal(release.type, "feat");
   assert.equal(release.label, "Feature release");
 });
@@ -26,8 +26,9 @@ test("roadmap marks shipped v1.2 capabilities as delivered", () => {
   }
 });
 
-test("roadmap identifies runtime feature configuration as the active candidate", () => {
-  assert.match(roadmap, /\| Runtime Feature Configuration .*\| In local review for v1\.3\.0 \|/);
+test("roadmap records runtime configuration and identifies Neon as the active candidate", () => {
+  assert.match(roadmap, /\| Runtime Feature Configuration .*\| Shipped in v1\.3\.0 \|/);
+  assert.match(roadmap, /\| Neon Configuration Store .*\| In local review for v1\.4\.0 \|/);
 });
 
 test("release checklists protect roadmap promotion and GitHub release tagging", () => {

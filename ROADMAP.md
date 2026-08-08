@@ -6,8 +6,8 @@ This list tracks additions that make the site useful to explore, not simply more
 
 | Addition | Purpose | Status |
 | --- | --- | --- |
-| Runtime Feature Configuration | Separate deployment from availability through validated, fail-open configuration flags. | In local review for v1.3.0 |
-| Neon Configuration Store | Persist environment-specific flags and audit history without exposing database credentials to the browser. | Planned next |
+| Runtime Feature Configuration | Separate deployment from availability through validated, fail-open configuration flags. | Shipped in v1.3.0 |
+| Neon Configuration Store | Persist environment-specific flags and audit history without exposing database credentials to the browser. | In local review for v1.4.0 |
 | Admin Control Center | Let the portfolio owner update production flags through an authenticated interface. | Planned |
 | Visitor Customization | Let viewers personalize presentation preferences locally within admin-enabled capabilities. | Planned |
 | Project Case Study Mode | Let viewers understand the problem, implementation choices, and result behind selected work. | Shipped in v1.2.0 |
@@ -21,6 +21,9 @@ This list tracks additions that make the site useful to explore, not simply more
 ## Delivery Notes
 
 - Runtime configuration begins with six Boolean flags and checked-in defaults; variants and targeting remain deliberately out of scope.
+- Neon stores independent development, staging, and production values behind the existing read-only API contract.
+- Database changes are recorded automatically in `feature_audit`; a dedicated admin interface remains a separate later feature.
+- Neon Auth remains disabled until the Admin Control Center includes explicit owner authorization and restricted account creation.
 - Configuration failures must preserve the complete portfolio, and local URL overrides must never affect remote deployments.
 - Database credentials and admin writes must remain behind Vercel Functions rather than browser code.
 - Case studies remain curated for accuracy instead of being generated from incomplete repository metadata.

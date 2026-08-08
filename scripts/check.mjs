@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 
 const files = [
   "api/config.js",
+  "api/_lib/feature-store.js",
   "dev-server.mjs",
   "src/main.js",
   "src/config/environment.js",

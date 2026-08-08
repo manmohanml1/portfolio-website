@@ -1,4 +1,5 @@
 import { DEFAULT_FEATURE_FLAGS } from "../src/config/feature-defaults.js";
+import { readFeatureConfig } from "./_lib/feature-store.js";
 
 export function resolveConfigEnvironment(vercelEnvironment = process.env.VERCEL_ENV) {
   if (vercelEnvironment === "production") return "production";
@@ -6,21 +7,35 @@ export function resolveConfigEnvironment(vercelEnvironment = process.env.VERCEL_
   return "development";
 }
 
-export function createPublicFeatureConfig(environment = resolveConfigEnvironment()) {
+export function createPublicFeatureConfig(
+  environment = resolveConfigEnvironment(),
+  storedConfig = { source: "defaults", flags: DEFAULT_FEATURE_FLAGS },
+) {
   return {
     version: 1,
     environment,
-    flags: { ...DEFAULT_FEATURE_FLAGS },
+    source: storedConfig.source,
+    flags: { ...storedConfig.flags },
   };
 }
 
-export default function handler(request, response) {
-  if (request.method !== "GET") {
-    response.setHeader("Allow", "GET");
-    response.status(405).json({ error: "Method not allowed" });
-    return;
-  }
+export function createConfigHandler({ readConfig = readFeatureConfig } = {}) {
+  return async function handler(request, response) {
+    if (request.method !== "GET") {
+      response.setHeader("Allow", "GET");
+      response.status(405).json({ error: "Method not allowed" });
+      return;
+    }
 
-  response.setHeader("Cache-Control", "public, s-maxage=30, stale-while-revalidate=60");
-  response.status(200).json(createPublicFeatureConfig());
+    const environment = resolveConfigEnvironment();
+    const storedConfig = await readConfig({ environment });
+    const cacheControl = storedConfig.source === "database"
+      ? "public, s-maxage=30, stale-while-revalidate=60"
+      : "no-store";
+
+    response.setHeader("Cache-Control", cacheControl);
+    response.status(200).json(createPublicFeatureConfig(environment, storedConfig));
+  };
 }
+
+export default createConfigHandler();

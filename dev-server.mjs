@@ -3,6 +3,7 @@ import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DEFAULT_FEATURE_FLAGS, isKnownFeatureFlag } from "./src/config/feature-defaults.js";
+import { readFeatureConfig } from "./api/_lib/feature-store.js";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 const port = Number(process.env.PORT || 4173);
@@ -18,11 +19,13 @@ const types = {
   ".svg": "image/svg+xml",
 };
 
-createServer((request, response) => {
+createServer(async (request, response) => {
   const url = new URL(request.url || "/", `http://localhost:${port}`);
 
   if (url.pathname === "/api/config") {
-    const flags = { ...DEFAULT_FEATURE_FLAGS };
+    const storedConfig = await readFeatureConfig({ environment: "development" });
+    const flags = { ...storedConfig.flags };
+    let hasOverrides = false;
 
     url.searchParams.getAll("flag").forEach((override) => {
       const separator = override.lastIndexOf(":");
@@ -31,6 +34,7 @@ createServer((request, response) => {
 
       if (separator > 0 && isKnownFeatureFlag(key) && ["true", "false"].includes(value)) {
         flags[key] = value === "true";
+        hasOverrides = true;
       }
     });
 
@@ -38,7 +42,12 @@ createServer((request, response) => {
       "Cache-Control": "no-store",
       "Content-Type": "application/json; charset=utf-8",
     });
-    response.end(JSON.stringify({ version: 1, environment: "development", flags }));
+    response.end(JSON.stringify({
+      version: 1,
+      environment: "development",
+      source: hasOverrides ? "local-overrides" : storedConfig.source,
+      flags,
+    }));
     return;
   }
 

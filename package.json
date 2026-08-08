@@ -5,5 +5,8 @@
     "test": "node --test",
     "verify": "npm run check && npm test",
     "dev": "node dev-server.mjs"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0"
   }
 }

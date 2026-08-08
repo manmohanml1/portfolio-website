@@ -1,11 +1,13 @@
 # Portfolio Architecture
 
-This portfolio has a static, no-build frontend with modular ES modules, one read-only Vercel Function for runtime configuration, and a hosted Formspree delivery endpoint for private feedback. It remains lighter than a full Next.js or Astro app while establishing a server boundary for future configuration storage.
+This portfolio has a static, no-build frontend with modular ES modules, one read-only Vercel Function backed optionally by Neon, and a hosted Formspree delivery endpoint for private feedback. It remains lighter than a full Next.js or Astro app while keeping database access behind a server boundary.
 
 ## Structure
 
 - `index.html`: semantic page shell and persistent layout anchors.
-- `api/config.js`: public allow-listed feature configuration endpoint; currently serves checked-in defaults before Neon integration.
+- `api/config.js`: public allow-listed feature configuration endpoint.
+- `api/_lib/feature-store.js`: server-only Neon reader, timeout, validation, and defaults fallback.
+- `db/`: idempotent schema migration and environment-specific seed data.
 - `styles.css`: current visual system, responsive layout, theme variables, and animations.
 - `src/data/portfolio.js`: editable curated portfolio content, skills, and journey sections.
 - `src/data/themes.js`: theme definitions used by the style switcher.
@@ -64,7 +66,11 @@ Repeated `flag=key:false` parameters can override registered flags only on local
 
 ## Runtime Feature Configuration
 
-Portfolio startup resolves the environment, loads `/api/config`, validates only registered Boolean flags, applies section/control visibility, and then initializes enabled renderers and interactions. The current endpoint returns checked-in defaults with a short edge-cache window. The next infrastructure slice will replace that data source with environment-specific Neon records while preserving the same browser contract.
+Portfolio startup resolves the environment, loads `/api/config`, validates only registered Boolean flags, applies section/control visibility, and then initializes enabled renderers and interactions. The endpoint reads environment-specific Neon rows when `DATABASE_URL` is configured and otherwise returns checked-in defaults. Database responses receive a short edge-cache window; fallback responses are not cached so recovery is immediate.
+
+Neon is a separate managed resource, not part of the browser application. Vercel Functions access it through a server-only connection string. The schema keeps development, staging, and production values independent and records inserts or updates automatically in `feature_audit`. Direct SQL control is suitable for this phase; authenticated admin writes remain isolated as a later feature.
+
+Neon Auth is intentionally disabled during this phase. Anonymous visitor preferences remain in browser storage, while a future Admin Control Center can introduce authentication together with explicit owner authorization, restricted registration, trusted domains, and server-side token validation.
 
 The first registry controls Journey, Skills, Feedback, project dialogs, project filters, and card tilt. When a section is disabled, its navigation entry is disabled with it. When project dialogs are disabled, repository links remain available and detail-only controls are omitted.
 
