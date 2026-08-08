@@ -2,14 +2,17 @@ import { isLocalAdminRuntime } from "../_lib/admin-auth.js";
 
 export function createAdminAuthConfig(environment = process.env) {
   const local = isLocalAdminRuntime(environment);
-  const authUrl = environment.NEON_AUTH_URL || "";
+  const authUrl = environment.NEON_AUTH_BASE_URL
+    || environment.NEON_AUTH_URL
+    || environment.VITE_NEON_AUTH_URL
+    || "";
   return {
     version: 1,
     mode: local && environment.ADMIN_LOCAL_TOKEN ? "local-token" : "neon-auth",
     authUrl,
     configured: local
       ? Boolean(environment.ADMIN_LOCAL_TOKEN)
-      : Boolean(authUrl && environment.NEON_AUTH_JWKS_URL && environment.NEON_AUTH_ISSUER),
+      : Boolean(authUrl && environment.NEON_AUTH_JWKS_URL),
   };
 }
 

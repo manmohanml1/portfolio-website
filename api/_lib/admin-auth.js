@@ -30,9 +30,10 @@ function getJwks(url) {
 export async function verifyNeonOwnerToken(token, environment = process.env) {
   const jwksUrl = environment.NEON_AUTH_JWKS_URL || "";
   const issuer = environment.NEON_AUTH_ISSUER || "";
-  if (!jwksUrl || !issuer) throw new Error("Neon Auth verification is not configured");
+  if (!jwksUrl) throw new Error("Neon Auth verification is not configured");
 
-  const options = { issuer };
+  const options = {};
+  if (issuer) options.issuer = issuer;
   if (environment.NEON_AUTH_AUDIENCE) options.audience = environment.NEON_AUTH_AUDIENCE;
   const { payload } = await jwtVerify(token, getJwks(jwksUrl), options);
   return payload;

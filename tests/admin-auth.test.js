@@ -70,3 +70,18 @@ test("public admin auth bootstrap never includes the local secret", () => {
   });
   assert.equal(JSON.stringify(config).includes("do-not-expose"), false);
 });
+
+test("remote bootstrap uses Neon Vercel integration variables", () => {
+  const config = createAdminAuthConfig({
+    VERCEL_ENV: "preview",
+    NEON_AUTH_BASE_URL: "https://preview-auth.example.com",
+    NEON_AUTH_JWKS_URL: "https://preview-auth.example.com/.well-known/jwks.json",
+  });
+
+  assert.deepEqual(config, {
+    version: 1,
+    mode: "neon-auth",
+    authUrl: "https://preview-auth.example.com",
+    configured: true,
+  });
+});
