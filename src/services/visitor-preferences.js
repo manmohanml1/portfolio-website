@@ -3,14 +3,12 @@ import { DEFAULT_THEME, resolveTheme } from "../data/themes.js";
 export const PREFERENCES_STORAGE_KEY = "portfolio-preferences-v1";
 export const LEGACY_THEME_STORAGE_KEY = "portfolio-theme";
 export const LEGACY_MOTION_STORAGE_KEY = "portfolio-reduce-motion";
-export const VIEW_DENSITIES = Object.freeze(["comfortable", "compact"]);
 export const PROJECT_FOCUS_OPTIONS = Object.freeze(["all", "frontend", "backend", "data", "ai"]);
 
 export const DEFAULT_VISITOR_PREFERENCES = Object.freeze({
   version: 1,
   theme: DEFAULT_THEME,
   reduceMotion: null,
-  density: "comfortable",
   projectFocus: "all",
 });
 
@@ -29,7 +27,6 @@ export function normalizeVisitorPreferences(value = {}) {
     version: 1,
     theme: resolveTheme(value?.theme),
     reduceMotion,
-    density: VIEW_DENSITIES.includes(value?.density) ? value.density : "comfortable",
     projectFocus: PROJECT_FOCUS_OPTIONS.includes(value?.projectFocus) ? value.projectFocus : "all",
   });
 }
@@ -49,6 +46,9 @@ function readLegacyPreferences(storage) {
 export function writeVisitorPreferences(preferences, storage = globalThis.localStorage) {
   const normalized = normalizeVisitorPreferences(preferences);
   safeStorageCall(() => storage?.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(normalized)));
+  if (typeof globalThis.dispatchEvent === "function" && typeof globalThis.CustomEvent === "function") {
+    globalThis.dispatchEvent(new globalThis.CustomEvent("portfolio:preferences-changed", { detail: normalized }));
+  }
   return normalized;
 }
 

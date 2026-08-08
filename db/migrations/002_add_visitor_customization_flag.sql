@@ -3,7 +3,7 @@ SELECT
   'features.visitorCustomization.enabled',
   environment.name,
   TRUE,
-  'Allow local viewer preferences and layout customization'
+  'Allow local viewer preferences and evidence focus'
 FROM (
   VALUES ('development'), ('staging'), ('production')
 ) AS environment(name)

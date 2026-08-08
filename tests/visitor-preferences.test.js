@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { applyViewDensity } from "../src/features/visitor-customization.js";
+import { applyProjectFocus, hasCustomizedPreferences } from "../src/features/visitor-customization.js";
 import {
   clearVisitorPreferences,
   DEFAULT_VISITOR_PREFERENCES,
@@ -36,7 +36,6 @@ test("visitor preferences validate every locally persisted field", () => {
     normalizeVisitorPreferences({
       theme: "terminal",
       reduceMotion: true,
-      density: "compact",
       projectFocus: "backend",
       ignored: "private",
     }),
@@ -44,7 +43,6 @@ test("visitor preferences validate every locally persisted field", () => {
       version: 1,
       theme: "terminal",
       reduceMotion: true,
-      density: "compact",
       projectFocus: "backend",
     },
   );
@@ -52,7 +50,6 @@ test("visitor preferences validate every locally persisted field", () => {
   assert.deepEqual(normalizeVisitorPreferences({
     theme: "missing",
     reduceMotion: "true",
-    density: "tiny",
     projectFocus: "wearable",
   }), DEFAULT_VISITOR_PREFERENCES);
 });
@@ -73,11 +70,11 @@ test("updates preserve unrelated preferences and reset removes current and legac
   const storage = createStorage();
 
   updateVisitorPreferences({ theme: "light", projectFocus: "data" }, storage);
-  const compact = updateVisitorPreferences({ density: "compact" }, storage);
+  const updated = updateVisitorPreferences({ reduceMotion: true }, storage);
 
-  assert.equal(compact.theme, "light");
-  assert.equal(compact.projectFocus, "data");
-  assert.equal(compact.density, "compact");
+  assert.equal(updated.theme, "light");
+  assert.equal(updated.projectFocus, "data");
+  assert.equal(updated.reduceMotion, true);
 
   clearVisitorPreferences(storage);
   assert.deepEqual(storage.snapshot(), {});
@@ -102,11 +99,17 @@ test("malformed or unavailable browser storage safely restores defaults", () => 
   assert.doesNotThrow(() => clearVisitorPreferences(blocked));
 });
 
-test("view density applies only supported document states", () => {
+test("project focus applies only supported document states", () => {
   const documentLike = { documentElement: { dataset: {} } };
 
-  assert.equal(applyViewDensity("compact", documentLike), "compact");
-  assert.equal(documentLike.documentElement.dataset.density, "compact");
-  assert.equal(applyViewDensity("unknown", documentLike), "comfortable");
-  assert.equal(documentLike.documentElement.dataset.density, "comfortable");
+  assert.equal(applyProjectFocus("backend", documentLike), "backend");
+  assert.equal(documentLike.documentElement.dataset.projectFocus, "backend");
+  assert.equal(applyProjectFocus("unknown", documentLike), "all");
+  assert.equal(documentLike.documentElement.dataset.projectFocus, "all");
+});
+
+test("restore defaults appears only after a meaningful preference changes", () => {
+  assert.equal(hasCustomizedPreferences(DEFAULT_VISITOR_PREFERENCES), false);
+  assert.equal(hasCustomizedPreferences({ ...DEFAULT_VISITOR_PREFERENCES, theme: "terminal" }), true);
+  assert.equal(hasCustomizedPreferences({ ...DEFAULT_VISITOR_PREFERENCES, projectFocus: "ai" }), true);
 });

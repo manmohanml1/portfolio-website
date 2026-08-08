@@ -5,7 +5,7 @@ import { setupMotionPreference } from "./features/motion-preference.js";
 import { setupFeedbackDialog } from "./features/feedback-dialog.js";
 import { setupProjectDialog } from "./features/project-dialog.js";
 import { setupThemeMenu } from "./features/theme-switcher.js";
-import { applyViewDensity, setupVisitorCustomization } from "./features/visitor-customization.js";
+import { applyProjectFocus, setupVisitorCustomization } from "./features/visitor-customization.js";
 import { setupProjectFilters } from "./render/projects.js";
 import { renderReleaseIndicator } from "./render/release.js";
 import { renderJourney, renderSkills, renderStackStrip } from "./render/sections.js";
@@ -29,7 +29,7 @@ async function bootPortfolio() {
   );
   const visitorPreferences = readVisitorPreferences();
 
-  if (visitorCustomizationEnabled) applyViewDensity(visitorPreferences.density);
+  if (visitorCustomizationEnabled) applyProjectFocus(visitorPreferences.projectFocus);
 
   renderReleaseIndicator();
   renderStackStrip();
@@ -41,7 +41,7 @@ async function bootPortfolio() {
     ? setupProjectDialog({ onFeedback: openFeedbackDialog })
     : undefined;
 
-  setupProjectFilters({
+  const projectFilterController = setupProjectFilters({
     filtersEnabled: projectFiltersEnabled,
     initialFilter: visitorCustomizationEnabled && projectFiltersEnabled
       ? visitorPreferences.projectFocus
@@ -54,7 +54,14 @@ async function bootPortfolio() {
   });
   setupThemeMenu({ customizationEnabled: visitorCustomizationEnabled });
   setupMotionPreference();
-  if (visitorCustomizationEnabled) setupVisitorCustomization();
+  if (visitorCustomizationEnabled) {
+    setupVisitorCustomization({
+      initialPreferences: visitorPreferences,
+      onProjectFocusChange: projectFiltersEnabled
+        ? (projectFocus) => projectFilterController.setFilter(projectFocus)
+        : undefined,
+    });
+  }
   setupRevealAnimation();
   if (tiltCardsEnabled) setupTiltCards();
   setupBackToTop();

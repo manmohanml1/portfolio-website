@@ -18,7 +18,7 @@ test("document loads the modular application entry and contact link", () => {
 });
 
 test("document includes accessible controls for theme, project details, and back-to-top actions", () => {
-  assert.match(html, /aria-label="Change visual style"/);
+  assert.match(html, /aria-label="Customize view"/);
   assert.match(html, /id="project-dialog"/);
   assert.match(html, /id="feedback-dialog"/);
   assert.match(html, /data-open-feedback>Suggest an improvement/);
@@ -30,10 +30,11 @@ test("hidden feature controls cannot be made visible by component display styles
   assert.match(styles, /\[hidden\]\s*\{\s*display:\s*none\s*!important;/);
 });
 
-test("visitor customization is rollout-gated and supports a compact document state", () => {
+test("visitor customization is rollout-gated and supports evidence focus", () => {
   assert.match(mainSource, /features\.visitorCustomization\.enabled/);
   assert.match(mainSource, /setupVisitorCustomization/);
-  assert.match(styles, /data-density="compact"/);
+  assert.match(html, /data-focus-evidence="backend"/);
+  assert.match(styles, /data-project-focus="backend"/);
 });
 
 test("document emphasizes backend work without the removed proof section", () => {

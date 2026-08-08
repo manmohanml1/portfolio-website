@@ -1,43 +1,60 @@
-import { qs } from "../utils/dom.js";
+import { qs, qsa } from "../utils/dom.js";
 import {
   clearVisitorPreferences,
+  DEFAULT_VISITOR_PREFERENCES,
+  PROJECT_FOCUS_OPTIONS,
   readVisitorPreferences,
   updateVisitorPreferences,
 } from "../services/visitor-preferences.js";
 
-export function applyViewDensity(density, documentLike = document) {
-  const resolvedDensity = density === "compact" ? "compact" : "comfortable";
-  documentLike.documentElement.dataset.density = resolvedDensity;
-  return resolvedDensity;
+export function applyProjectFocus(projectFocus, documentLike = document) {
+  const resolvedFocus = PROJECT_FOCUS_OPTIONS.includes(projectFocus) ? projectFocus : "all";
+  documentLike.documentElement.dataset.projectFocus = resolvedFocus;
+  return resolvedFocus;
+}
+
+export function hasCustomizedPreferences(preferences) {
+  return preferences.theme !== DEFAULT_VISITOR_PREFERENCES.theme
+    || preferences.reduceMotion !== DEFAULT_VISITOR_PREFERENCES.reduceMotion
+    || preferences.projectFocus !== DEFAULT_VISITOR_PREFERENCES.projectFocus;
 }
 
 export function setupVisitorCustomization({
+  initialPreferences = readVisitorPreferences(),
+  onProjectFocusChange,
   storage = globalThis.localStorage,
   reload = () => globalThis.location.reload(),
 } = {}) {
-  const densityToggle = qs(".density-trigger");
+  const focusButtons = qsa("button[data-project-focus]");
   const resetButton = qs(".preferences-reset");
 
-  if (!densityToggle || !resetButton) {
+  if (focusButtons.length === 0 || !resetButton) {
     return;
   }
 
-  const syncDensityControl = (density) => {
-    const isCompact = applyViewDensity(density) === "compact";
-    const label = qs(".density-label", densityToggle);
+  const syncControls = (preferences) => {
+    const focus = applyProjectFocus(preferences.projectFocus);
 
-    densityToggle.setAttribute("aria-pressed", String(isCompact));
-    densityToggle.setAttribute("aria-label", isCompact ? "Use comfortable layout" : "Use compact layout");
-    densityToggle.title = isCompact ? "Use comfortable layout" : "Use compact layout";
-    label.textContent = isCompact ? "Comfortable layout" : "Compact layout";
+    focusButtons.forEach((button) => {
+      const selected = button.dataset.projectFocus === focus;
+      button.classList.toggle("active", selected);
+      button.setAttribute("aria-pressed", String(selected));
+    });
+    resetButton.hidden = !hasCustomizedPreferences(preferences);
   };
 
-  syncDensityControl(readVisitorPreferences(storage).density);
+  syncControls(initialPreferences);
 
-  densityToggle.addEventListener("click", () => {
-    const currentDensity = document.documentElement.dataset.density;
-    const nextDensity = currentDensity === "compact" ? "comfortable" : "compact";
-    syncDensityControl(updateVisitorPreferences({ density: nextDensity }, storage).density);
+  focusButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const preferences = updateVisitorPreferences({ projectFocus: button.dataset.projectFocus }, storage);
+      syncControls(preferences);
+      onProjectFocusChange?.(preferences.projectFocus);
+    });
+  });
+
+  globalThis.addEventListener?.("portfolio:preferences-changed", (event) => {
+    syncControls(event.detail);
   });
 
   resetButton.addEventListener("click", () => {

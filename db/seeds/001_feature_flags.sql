@@ -8,7 +8,7 @@ FROM (
     ('features.projectDialogs.enabled', 'Open detailed project dialogs'),
     ('features.projectFilters.enabled', 'Show project category filters'),
     ('effects.tiltCards.enabled', 'Enable pointer-based project card tilt'),
-    ('features.visitorCustomization.enabled', 'Allow local viewer preferences and layout customization')
+    ('features.visitorCustomization.enabled', 'Allow local viewer preferences and evidence focus')
 ) AS seed(key, description)
 CROSS JOIN (
   VALUES ('development'), ('staging'), ('production')

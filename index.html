@@ -43,13 +43,13 @@
           <button
             class="theme-trigger"
             type="button"
-            aria-label="Change visual style"
+            aria-label="Customize view"
             aria-expanded="false"
             aria-controls="theme-options"
           >
             ◐
           </button>
-          <div class="theme-options" id="theme-options" role="menu" aria-label="Visual style options"></div>
+          <div class="theme-options" id="theme-options" aria-label="View customization options"></div>
         </div>
       </nav>
     </header>
@@ -99,19 +99,19 @@
             </div>
           </div>
           <div class="signal-grid">
-            <div class="signal-card">
+            <div class="signal-card" data-focus-evidence="backend">
               <span>Backend</span>
               <strong>TypeScript + Java</strong>
             </div>
-            <div class="signal-card">
+            <div class="signal-card" data-focus-evidence="data">
               <span>Cloud data</span>
               <strong>Kafka + AWS</strong>
             </div>
-            <div class="signal-card">
+            <div class="signal-card" data-focus-evidence="frontend">
               <span>Frontend</span>
               <strong>React apps</strong>
             </div>
-            <div class="signal-card">
+            <div class="signal-card" data-focus-evidence="ai">
               <span>Exploring</span>
               <strong>Applied AI</strong>
             </div>
@@ -209,19 +209,19 @@ ship: github -> vercel</code></pre>
           </div>
         </div>
         <div class="skill-grid">
-          <section class="reveal">
+          <section class="reveal" data-focus-evidence="frontend">
             <h3>Frontend</h3>
             <p>React, Next.js, Tailwind CSS, Material UI, responsive product interfaces.</p>
           </section>
-          <section class="reveal">
+          <section class="reveal" data-focus-evidence="backend">
             <h3>Backend</h3>
             <p>Express.js, TypeScript, REST APIs, monorepo workflows, service design.</p>
           </section>
-          <section class="reveal">
+          <section class="reveal" data-focus-evidence="data">
             <h3>Data & Cloud</h3>
             <p>Kafka, AWS Kinesis, PostgreSQL, Docker, Kubernetes, autoscaling services.</p>
           </section>
-          <section class="reveal">
+          <section class="reveal" data-focus-evidence="ai">
             <h3>Applied AI</h3>
             <p>LangChain prototypes and experiments that connect models to web and API products.</p>
           </section>

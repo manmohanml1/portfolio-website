@@ -25,7 +25,7 @@ This list tracks additions that make the site useful to explore, not simply more
 - Vercel Preview databases remain isolated for safe future schema testing, while all Previews read the shared staging feature flags.
 - Database changes are recorded automatically in `feature_audit`; a dedicated admin interface remains a separate later feature.
 - Neon Auth remains disabled until the Admin Control Center includes explicit owner authorization and restricted account creation.
-- Visitor preferences stay anonymous and device-local; theme, motion, density, and project focus never enter Neon.
+- Visitor preferences stay anonymous and device-local; theme, motion, and project focus never enter Neon.
 - Configuration failures must preserve the complete portfolio, and local URL overrides must never affect remote deployments.
 - Database credentials and admin writes must remain behind Vercel Functions rather than browser code.
 - Case studies remain curated for accuracy instead of being generated from incomplete repository metadata.

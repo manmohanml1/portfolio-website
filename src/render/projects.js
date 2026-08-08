@@ -89,6 +89,13 @@ export function setupProjectFilters({
     filters.forEach((item) => item.classList.toggle("active", item.dataset.filter === filter));
   }
 
+  function selectFilter(filter, { notify = false } = {}) {
+    const resolvedFilter = PROJECT_FILTERS.includes(filter) ? filter : "all";
+    syncFilterControls(resolvedFilter);
+    renderProjects(resolvedFilter);
+    if (notify) onFilterChange?.(resolvedFilter);
+  }
+
   function renderProjects(filter = "all") {
     activeFilter = filter;
     const visibleProjects = getProjectsForFilter(filter, availableProjects);
@@ -111,9 +118,7 @@ export function setupProjectFilters({
   if (filtersEnabled) {
     filters.forEach((button) => {
       button.addEventListener("click", () => {
-        syncFilterControls(button.dataset.filter);
-        renderProjects(button.dataset.filter);
-        onFilterChange?.(button.dataset.filter);
+        selectFilter(button.dataset.filter, { notify: true });
       });
     });
   }
@@ -149,4 +154,10 @@ export function setupProjectFilters({
     .catch(() => {
       githubProjectStatus.textContent = "Curated projects shown; GitHub additions unavailable";
     });
+
+  return Object.freeze({
+    setFilter(filter) {
+      selectFilter(filter);
+    },
+  });
 }

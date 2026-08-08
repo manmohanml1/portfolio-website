@@ -8,7 +8,7 @@ export function renderThemeOptions({ customizationEnabled = false } = {}) {
   themeOptions.innerHTML = themes
     .map(
       (theme) => `
-        <button class="theme-option" type="button" role="menuitem" data-theme="${theme.id}">
+        <button class="theme-option" type="button" data-theme="${theme.id}">
           <span class="theme-swatch" aria-hidden="true">
             ${theme.swatches.map((color) => `<i style="background: ${color}"></i>`).join("")}
           </span>
@@ -23,13 +23,19 @@ export function renderThemeOptions({ customizationEnabled = false } = {}) {
       </button>
       ${
         customizationEnabled
-          ? `<button class="density-trigger theme-option" type="button" aria-label="Use compact layout" aria-pressed="false" title="Use compact layout">
-              <span class="preference-symbol" aria-hidden="true">&#8645;</span>
-              <span class="density-label">Compact layout</span>
-            </button>
-            <button class="preferences-reset theme-option" type="button">
+          ? `<div class="focus-control" role="group" aria-label="View focus">
+              <span class="preference-section-label">Focus</span>
+              <div class="focus-options">
+                <button type="button" data-project-focus="all" aria-pressed="true">All</button>
+                <button type="button" data-project-focus="backend" aria-pressed="false">Backend</button>
+                <button type="button" data-project-focus="frontend" aria-pressed="false">Frontend</button>
+                <button type="button" data-project-focus="data" aria-pressed="false">Data</button>
+                <button type="button" data-project-focus="ai" aria-pressed="false">AI</button>
+              </div>
+            </div>
+            <button class="preferences-reset theme-option" type="button" hidden>
               <span class="preference-symbol" aria-hidden="true">&#8634;</span>
-              <span>Reset view</span>
+              <span>Restore defaults</span>
             </button>`
           : ""
       }
