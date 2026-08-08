@@ -18,6 +18,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Consolidated the existing theme and reduced-motion storage keys behind a resilient preference service.
 - Kept project category filters temporary and independent from the saved audience lens.
+- Aligned Vercel `-git-` branch aliases with the staging environment used by the Preview configuration endpoint.
 - Advanced the visible feature candidate to `v1.5.0`.
 
 ## [1.4.0] - 2026-08-08
