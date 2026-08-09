@@ -412,6 +412,7 @@ input:focus, button:focus-visible { outline: 3px solid rgba(23, 107, 77, .22); o
 .publishing-heading a { color: var(--admin-accent); font-size: .74rem; font-weight: 750; }
 .publishing-heading small, .publishing-actions small { color: var(--admin-muted); font-size: .7rem; }
 .publishing-action-buttons { display: flex; align-items: center; gap: 8px; }
+.publishing-action-buttons[hidden] { display: none; }
 .publication-status {
   color: var(--admin-muted);
   font-size: .65rem;

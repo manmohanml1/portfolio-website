@@ -4,6 +4,7 @@ import test from "node:test";
 
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 const adminHtml = await readFile(new URL("../admin.html", import.meta.url), "utf8");
+const adminStyles = await readFile(new URL("../admin.css", import.meta.url), "utf8");
 const styles = await readFile(new URL("../styles.css", import.meta.url), "utf8");
 const mainSource = await readFile(new URL("../src/main.js", import.meta.url), "utf8");
 const serverSource = await readFile(new URL("../dev-server.mjs", import.meta.url), "utf8");
@@ -33,6 +34,7 @@ test("document includes accessible controls for theme, project details, and back
 
 test("hidden feature controls cannot be made visible by component display styles", () => {
   assert.match(styles, /\[hidden\]\s*\{\s*display:\s*none\s*!important;/);
+  assert.match(adminStyles, /\.publishing-action-buttons\[hidden\]\s*\{\s*display:\s*none;/);
 });
 
 test("visitor customization is rollout-gated and supports audience lenses and project layouts", () => {
