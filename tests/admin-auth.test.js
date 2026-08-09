@@ -4,6 +4,7 @@ import {
   authorizeAdminRequest,
   isLocalAdminRuntime,
   isTrustedMutationOrigin,
+  resolveNeonJwksUrl,
 } from "../api/_lib/admin-auth.js";
 import { createAdminAuthConfig } from "../api/admin/auth-config.js";
 
@@ -74,14 +75,23 @@ test("public admin auth bootstrap never includes the local secret", () => {
 test("remote bootstrap uses Neon Vercel integration variables", () => {
   const config = createAdminAuthConfig({
     VERCEL_ENV: "preview",
-    NEON_AUTH_BASE_URL: "https://preview-auth.example.com",
-    NEON_AUTH_JWKS_URL: "https://preview-auth.example.com/.well-known/jwks.json",
+    NEON_AUTH_BASE_URL: "https://preview-auth.example.com/auth",
   });
 
   assert.deepEqual(config, {
     version: 1,
     mode: "neon-auth",
-    authUrl: "https://preview-auth.example.com",
+    authUrl: "https://preview-auth.example.com/auth",
     configured: true,
   });
+});
+
+test("JWKS verification follows the deployment-specific Neon Auth branch", () => {
+  assert.equal(resolveNeonJwksUrl({
+    NEON_AUTH_BASE_URL: "https://preview-auth.example.com/neondb/auth",
+    NEON_AUTH_JWKS_URL: "https://stale-main-auth.example.com/.well-known/jwks.json",
+  }), "https://preview-auth.example.com/neondb/auth/.well-known/jwks.json");
+  assert.equal(resolveNeonJwksUrl({
+    NEON_AUTH_URL: "https://legacy-auth.example.com",
+  }), "https://legacy-auth.example.com/auth/.well-known/jwks.json");
 });

@@ -12,7 +12,7 @@ export function createAdminAuthConfig(environment = process.env) {
     authUrl,
     configured: local
       ? Boolean(environment.ADMIN_LOCAL_TOKEN)
-      : Boolean(authUrl && environment.NEON_AUTH_JWKS_URL),
+      : Boolean(authUrl),
   };
 }
 

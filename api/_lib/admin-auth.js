@@ -27,8 +27,21 @@ function getJwks(url) {
   return jwksCache.get(url);
 }
 
+export function resolveNeonJwksUrl(environment = process.env) {
+  const authUrl = environment.NEON_AUTH_BASE_URL
+    || environment.NEON_AUTH_URL
+    || environment.VITE_NEON_AUTH_URL
+    || "";
+  if (authUrl) {
+    const baseUrl = authUrl.replace(/\/+$/, "");
+    const authBaseUrl = baseUrl.endsWith("/auth") ? baseUrl : `${baseUrl}/auth`;
+    return `${authBaseUrl}/.well-known/jwks.json`;
+  }
+  return environment.NEON_AUTH_JWKS_URL || "";
+}
+
 export async function verifyNeonOwnerToken(token, environment = process.env) {
-  const jwksUrl = environment.NEON_AUTH_JWKS_URL || "";
+  const jwksUrl = resolveNeonJwksUrl(environment);
   const issuer = environment.NEON_AUTH_ISSUER || "";
   if (!jwksUrl) throw new Error("Neon Auth verification is not configured");
 
