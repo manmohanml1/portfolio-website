@@ -58,18 +58,20 @@
         <div class="workspace-tabs" role="tablist" aria-label="Control Center views">
           <button id="flags-tab" type="button" role="tab" aria-selected="true" aria-controls="flags-panel">Flags</button>
           <button id="audit-tab" type="button" role="tab" aria-selected="false" aria-controls="audit-panel" tabindex="-1">Audit</button>
+          <button id="analytics-tab" type="button" role="tab" aria-selected="false" aria-controls="analytics-panel" tabindex="-1">Analytics</button>
         </div>
 
-        <div class="environment-bar">
-          <div class="segmented-control" role="group" aria-label="Configuration environment">
-            <button type="button" data-environment="development">Development</button>
-            <button type="button" data-environment="staging">Staging</button>
-            <button type="button" data-environment="production">Production</button>
+        <div id="configuration-context">
+          <div class="environment-bar">
+            <div class="segmented-control" role="group" aria-label="Configuration environment">
+              <button type="button" data-environment="development">Development</button>
+              <button type="button" data-environment="staging">Staging</button>
+              <button type="button" data-environment="production">Production</button>
+            </div>
+            <button class="icon-button" id="refresh-config" type="button" title="Refresh current view" aria-label="Refresh current view">↻</button>
           </div>
-          <button class="icon-button" id="refresh-config" type="button" title="Refresh configuration" aria-label="Refresh configuration">↻</button>
+          <div class="environment-notice" id="environment-notice" role="status"></div>
         </div>
-
-        <div class="environment-notice" id="environment-notice" role="status"></div>
 
         <section class="flag-section" id="flags-panel" role="tabpanel" aria-labelledby="flags-tab">
           <div class="section-heading">
@@ -93,6 +95,20 @@
             </div>
           </div>
           <div class="audit-list" id="audit-list"></div>
+        </section>
+
+        <section class="analytics-section" id="analytics-panel" role="tabpanel" aria-labelledby="analytics-tab" hidden>
+          <div class="section-heading analytics-heading">
+            <div>
+              <h2 id="analytics-title">Production analytics</h2>
+              <p id="analytics-status">Aggregated Vercel Web Analytics</p>
+            </div>
+            <div class="segmented-control analytics-range" role="group" aria-label="Analytics reporting window">
+              <button type="button" data-analytics-days="7" aria-pressed="true">7 days</button>
+              <button type="button" data-analytics-days="30" aria-pressed="false">30 days</button>
+            </div>
+          </div>
+          <div id="analytics-summary" aria-live="polite"></div>
         </section>
       </section>
     </main>

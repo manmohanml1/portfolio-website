@@ -73,6 +73,17 @@ The page is unlinked and marked `noindex`, but access control comes from server-
 
 Neon's current Managed Better Auth service does not yet provide a built-in restricted-signup switch. The portfolio therefore exposes sign-in only and treats the API allowlist as the authorization boundary. Enable email verification when available, use `ADMIN_OWNER_IDS` for the owner, and remove any unexpected Auth users from Neon.
 
+### Control Center Analytics Setup
+
+1. In the Vercel project, open **Analytics** and enable Web Analytics. Open **Speed Insights** and enable it for the same project.
+2. Create a Vercel access token for the portfolio owner. Add it as the server-only `VERCEL_API_TOKEN` variable for Preview and Production. Never expose it with a `VITE_` prefix or return it from an API.
+3. Add `VERCEL_PROJECT_ID` for the portfolio project and `VERCEL_TEAM_ID` for its owning team to Preview and Production. These are public identifiers, but keeping them in environment configuration makes the adapter portable and avoids relying on framework-specific system-variable exposure.
+4. Optionally add `VERCEL_ANALYTICS_DASHBOARD_URL` with the direct project Analytics or Speed Insights URL. Without it, the Control Center links to the general Vercel dashboard.
+5. Redeploy. Visit the public portfolio to begin collecting page views and real-user performance data; `/admin.html` is deliberately excluded from both collectors.
+6. Sign in to `/admin.html`, open **Analytics**, and confirm 7-day and 30-day summaries load. New projects may show an empty state until Vercel processes initial visits.
+
+The owner endpoint calls Vercel's aggregated Web Analytics API and returns only page views, visitors, daily trends, and ranked dimensions. The access token never reaches the browser. Speed Insights does not expose the same supported read API, so Core Web Vitals remain in Vercel's protected dashboard rather than relying on an undocumented endpoint.
+
 ## Private Feedback Setup
 
 The feedback modal posts privately to the Formspree form configured in `src/services/feedback.js`:
