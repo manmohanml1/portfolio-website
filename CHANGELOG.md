@@ -20,7 +20,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Fixed
 
-- Aligned owner sign-in with Neon's managed Auth protocol by sending client metadata, reading the issued JWT response header, and preserving actionable service errors.
+- Aligned owner sign-in with Neon's managed Auth protocol by sending client metadata, exchanging the session for an issued JWT, and preserving actionable service errors.
 
 ## [1.5.2] - 2026-08-08
 

@@ -45,6 +45,35 @@ test("owner sign-in accepts a Neon base URL without an auth suffix", async () =>
   assert.equal(requestedUrl, "https://auth.example.com/auth/sign-in/email");
 });
 
+test("owner sign-in exchanges the Neon session for a verifiable JWT", async () => {
+  const requests = [];
+  const credential = await signInOwner(
+    { mode: "neon-auth", authUrl: "https://auth.example.com/auth" },
+    { email: "owner@example.com", password: "secret" },
+    async (url, options) => {
+      requests.push({ url, options });
+      if (url.endsWith("/sign-in/email")) {
+        return new Response(JSON.stringify({
+          token: "opaque-session-token",
+          user: { email: "owner@example.com" },
+        }), { status: 200, headers: { "Content-Type": "application/json" } });
+      }
+      return new Response(JSON.stringify({ token: "header.payload.signature" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    },
+  );
+
+  assert.deepEqual(credential, { mode: "neon-auth", value: "header.payload.signature" });
+  assert.deepEqual(requests.map(({ url }) => url), [
+    "https://auth.example.com/auth/sign-in/email",
+    "https://auth.example.com/auth/token",
+  ]);
+  assert.equal(requests[1].options.credentials, "include");
+  assert.ok(requests[1].options.headers["X-Neon-Client-Info"]);
+});
+
 test("owner sign-in exposes Neon authentication errors", async () => {
   await assert.rejects(
     signInOwner(

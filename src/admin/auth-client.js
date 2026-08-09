@@ -21,6 +21,13 @@ function getAuthEndpoint(authUrl, path) {
   return `${authBaseUrl}/${path}`;
 }
 
+function getNeonHeaders(includeContentType = false) {
+  return {
+    ...(includeContentType ? { "Content-Type": "application/json" } : {}),
+    "X-Neon-Client-Info": NEON_CLIENT_INFO,
+  };
+}
+
 export async function loadAdminAuthConfig() {
   return readJson(await fetch("/api/admin/auth-config", { cache: "no-store" }));
 }
@@ -58,18 +65,27 @@ export async function signInOwner(config, { email, password, localToken }, fetch
   const response = await fetchImpl(getAuthEndpoint(config.authUrl, "sign-in/email"), {
     method: "POST",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Neon-Client-Info": NEON_CLIENT_INFO,
-    },
+    headers: getNeonHeaders(true),
     body: JSON.stringify({ email, password }),
   });
   const signInResponse = await readJson(response);
-  const token = response.headers.get("set-auth-jwt")
+  let token = response.headers.get("set-auth-jwt")
     || signInResponse.data?.session?.access_token
     || signInResponse.session?.access_token
     || signInResponse.data?.session?.accessToken;
-  if (!token) throw new Error("Neon Auth did not return an access token");
+
+  // Neon sign-in returns an opaque session token. Exchange its HttpOnly cookie
+  // for the JWT that the admin API can verify against the branch JWKS.
+  if (!token) {
+    const tokenResponse = await readJson(await fetchImpl(getAuthEndpoint(config.authUrl, "token"), {
+      method: "GET",
+      credentials: "include",
+      headers: getNeonHeaders(),
+    }));
+    token = tokenResponse.token || tokenResponse.data?.token;
+  }
+
+  if (!token) throw new Error("Neon Auth did not return a JWT");
   return { mode: "neon-auth", value: token };
 }
 
