@@ -152,6 +152,8 @@ test("admin updates are parameterized with owner attribution and version checks"
   });
 
   assert.match(query[0], /set_config\('app.changed_by'/);
+  assert.match(query[0], /date_trunc\('milliseconds', updated_at\)/);
+  assert.match(query[0], /date_trunc\('milliseconds', \$5::timestamptz\)/);
   assert.deepEqual(query[1], [
     "production",
     "features.feedback.enabled",

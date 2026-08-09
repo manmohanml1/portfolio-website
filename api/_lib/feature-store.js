@@ -148,7 +148,10 @@ export async function updateFeatureFlag({
      FROM actor
      WHERE environment = $1
        AND key = $2
-       AND ($5::timestamptz IS NULL OR updated_at = $5::timestamptz)
+       AND (
+         $5::timestamptz IS NULL
+         OR date_trunc('milliseconds', updated_at) = date_trunc('milliseconds', $5::timestamptz)
+       )
      RETURNING key, environment, enabled, description, updated_at`,
     [environment, key, enabled, changedBy, expectedUpdatedAt],
   );
