@@ -31,3 +31,24 @@ export async function saveFeatureFlag(environment, flag, credential) {
     }),
   }));
 }
+
+export function mergeSavedFlag(state, savedFlag) {
+  const previous = state.flags.find((flag) => flag.key === savedFlag.key);
+  const flags = state.flags.map((flag) => (
+    flag.key === savedFlag.key ? { ...flag, ...savedFlag } : flag
+  ));
+  if (!previous || previous.enabled === savedFlag.enabled) return { ...state, flags };
+
+  return {
+    ...state,
+    flags,
+    audit: [{
+      key: savedFlag.key,
+      environment: savedFlag.environment,
+      oldEnabled: previous.enabled,
+      newEnabled: savedFlag.enabled,
+      changedBy: state.owner || "Owner",
+      changedAt: savedFlag.updatedAt,
+    }, ...state.audit],
+  };
+}

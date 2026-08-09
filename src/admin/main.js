@@ -6,7 +6,7 @@ import {
   signOutOwner,
   storeCredential,
 } from "./auth-client.js";
-import { loadFeatureState, saveFeatureFlag } from "./api.js";
+import { loadFeatureState, mergeSavedFlag, saveFeatureFlag } from "./api.js";
 import { renderAudit, renderFlags } from "./render.js";
 
 const elements = {
@@ -118,9 +118,10 @@ async function handleSave(flag, controls) {
 
   controls.row.classList.add("is-saving");
   try {
-    await saveFeatureFlag(environment, flag, credential);
+    const response = await saveFeatureFlag(environment, flag, credential);
+    currentState = mergeSavedFlag(currentState, response.flag);
+    renderState();
     showToast(`${flag.key} updated`);
-    await refreshState();
   } catch (error) {
     showToast(error.message, "error");
     await refreshState();

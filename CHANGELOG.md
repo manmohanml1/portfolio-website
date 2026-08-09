@@ -21,6 +21,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ### Fixed
 
 - Aligned owner sign-in with Neon's managed Auth protocol by sending client metadata, exchanging the session for an issued JWT, deriving branch-matched JWKS verification, and preserving actionable service errors.
+- Kept successful flag saves synchronized with the database-returned value and optimistic version so the Control Center no longer reverts visually or creates a false second-save conflict.
 
 ## [1.5.2] - 2026-08-08
 
