@@ -8,11 +8,11 @@ const pullRequestTemplate = await readFile(new URL("../.github/PULL_REQUEST_TEMP
 const deployment = await readFile(new URL("../DEPLOYMENT.md", import.meta.url), "utf8");
 const roadmap = await readFile(new URL("../ROADMAP.md", import.meta.url), "utf8");
 
-test("current release identifies the v1.8 evidence and discovery feature candidate", () => {
+test("current release identifies the v1.8.1 Search Console verification fix", () => {
   assert.match(release.version, /^v\d+\.\d+\.\d+$/);
-  assert.equal(release.version, "v1.8.0");
-  assert.equal(release.type, "feat");
-  assert.equal(release.label, "Feature release");
+  assert.equal(release.version, "v1.8.1");
+  assert.equal(release.type, "fix");
+  assert.equal(release.label, "Fix release");
 });
 
 test("pull request quality workflow enforces change-type title prefixes", () => {
