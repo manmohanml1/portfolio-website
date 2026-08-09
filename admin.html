@@ -3,9 +3,11 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex, nofollow">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="referrer" content="no-referrer">
+    <meta name="description" content="Private owner-only administration for Manmohan Lonawat's portfolio. Visitors should not enter credentials.">
     <meta name="color-scheme" content="light dark">
-    <title>Portfolio Control Center</title>
+    <title>Manmohan Lonawat Portfolio | Private Owner Control Center</title>
     <link rel="stylesheet" href="/admin.css">
   </head>
   <body>
@@ -27,6 +29,7 @@
       <section class="auth-panel" id="auth-panel" aria-labelledby="auth-title">
         <p class="eyebrow">Restricted</p>
         <h1 id="auth-title">Owner authentication</h1>
+        <p class="auth-disclosure">This workspace is only for Manmohan Lonawat. Visitors should not enter credentials.</p>
         <p class="auth-status" id="auth-status">Checking admin configuration…</p>
         <form id="owner-login" hidden>
           <div id="remote-fields">
@@ -46,8 +49,8 @@
       <section class="admin-workspace" id="admin-workspace" hidden aria-labelledby="workspace-title">
         <div class="workspace-heading">
           <div>
-            <p class="eyebrow">Runtime control plane</p>
-            <h1 id="workspace-title">Feature availability</h1>
+            <p class="eyebrow">Private control plane</p>
+            <h1 id="workspace-title">Portfolio operations</h1>
           </div>
           <div class="owner-identity">
             <small>Authenticated owner</small>
@@ -56,59 +59,123 @@
         </div>
 
         <div class="workspace-tabs" role="tablist" aria-label="Control Center views">
-          <button id="flags-tab" type="button" role="tab" aria-selected="true" aria-controls="flags-panel">Flags</button>
-          <button id="audit-tab" type="button" role="tab" aria-selected="false" aria-controls="audit-panel" tabindex="-1">Audit</button>
+          <button id="runtime-tab" type="button" role="tab" aria-selected="true" aria-controls="runtime-panel">Runtime</button>
+          <button id="projects-tab" type="button" role="tab" aria-selected="false" aria-controls="projects-panel" tabindex="-1">Projects</button>
           <button id="analytics-tab" type="button" role="tab" aria-selected="false" aria-controls="analytics-panel" tabindex="-1">Analytics</button>
         </div>
 
-        <div id="configuration-context">
-          <div class="environment-bar">
-            <div class="segmented-control" role="group" aria-label="Configuration environment">
-              <button type="button" data-environment="development">Development</button>
-              <button type="button" data-environment="staging">Staging</button>
-              <button type="button" data-environment="production">Production</button>
-            </div>
-            <button class="icon-button" id="refresh-config" type="button" title="Refresh current view" aria-label="Refresh current view">↻</button>
+        <section class="runtime-section" id="runtime-panel" role="tabpanel" aria-labelledby="runtime-tab" data-workspace-panel>
+          <div class="sub-tabs" role="tablist" aria-label="Runtime views">
+            <button id="runtime-controls-tab" type="button" role="tab" aria-selected="true" aria-controls="runtime-controls-panel">Controls</button>
+            <button id="runtime-history-tab" type="button" role="tab" aria-selected="false" aria-controls="runtime-history-panel" tabindex="-1">Change history</button>
           </div>
-          <div class="environment-notice" id="environment-notice" role="status"></div>
-        </div>
-
-        <section class="flag-section" id="flags-panel" role="tabpanel" aria-labelledby="flags-tab">
-          <div class="section-heading">
-            <div>
-              <h2 id="flags-title">Flags</h2>
-              <p id="flag-source"></p>
+          <div id="configuration-context">
+            <div class="environment-bar">
+              <div class="segmented-control" role="group" aria-label="Configuration environment">
+                <button type="button" data-environment="development">Development</button>
+                <button type="button" data-environment="staging">Staging</button>
+                <button type="button" data-environment="production">Production</button>
+              </div>
+              <button class="icon-button" id="refresh-config" type="button" title="Refresh current view" aria-label="Refresh current view">↻</button>
             </div>
-            <label class="search-control" for="flag-search">
-              <span>Filter</span>
-              <input id="flag-search" type="search" placeholder="Search flags">
-            </label>
+            <div class="environment-notice" id="environment-notice" role="status"></div>
           </div>
-          <div class="flag-list" id="flag-list" aria-live="polite"></div>
+          <section class="flag-section" id="runtime-controls-panel" role="tabpanel" aria-labelledby="runtime-controls-tab" data-runtime-panel>
+            <div class="section-heading">
+              <div>
+                <h2 id="flags-title">Experience controls</h2>
+                <p id="flag-source"></p>
+              </div>
+              <label class="search-control" for="flag-search">
+                <span>Filter</span>
+                <input id="flag-search" type="search" placeholder="Search controls">
+              </label>
+            </div>
+            <div class="flag-list" id="flag-list" aria-live="polite"></div>
+          </section>
+          <section class="audit-section" id="runtime-history-panel" role="tabpanel" aria-labelledby="runtime-history-tab" data-runtime-panel hidden>
+            <div class="section-heading">
+              <div>
+                <h2 id="audit-title">Runtime change history</h2>
+                <p>Latest changes for the selected environment</p>
+              </div>
+            </div>
+            <div class="audit-list" id="audit-list"></div>
+          </section>
         </section>
 
-        <section class="audit-section" id="audit-panel" role="tabpanel" aria-labelledby="audit-tab" hidden>
-          <div class="section-heading">
-            <div>
-              <h2 id="audit-title">Audit history</h2>
-              <p>Latest environment changes</p>
-            </div>
+        <section class="publishing-section" id="projects-panel" role="tabpanel" aria-labelledby="projects-tab" data-workspace-panel hidden>
+          <div class="sub-tabs" role="tablist" aria-label="Project publishing views">
+            <button id="projects-review-tab" type="button" role="tab" aria-selected="true" aria-controls="projects-list-panel">Review</button>
+            <button id="projects-published-tab" type="button" role="tab" aria-selected="false" aria-controls="projects-list-panel" tabindex="-1">Published</button>
+            <button id="projects-hidden-tab" type="button" role="tab" aria-selected="false" aria-controls="projects-list-panel" tabindex="-1">Hidden</button>
+            <button id="projects-history-tab" type="button" role="tab" aria-selected="false" aria-controls="projects-history-panel" tabindex="-1">History</button>
           </div>
-          <div class="audit-list" id="audit-list"></div>
+          <div class="section-heading publishing-section-heading">
+            <div>
+              <h2 id="projects-view-title">Project review inbox</h2>
+              <p id="publishing-status">Review tagged GitHub repositories before they appear publicly.</p>
+            </div>
+            <button class="secondary-action" id="sync-projects" type="button">Sync GitHub</button>
+          </div>
+          <div id="projects-list-panel" role="tabpanel" aria-labelledby="projects-review-tab" data-projects-panel>
+            <div class="publishing-filters" id="project-filters" aria-label="Filter projects">
+              <label class="publishing-search">
+                <span>Search projects</span>
+                <input id="project-search" type="search" placeholder="Repository, technology, or capability" autocomplete="off">
+              </label>
+              <label>
+                <span>Category</span>
+                <select id="project-category">
+                  <option value="">All categories</option>
+                  <option value="frontend">Frontend</option>
+                  <option value="backend">Backend</option>
+                  <option value="data">Data</option>
+                  <option value="ai">AI</option>
+                  <option value="wearable">Wearable</option>
+                  <option value="other">Other</option>
+                </select>
+              </label>
+            </div>
+            <div class="publishing-summary" id="publishing-summary" aria-live="polite"></div>
+            <div class="publishing-list" id="publishing-list" aria-live="polite"></div>
+          </div>
+          <div id="projects-history-panel" role="tabpanel" aria-labelledby="projects-history-tab" data-projects-panel hidden>
+            <div class="audit-list" id="publishing-audit"></div>
+          </div>
         </section>
 
-        <section class="analytics-section" id="analytics-panel" role="tabpanel" aria-labelledby="analytics-tab" hidden>
-          <div class="section-heading analytics-heading">
-            <div>
-              <h2 id="analytics-title">Production analytics</h2>
-              <p id="analytics-status">Aggregated Vercel Web Analytics</p>
+        <section class="analytics-section" id="analytics-panel" role="tabpanel" aria-labelledby="analytics-tab" data-workspace-panel hidden>
+          <div class="sub-tabs" role="tablist" aria-label="Analytics views">
+            <button id="analytics-traffic-tab" type="button" role="tab" aria-selected="true" aria-controls="analytics-traffic-panel">Traffic</button>
+            <button id="analytics-performance-tab" type="button" role="tab" aria-selected="false" aria-controls="analytics-performance-panel" tabindex="-1">Performance</button>
+          </div>
+          <div id="analytics-traffic-panel" role="tabpanel" aria-labelledby="analytics-traffic-tab" data-analytics-panel>
+            <div class="section-heading analytics-heading">
+              <div>
+                <h2 id="analytics-title">Production traffic</h2>
+                <p id="analytics-status">Aggregated Vercel Web Analytics</p>
+              </div>
+              <div class="segmented-control analytics-range" role="group" aria-label="Analytics reporting window">
+                <button type="button" data-analytics-days="7" aria-pressed="true">7 days</button>
+                <button type="button" data-analytics-days="30" aria-pressed="false">30 days</button>
+              </div>
             </div>
-            <div class="segmented-control analytics-range" role="group" aria-label="Analytics reporting window">
-              <button type="button" data-analytics-days="7" aria-pressed="true">7 days</button>
-              <button type="button" data-analytics-days="30" aria-pressed="false">30 days</button>
+            <div id="analytics-summary" aria-live="polite"></div>
+          </div>
+          <div id="analytics-performance-panel" role="tabpanel" aria-labelledby="analytics-performance-tab" data-analytics-panel hidden>
+            <div class="section-heading analytics-heading">
+              <div>
+                <h2>Real-user performance</h2>
+                <p>Core Web Vitals remain in the protected Vercel workspace.</p>
+              </div>
+            </div>
+            <div class="performance-surface">
+              <strong>Vercel Speed Insights</strong>
+              <p>Review page-level responsiveness, loading, and visual stability without exposing operational data publicly.</p>
+              <a class="secondary-action" id="performance-dashboard-link" href="https://vercel.com/dashboard" target="_blank" rel="noopener noreferrer">Open performance dashboard</a>
             </div>
           </div>
-          <div id="analytics-summary" aria-live="polite"></div>
         </section>
       </section>
     </main>

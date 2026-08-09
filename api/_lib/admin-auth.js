@@ -12,6 +12,16 @@ function parseList(value = "") {
   return value.split(",").map((entry) => entry.trim()).filter(Boolean);
 }
 
+function normalizeOrigin(value, defaultProtocol = "https:") {
+  if (!value) return "";
+  try {
+    const candidate = value.includes("://") ? value : `${defaultProtocol}//${value}`;
+    return new URL(candidate).origin;
+  } catch {
+    return "";
+  }
+}
+
 function safeTokenMatch(received, expected) {
   if (!received || !expected) return false;
   const receivedBuffer = Buffer.from(received);
@@ -104,10 +114,14 @@ export function isTrustedMutationOrigin(request, environment = process.env) {
     return true;
   }
 
-  const trusted = new Set(parseList(environment.ADMIN_TRUSTED_ORIGINS));
-  if (environment.VERCEL_URL) trusted.add(`https://${environment.VERCEL_URL}`);
-  if (environment.VERCEL_PROJECT_PRODUCTION_URL) {
-    trusted.add(`https://${environment.VERCEL_PROJECT_PRODUCTION_URL}`);
+  const trusted = new Set(
+    parseList(environment.ADMIN_TRUSTED_ORIGINS)
+      .map((entry) => normalizeOrigin(entry))
+      .filter(Boolean),
+  );
+  for (const key of ["VERCEL_URL", "VERCEL_BRANCH_URL", "VERCEL_PROJECT_PRODUCTION_URL"]) {
+    const vercelOrigin = normalizeOrigin(environment[key]);
+    if (vercelOrigin) trusted.add(vercelOrigin);
   }
-  return trusted.has(origin);
+  return trusted.has(normalizeOrigin(origin));
 }

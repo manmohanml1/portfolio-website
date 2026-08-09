@@ -45,8 +45,13 @@ test("theme config exposes a focused set of distinct visual worlds", () => {
 
   for (const theme of themes) {
     assert.ok(theme.label);
+    assert.ok(theme.description);
+    assert.ok(theme.layout);
     assert.equal(theme.swatches.length, 3);
   }
+
+  assert.equal(new Set(themes.map((theme) => theme.layout)).size, themes.length);
+  assert.match(themeSwitcherSource, /dataset\.themeLayout = themeConfig\.layout/);
 });
 
 test("theme resolver uses supported themes and safely falls back", () => {
@@ -92,8 +97,14 @@ test("every audience variant defines complete page-wide positioning", () => {
 
 test("specialized variants remove unrelated career and skill evidence", () => {
   assert.equal(selectEvidenceForAudience(experiences, "backend").length, 3);
-  assert.deepEqual(selectEvidenceForAudience(skills, "data").map((item) => item.title), ["Data & Cloud"]);
-  assert.deepEqual(selectEvidenceForAudience(skills, "ai").map((item) => item.title), ["Backend", "Applied AI"]);
+  assert.deepEqual(selectEvidenceForAudience(skills, "data").map((item) => item.title), [
+    "Current enterprise stack",
+    "Data, delivery, and quality",
+  ]);
+  assert.deepEqual(selectEvidenceForAudience(skills, "ai").map((item) => item.title), [
+    "Cloud backend foundation",
+    "Product experiments",
+  ]);
   assert.equal(selectEvidenceForAudience(credentials, "ai").length, 3);
   assert.equal(selectEvidenceForAudience(experiences, "general").length, experiences.length);
 });

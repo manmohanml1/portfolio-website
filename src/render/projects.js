@@ -4,8 +4,9 @@ import { AUDIENCE_OPTIONS } from "../services/visitor-preferences.js";
 import { getAudienceLens } from "../data/audience-lenses.js";
 import { escapeHtml, qs, qsa, safeExternalUrl, tagsTemplate } from "../utils/dom.js";
 
-export const PROJECT_FILTERS = ["all", "frontend", "backend", "data", "ai", "wearable"];
+export const PROJECT_FILTERS = ["featured", "all", "frontend", "backend", "data", "ai", "wearable"];
 const FILTER_LABELS = {
+  featured: "featured projects",
   all: "all projects",
   frontend: "Frontend projects",
   backend: "Backend projects",
@@ -29,6 +30,10 @@ export function canOpenProjectCard(layout, hasInteractiveTarget = false) {
 export function getProjectsForFilter(filter = "all", availableProjects = projects) {
   if (!PROJECT_FILTERS.includes(filter) || filter === "all") {
     return availableProjects;
+  }
+
+  if (filter === "featured") {
+    return availableProjects.filter((project) => project.featured);
   }
 
   return availableProjects.filter((project) => project.category === filter);
@@ -77,11 +82,29 @@ export function getFilterLabel(filter = "all") {
   return FILTER_LABELS[filter] || FILTER_LABELS.all;
 }
 
-export function mergeProjects(curatedProjects, discoveredProjects) {
-  const curatedUrls = new Set(curatedProjects.map((project) => project.repo.toLowerCase()));
+export function mergeProjects(curatedProjects, discoveredProjects, managedRepositories = []) {
+  const managedUrls = new Set(managedRepositories.map((repo) => repo.toLowerCase()));
+  const discoveredByUrl = new Map(
+    discoveredProjects.map((project) => [project.repo.toLowerCase(), project]),
+  );
+  const mergedCurated = curatedProjects.map((project) => {
+    const approved = discoveredByUrl.get(project.repo.toLowerCase());
+    if (!approved) return managedUrls.has(project.repo.toLowerCase()) ? null : project;
+    discoveredByUrl.delete(project.repo.toLowerCase());
+    if (!approved.ownerReviewed) return project;
+    return {
+      ...project,
+      ...approved,
+      featured: project.featured,
+      details: {
+        ...(project.details || {}),
+        ...(approved.details || {}),
+      },
+    };
+  }).filter(Boolean);
   return [
-    ...curatedProjects,
-    ...discoveredProjects.filter((project) => !curatedUrls.has(project.repo.toLowerCase())),
+    ...mergedCurated,
+    ...discoveredByUrl.values(),
   ];
 }
 
@@ -127,8 +150,8 @@ export function setupProjectFilters({
   const wearableFilter = qs('[data-filter="wearable"]');
   let availableProjects = projects;
   let discoveredProjects = [];
-  let activeFilter = "all";
   let activeAudience = AUDIENCE_OPTIONS.includes(audience) ? audience : "general";
+  let activeFilter = activeAudience === "general" ? "featured" : "all";
 
   function getVisibleProjects() {
     return getProjectsForFilter(activeFilter, getProjectsForAudience(activeAudience, availableProjects));
@@ -201,8 +224,8 @@ export function setupProjectFilters({
   renderProjects(activeFilter);
 
   fetchOptInProjects()
-    .then((fetchedProjects) => {
-      availableProjects = mergeProjects(projects, fetchedProjects);
+    .then(({ projects: fetchedProjects, managedRepositories }) => {
+      availableProjects = mergeProjects(projects, fetchedProjects, managedRepositories);
       const addedProjects = availableProjects.length - projects.length;
       // Keep the discovered subset so audience-specific sync status stays accurate.
       discoveredProjects = availableProjects.filter((project) => project.discovered);
@@ -220,7 +243,7 @@ export function setupProjectFilters({
   return Object.freeze({
     setAudience(nextAudience) {
       activeAudience = AUDIENCE_OPTIONS.includes(nextAudience) ? nextAudience : "general";
-      selectFilter("all");
+      selectFilter(activeAudience === "general" ? "featured" : "all");
     },
   });
 }

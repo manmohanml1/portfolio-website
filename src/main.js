@@ -4,6 +4,7 @@ import { setupBackToTop, setupRevealAnimation, setupTiltCards } from "./features
 import { setupMotionPreference } from "./features/motion-preference.js";
 import { setupPublicObservability } from "./features/observability.js";
 import { setupFeedbackDialog } from "./features/feedback-dialog.js";
+import { setupEvidenceExplorer } from "./features/evidence-explorer.js";
 import { setupProjectDialog } from "./features/project-dialog.js";
 import { setupThemeMenu } from "./features/theme-switcher.js";
 import { applyAudienceLens, applyProjectLayout, setupVisitorCustomization } from "./features/visitor-customization.js";
@@ -56,13 +57,18 @@ async function bootPortfolio() {
     onCardsRendered: tiltCardsEnabled ? () => setupTiltCards(".project-card") : undefined,
     onOpenProject: openProjectDialog,
   });
-  setupThemeMenu({ customizationEnabled: visitorCustomizationEnabled });
+  const evidenceExplorer = setupEvidenceExplorer({
+    initialAudience: visitorCustomizationEnabled ? visitorPreferences.audience : "general",
+    onOpenProject: openProjectDialog,
+  });
+  setupThemeMenu();
   setupMotionPreference();
   if (visitorCustomizationEnabled) {
     setupVisitorCustomization({
       initialPreferences: visitorPreferences,
       onAudienceChange: (audience) => {
         projectFilterController.setAudience(audience);
+        evidenceExplorer.setAudience(audience);
         renderStackStrip({ audience });
         if (journeyEnabled) renderJourney({ audience });
         if (skillsEnabled) renderSkills({ audience });

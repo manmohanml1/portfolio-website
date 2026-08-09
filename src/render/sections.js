@@ -1,4 +1,4 @@
-import { credentials, experiences, skills, stackItems } from "../data/portfolio.js";
+import { careerTimeline, credentials, experiences, skills, stackItems } from "../data/portfolio.js";
 import { getAudienceLens, selectEvidenceForAudience } from "../data/audience-lenses.js";
 import { escapeHtml, qs } from "../utils/dom.js";
 
@@ -17,6 +17,19 @@ export function renderStackStrip({ audience = "general" } = {}) {
 export function renderJourney({ audience = "general" } = {}) {
   const experienceList = qs("#experience-list");
   const credentialGrid = qs("#credential-grid");
+  const careerProgression = qs("#career-progression");
+
+  careerProgression.innerHTML = selectEvidenceForAudience(careerTimeline, audience)
+    .map(
+      (item) => `
+        <article class="progression-step reveal">
+          <span>${escapeHtml(item.period)}</span>
+          <h3>${escapeHtml(item.title)}</h3>
+          <p>${escapeHtml(item.description)}</p>
+        </article>
+      `,
+    )
+    .join("");
 
   experienceList.innerHTML = selectEvidenceForAudience(experiences, audience)
     .map(

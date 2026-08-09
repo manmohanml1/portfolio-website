@@ -1,3 +1,5 @@
+import { isUsefulProjectImage } from "../config/project-media.js";
+
 const LABELS = {
   "sections.journey.enabled": "Journey section",
   "sections.skills.enabled": "Skills section",
@@ -108,6 +110,427 @@ export function renderAudit(container, entries) {
     name.textContent = LABELS[entry.key] || entry.key;
     const transition = document.createElement("span");
     transition.textContent = `${entry.oldEnabled === null ? "Created" : entry.oldEnabled ? "On" : "Off"} → ${entry.newEnabled ? "On" : "Off"}`;
+    event.append(name, transition);
+    const meta = document.createElement("div");
+    meta.className = "audit-meta";
+    const actor = document.createElement("span");
+    actor.textContent = entry.changedBy;
+    const time = document.createElement("time");
+    time.dateTime = entry.changedAt;
+    time.textContent = formatDate(entry.changedAt);
+    meta.append(actor, time);
+    row.append(event, meta);
+    container.append(row);
+  });
+}
+
+function createField(labelText, control) {
+  const label = document.createElement("label");
+  const labelCopy = document.createElement("span");
+  labelCopy.textContent = labelText;
+  label.append(labelCopy, control);
+  return label;
+}
+
+function createProjectSelect(project) {
+  const select = document.createElement("select");
+  [
+    ["pending", "Pending review"],
+    ["approved", "Approved for portfolio"],
+    ["hidden", "Hidden"],
+  ].forEach(([value, label]) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    option.selected = project.status === value;
+    select.append(option);
+  });
+  return select;
+}
+
+function createCategorySelect(project) {
+  const select = document.createElement("select");
+  [
+    ["", "Use GitHub topics"],
+    ["frontend", "Frontend"],
+    ["backend", "Backend"],
+    ["data", "Data"],
+    ["ai", "AI"],
+    ["wearable", "Wearable"],
+    ["other", "Other"],
+  ].forEach(([value, label]) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    option.selected = project.category === value;
+    select.append(option);
+  });
+  return select;
+}
+
+function createEvidencePanel(project) {
+  const evidence = project.evidence || {};
+  const signals = [...new Set([...(evidence.languages || []), ...(evidence.technologies || [])])];
+  const panel = document.createElement("details");
+  panel.className = "publishing-evidence";
+  const summary = document.createElement("summary");
+  const label = document.createElement("strong");
+  label.textContent = "Extracted repository evidence";
+  const count = document.createElement("span");
+  count.textContent = `${signals.length} technology signals · ${(evidence.readmeSections || []).length} README sections`;
+  summary.append(label, count);
+  const body = document.createElement("div");
+  body.className = "publishing-evidence-body";
+  if (signals.length) {
+    const signalList = document.createElement("div");
+    signalList.className = "evidence-signals";
+    signals.forEach((signal) => {
+      const chip = document.createElement("span");
+      chip.textContent = signal;
+      signalList.append(chip);
+    });
+    body.append(signalList);
+  }
+  if (evidence.readmeExcerpt) {
+    const excerpt = document.createElement("p");
+    excerpt.textContent = evidence.readmeExcerpt;
+    body.append(excerpt);
+  }
+  panel.append(summary, body);
+  return panel;
+}
+
+function createCaseStudyEditor(project) {
+  const caseStudy = project.caseStudy || {};
+  const editor = document.createElement("details");
+  editor.className = "publishing-case-study";
+  const summary = document.createElement("summary");
+  const title = document.createElement("strong");
+  title.textContent = project.caseStudySource === "owner"
+    ? "Owner-edited case study"
+    : "Generated case-study draft";
+  const hint = document.createElement("span");
+  hint.textContent = "Review the claims before approval";
+  summary.append(title, hint);
+  const fields = document.createElement("div");
+  fields.className = "case-study-fields";
+  const controls = {};
+  [
+    ["summary", "Case-study summary", 3],
+    ["purpose", "Purpose", 3],
+    ["challenge", "Problem or challenge", 3],
+    ["build", "Implementation", 4],
+    ["engineering", "Engineering decisions", 4],
+    ["outcome", "Outcome or current state", 3],
+  ].forEach(([field, label, rows]) => {
+    const control = document.createElement("textarea");
+    control.value = caseStudy[field] || "";
+    control.rows = rows;
+    control.dataset.caseStudyField = field;
+    controls[field] = control;
+    fields.append(createField(label, control));
+  });
+  editor.append(summary, fields);
+  return { editor, controls };
+}
+
+function createMediaEditor(project, onUpload) {
+  const candidates = project.evidence?.mediaCandidates || [];
+  const images = candidates.filter((candidate) => (
+    candidate.kind === "image" && isUsefulProjectImage(candidate)
+  ));
+  const videos = candidates.filter((candidate) => candidate.kind === "video");
+  const editor = document.createElement("details");
+  editor.className = "publishing-media";
+  const summary = document.createElement("summary");
+  const title = document.createElement("strong");
+  title.textContent = project.mediaSource === "owner" ? "Owner-selected media" : "Media draft";
+  const hint = document.createElement("span");
+  hint.textContent = `${images.length} images · ${videos.length} demos discovered`;
+  summary.append(title, hint);
+
+  const fields = document.createElement("div");
+  fields.className = "media-fields";
+  const coverInput = document.createElement("input");
+  coverInput.type = "url";
+  coverInput.value = isUsefulProjectImage({
+    url: project.media?.coverImageUrl,
+    alt: project.media?.coverImageAlt,
+  }) ? project.media.coverImageUrl : "";
+  coverInput.placeholder = "No cover image selected";
+  const coverList = document.createElement("datalist");
+  coverList.id = `cover-media-${project.githubId}`;
+  images.forEach((candidate) => {
+    const option = document.createElement("option");
+    option.value = candidate.url;
+    option.label = candidate.alt || candidate.source;
+    coverList.append(option);
+  });
+  coverInput.setAttribute("list", coverList.id);
+  const altInput = document.createElement("input");
+  altInput.value = project.media?.coverImageAlt || "";
+  altInput.maxLength = 180;
+  altInput.placeholder = "Describe the visible project screen";
+  const demoInput = document.createElement("input");
+  demoInput.type = "url";
+  demoInput.value = project.media?.demoUrl || "";
+  demoInput.placeholder = "Optional HTTPS demo or video URL";
+  const demoList = document.createElement("datalist");
+  demoList.id = `demo-media-${project.githubId}`;
+  videos.forEach((candidate) => {
+    const option = document.createElement("option");
+    option.value = candidate.url;
+    option.label = candidate.alt || candidate.source;
+    demoList.append(option);
+  });
+  demoInput.setAttribute("list", demoList.id);
+
+  const uploadControl = document.createElement("div");
+  uploadControl.className = "media-upload-control";
+  const uploadLabel = document.createElement("label");
+  uploadLabel.className = "media-upload-action";
+  const uploadText = document.createElement("span");
+  uploadText.textContent = "Upload from device";
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "image/jpeg,image/png,image/webp";
+  const uploadStatus = document.createElement("span");
+  uploadStatus.className = "media-upload-status";
+  uploadStatus.textContent = "JPEG, PNG, or WebP · 3 MB maximum";
+  uploadLabel.append(uploadText, fileInput);
+  uploadControl.append(uploadLabel, uploadStatus);
+
+  const preview = document.createElement("figure");
+  preview.className = "media-preview";
+  const image = document.createElement("img");
+  image.alt = "Selected project cover preview";
+  preview.append(image);
+  const updatePreview = () => {
+    const source = coverInput.value.trim();
+    preview.hidden = true;
+    image.removeAttribute("src");
+    if (!source) return;
+    if (!isUsefulProjectImage({ url: source, alt: altInput.value })) {
+      uploadStatus.textContent = "Choose a raster project screenshot instead of a badge or SVG.";
+      uploadStatus.dataset.tone = "error";
+      return;
+    }
+    image.src = source;
+  };
+  image.addEventListener("load", () => {
+    preview.hidden = false;
+    if (uploadStatus.dataset.tone === "error") {
+      uploadStatus.textContent = "JPEG, PNG, or WebP · 3 MB maximum";
+      delete uploadStatus.dataset.tone;
+    }
+  });
+  image.addEventListener("error", () => {
+    preview.hidden = true;
+    image.removeAttribute("src");
+    uploadStatus.textContent = "Preview unavailable. Choose another image or upload one.";
+    uploadStatus.dataset.tone = "error";
+  });
+  coverInput.addEventListener("input", updatePreview);
+  fileInput.addEventListener("change", async () => {
+    const file = fileInput.files?.[0];
+    if (!file || !onUpload) return;
+    fileInput.disabled = true;
+    uploadStatus.textContent = "Uploading image...";
+    uploadStatus.dataset.tone = "progress";
+    try {
+      coverInput.value = await onUpload(project, file);
+      if (!altInput.value) altInput.value = `${project.title || project.name} project preview`;
+      uploadStatus.textContent = "Uploaded. Save changes to attach this image.";
+      uploadStatus.dataset.tone = "success";
+      coverInput.dispatchEvent(new Event("input", { bubbles: true }));
+    } catch (error) {
+      uploadStatus.textContent = error.message;
+      uploadStatus.dataset.tone = "error";
+    } finally {
+      fileInput.disabled = false;
+      fileInput.value = "";
+    }
+  });
+  updatePreview();
+  fields.append(
+    uploadControl,
+    createField("Cover image URL", coverInput),
+    createField("Cover image alt text", altInput),
+    createField("Demo video or walkthrough", demoInput),
+    coverList,
+    demoList,
+    preview,
+  );
+  editor.append(summary, fields);
+  return { editor, controls: { coverInput, altInput, demoInput } };
+}
+
+export function renderProjectInbox(container, state, { onSave, onUpload, onDiscard }) {
+  container.replaceChildren();
+  if (!state.projects.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = state.source === "unconfigured"
+      ? "Run the project publishing migration before syncing GitHub."
+      : state.emptyMessage || "No repositories are in the publishing queue. Sync GitHub to discover tagged projects.";
+    container.append(empty);
+    return;
+  }
+
+  state.projects.forEach((project) => {
+    const card = document.createElement("details");
+    card.className = "publishing-row";
+    card.dataset.status = project.status;
+    const cardSummary = document.createElement("summary");
+    cardSummary.className = "publishing-card-summary";
+    const cardIdentity = document.createElement("div");
+    const cardStatus = document.createElement("span");
+    cardStatus.className = "publication-status";
+    cardStatus.textContent = project.status;
+    const cardTitle = document.createElement("strong");
+    cardTitle.textContent = project.title || project.name;
+    const cardRepository = document.createElement("small");
+    cardRepository.textContent = project.name;
+    cardIdentity.append(cardStatus, cardTitle, cardRepository);
+    const cardMeta = document.createElement("div");
+    const cardCategory = document.createElement("strong");
+    cardCategory.textContent = project.category || "Uncategorized";
+    const cardSignals = document.createElement("span");
+    cardSignals.textContent = `${project.tags.length} technology signals`;
+    const cardUpdated = document.createElement("small");
+    cardUpdated.textContent = `Updated ${formatDate(project.githubUpdatedAt)}`;
+    cardMeta.append(cardCategory, cardSignals, cardUpdated);
+    cardSummary.append(cardIdentity, cardMeta);
+
+    const form = document.createElement("form");
+    form.className = "publishing-editor";
+
+    const heading = document.createElement("div");
+    heading.className = "publishing-heading";
+    const repository = document.createElement("a");
+    repository.href = project.repo;
+    repository.target = "_blank";
+    repository.rel = "noopener noreferrer";
+    repository.textContent = "Open repository";
+    const updated = document.createElement("small");
+    updated.textContent = `GitHub updated ${formatDate(project.githubUpdatedAt)}`;
+    heading.append(repository, updated);
+
+    const context = document.createElement("p");
+    context.className = "publishing-context";
+    context.textContent = project.githubDescription || "No GitHub description provided.";
+    const evidence = createEvidencePanel(project);
+
+    const fields = document.createElement("div");
+    fields.className = "publishing-fields";
+    const titleInput = document.createElement("input");
+    titleInput.value = project.title;
+    titleInput.maxLength = 120;
+    titleInput.placeholder = "Use generated repository title";
+    const description = document.createElement("textarea");
+    description.value = project.description;
+    description.maxLength = 600;
+    description.rows = 3;
+    description.placeholder = "Use the GitHub description";
+    const category = createCategorySelect(project);
+    const tags = document.createElement("input");
+    tags.value = project.tags.join(", ");
+    tags.placeholder = "TypeScript, AWS, APIs";
+    const publication = createProjectSelect(project);
+    fields.append(
+      createField("Portfolio title", titleInput),
+      createField("Public description", description),
+      createField("Category", category),
+      createField("Technology tags", tags),
+      createField("Publication", publication),
+    );
+    const { editor: caseStudyEditor, controls: caseStudyControls } = createCaseStudyEditor(project);
+    const { editor: mediaEditor, controls: mediaControls } = createMediaEditor(project, onUpload);
+
+    const actions = document.createElement("div");
+    actions.className = "publishing-actions";
+    const reviewed = document.createElement("small");
+    reviewed.textContent = project.reviewedAt
+      ? `Reviewed by ${project.reviewedBy} · ${formatDate(project.reviewedAt)}`
+      : "Not reviewed";
+    const save = document.createElement("button");
+    save.type = "submit";
+    save.className = "save-action";
+    save.textContent = project.status === "pending" ? "Review project" : "Save changes";
+    const discard = document.createElement("button");
+    discard.type = "button";
+    discard.className = "secondary-action";
+    discard.textContent = "Discard";
+    const actionButtons = document.createElement("div");
+    actionButtons.className = "publishing-action-buttons";
+    actionButtons.hidden = true;
+    actionButtons.append(discard, save);
+    actions.append(reviewed, actionButtons);
+
+    const readDraft = () => ({
+      status: publication.value,
+      title: titleInput.value,
+      description: description.value,
+      category: category.value,
+      tags: tags.value.split(",").map((entry) => entry.trim()).filter(Boolean),
+      caseStudy: {
+        caseStudy: true,
+        ...Object.fromEntries(Object.entries(caseStudyControls).map(([field, control]) => [
+          field,
+          control.value,
+        ])),
+        highlights: tags.value.split(",").map((entry) => entry.trim()).filter(Boolean),
+      },
+      media: {
+        coverImageUrl: mediaControls.coverInput.value,
+        coverImageAlt: mediaControls.altInput.value,
+        demoUrl: mediaControls.demoInput.value,
+      },
+    });
+    const initialDraft = JSON.stringify(readDraft());
+    const updateDirtyState = () => {
+      const dirty = JSON.stringify(readDraft()) !== initialDraft;
+      card.classList.toggle("is-dirty", dirty);
+      actionButtons.hidden = !dirty;
+    };
+    form.addEventListener("input", updateDirtyState);
+    form.addEventListener("change", updateDirtyState);
+    discard.addEventListener("click", () => onDiscard(project));
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (actionButtons.hidden) return;
+      save.disabled = true;
+      form.classList.add("is-saving");
+      await onSave({
+        ...project,
+        ...readDraft(),
+      }, { form, save, previousStatus: project.status });
+    });
+
+    form.append(heading, context, evidence, fields, mediaEditor, caseStudyEditor, actions);
+    card.append(cardSummary, form);
+    container.append(card);
+  });
+}
+
+export function renderProjectAudit(container, entries) {
+  container.replaceChildren();
+  if (!entries.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = "No publication decisions have been recorded.";
+    container.append(empty);
+    return;
+  }
+  entries.forEach((entry) => {
+    const row = document.createElement("div");
+    row.className = "audit-row";
+    const event = document.createElement("div");
+    const name = document.createElement("strong");
+    name.textContent = entry.name;
+    const transition = document.createElement("span");
+    transition.textContent = `${entry.oldStatus || "Discovered"} → ${entry.newStatus}`;
     event.append(name, transition);
     const meta = document.createElement("div");
     meta.className = "audit-meta";
@@ -235,20 +658,5 @@ export function renderAnalytics(container, summary) {
     createBreakdown("Devices", summary.breakdowns.devices),
   );
 
-  const speed = document.createElement("section");
-  speed.className = "speed-insights-panel";
-  const copy = document.createElement("div");
-  const heading = document.createElement("h3");
-  heading.textContent = "Speed Insights";
-  const description = document.createElement("p");
-  description.textContent = "Real-user Core Web Vitals are collected on the public portfolio and remain available in Vercel's protected dashboard.";
-  copy.append(heading, description);
-  const link = document.createElement("a");
-  link.href = summary.dashboardUrl;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  link.textContent = "Open Vercel insights";
-  speed.append(copy, link);
-
-  container.append(metrics, createTrend(summary.trend), breakdowns, speed);
+  container.append(metrics, createTrend(summary.trend), breakdowns);
 }

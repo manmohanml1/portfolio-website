@@ -6,6 +6,7 @@ const VISIBILITY_RULES = Object.freeze({
   "features.feedback.enabled": ["[data-open-feedback]", "#feedback-dialog"],
   "features.projectDialogs.enabled": ["#project-dialog"],
   "features.projectFilters.enabled": [".filter-bar"],
+  "features.visitorCustomization.enabled": ["[data-visitor-customization]"],
 });
 
 export function applyFeatureAvailability(config, documentLike = document) {

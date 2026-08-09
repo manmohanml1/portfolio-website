@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  applyProjectCuration,
   fetchOptInProjects,
   LIVE_PROJECT_TOPIC,
   mapGitHubRepository,
@@ -30,18 +31,51 @@ test("tagged GitHub repositories map into filterable portfolio cards", () => {
   assert.equal(project.live, undefined);
 });
 
-test("only opt-in non-archived owned repositories are fetched", async () => {
-  const projects = await fetchOptInProjects(async () => ({
+test("only owner-approved repositories returned by the publishing API are fetched", async () => {
+  let requestedUrl;
+  const result = await fetchOptInProjects(async (url) => {
+    requestedUrl = url;
+    return {
     ok: true,
-    json: async () => [
-      selectedRepository,
-      { ...selectedRepository, name: "untagged", topics: [] },
-      { ...selectedRepository, name: "archived", archived: true },
-      { ...selectedRepository, name: "forked", fork: true },
-    ],
-  }));
+    json: async () => ({
+      repositories: [selectedRepository],
+      managedRepositories: [selectedRepository.html_url],
+    }),
+  };
+  });
 
-  assert.deepEqual(projects.map((project) => project.title), ["Fresh API Project"]);
+  assert.equal(requestedUrl, "/api/projects");
+  assert.deepEqual(result.projects.map((project) => project.title), ["Fresh API Project"]);
+  assert.deepEqual(result.managedRepositories, [selectedRepository.html_url]);
+});
+
+test("owner curation overrides generated presentation without changing repository identity", () => {
+  const project = applyProjectCuration(mapGitHubRepository(selectedRepository), {
+    title: "Production API Foundation",
+    description: "A reviewed service architecture case study.",
+    category: "data",
+    tags: ["TypeScript", "PostgreSQL", "AWS"],
+    caseStudy: { caseStudy: true, summary: "Evidence-backed summary", build: "Built as an API." },
+    media: {
+      coverImageUrl: "https://raw.githubusercontent.com/manmohanml1/fresh-api-project/main/preview.png",
+      coverImageAlt: "API dashboard preview",
+      demoUrl: "https://www.youtube.com/watch?v=example",
+    },
+    ownerReviewed: true,
+  });
+
+  assert.equal(project.title, "Production API Foundation");
+  assert.equal(project.description, "A reviewed service architecture case study.");
+  assert.equal(project.category, "data");
+  assert.equal(project.type, "Data");
+  assert.deepEqual(project.tags, ["TypeScript", "PostgreSQL", "AWS"]);
+  assert.equal(project.repo, selectedRepository.html_url);
+  assert.equal(project.details.summary, "Evidence-backed summary");
+  assert.equal(project.details.caseStudy, true);
+  assert.match(project.details.preview.src, /preview\.png/);
+  assert.equal(project.details.preview.alt, "API dashboard preview");
+  assert.match(project.details.demoUrl, /youtube\.com/);
+  assert.equal(project.ownerReviewed, true);
 });
 
 test("externally sourced card content is safely prepared for HTML rendering", () => {
