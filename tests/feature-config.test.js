@@ -45,6 +45,16 @@ test("configuration preserves known server source labels", () => {
   assert.equal(normalizeFeatureConfig({ source: "internal", flags: {} }).source, "remote");
 });
 
+test("local admin preview state is reported without changing its flags", () => {
+  const config = normalizeFeatureConfig({
+    source: "local-memory",
+    flags: { "features.feedback.enabled": false },
+  });
+
+  assert.equal(config.source, "local-memory");
+  assert.equal(config.flags["features.feedback.enabled"], false);
+});
+
 test("missing and malformed payloads fall back to the complete default experience", () => {
   for (const payload of [null, [], {}, { flags: null }]) {
     assert.deepEqual(normalizeFeatureConfig(payload, "production"), createDefaultFeatureConfig("production"));
@@ -85,6 +95,7 @@ test("successful requests normalize the response and send an abort signal", asyn
   });
 
   assert.equal(request[0], "/api/config");
+  assert.equal(request[1].cache, "no-store");
   assert.ok(request[1].signal instanceof AbortSignal);
   assert.equal(config.source, "database");
   assert.equal(config.flags["features.feedback.enabled"], false);

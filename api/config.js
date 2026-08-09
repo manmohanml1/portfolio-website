@@ -29,11 +29,10 @@ export function createConfigHandler({ readConfig = readFeatureConfig } = {}) {
 
     const environment = resolveConfigEnvironment();
     const storedConfig = await readConfig({ environment });
-    const cacheControl = storedConfig.source === "database"
-      ? "public, s-maxage=30, stale-while-revalidate=60"
-      : "no-store";
 
-    response.setHeader("Cache-Control", cacheControl);
+    response.setHeader("Cache-Control", "no-store, max-age=0");
+    response.setHeader("CDN-Cache-Control", "no-store");
+    response.setHeader("Vercel-CDN-Cache-Control", "no-store");
     response.status(200).json(createPublicFeatureConfig(environment, storedConfig));
   };
 }

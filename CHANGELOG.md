@@ -6,6 +6,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-08-08
+
+### Added
+
+- Added an unlinked, no-index owner Control Center for switching development, staging, and production feature flags and reviewing environment audit history.
+- Separated flag management and audit history into keyboard-accessible owner workspace tabs that retain the selected environment.
+- Added a protected admin feature API with server-side Neon Auth JWT verification, exact owner allowlists, trusted mutation origins, optimistic update checks, and owner-attributed database changes.
+- Added a development-only local owner-token flow and in-memory control-plane preview that cannot activate on Vercel.
+- Added focused automated coverage for authorization boundaries, admin reads and writes, conflict handling, secret-safe bootstrap configuration, and audit queries.
+
+### Changed
+
+- Released the authenticated owner Control Center and immediate Neon-backed feature availability as `v1.6.0`.
+
+### Fixed
+
+- Aligned owner sign-in with Neon's managed Auth protocol by sending client metadata, exchanging the session for an issued JWT, deriving branch-matched JWKS verification, and preserving actionable service errors.
+- Kept successful flag saves synchronized with the database-returned value and optimistic version so the Control Center no longer reverts visually or creates a false second-save conflict.
+- Matched optimistic flag versions at the millisecond precision preserved by JSON, preventing PostgreSQL microseconds from causing false `409` conflicts.
+- Disabled browser and edge caching for public runtime configuration so saved flags take effect on the next page refresh.
+- Opened the Control Center on the environment served by its deployment: Staging for Preview, Production for Production, and Development locally.
+
 ## [1.5.2] - 2026-08-08
 
 ### Fixed
@@ -138,7 +160,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Published the initial production portfolio deployment on Vercel Hobby.
 - Connected the GitHub repository to Vercel for automatic production and preview deployments.
 
-[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.5.2...HEAD
+[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.5.2...v1.6.0
 [1.5.2]: https://github.com/manmohanml1/portfolio-website/compare/v1.5.1...v1.5.2
 [1.5.1]: https://github.com/manmohanml1/portfolio-website/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.4.0...v1.5.0

@@ -42,7 +42,7 @@ test("public configuration contains only registered flags", () => {
   assert.deepEqual(Object.keys(config.flags), FEATURE_FLAG_KEYS);
 });
 
-test("config endpoint caches successful database responses", async () => {
+test("config endpoint never caches database responses", async () => {
   const response = createResponse();
   const databaseHandler = createConfigHandler({
     readConfig: async () => ({
@@ -53,7 +53,9 @@ test("config endpoint caches successful database responses", async () => {
   await databaseHandler({ method: "GET" }, response);
 
   assert.equal(response.statusCode, 200);
-  assert.match(response.headers["Cache-Control"], /s-maxage=30/);
+  assert.equal(response.headers["Cache-Control"], "no-store, max-age=0");
+  assert.equal(response.headers["CDN-Cache-Control"], "no-store");
+  assert.equal(response.headers["Vercel-CDN-Cache-Control"], "no-store");
   assert.equal(response.body.source, "database");
   assert.deepEqual(Object.keys(response.body.flags), FEATURE_FLAG_KEYS);
 });
@@ -63,7 +65,7 @@ test("config endpoint does not cache fallback responses", async () => {
   await handler({ method: "GET" }, response);
 
   assert.equal(response.statusCode, 200);
-  assert.equal(response.headers["Cache-Control"], "no-store");
+  assert.equal(response.headers["Cache-Control"], "no-store, max-age=0");
   assert.equal(response.body.source, "defaults");
 });
 

@@ -4,9 +4,51 @@ import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DEFAULT_FEATURE_FLAGS, isKnownFeatureFlag } from "./src/config/feature-defaults.js";
 import { readFeatureConfig } from "./api/_lib/feature-store.js";
+import adminAuthConfigHandler from "./api/admin/auth-config.js";
+import { createAdminFeatureHandler } from "./api/admin/features.js";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 const port = Number(process.env.PORT || 4173);
+const hasFeatureDatabase = Boolean(
+  process.env.FEATURE_CONFIG_DATABASE_URL || process.env.DATABASE_URL,
+);
+
+const localAdminState = new Map(
+  ["development", "staging", "production"].map((environment) => [environment, {
+    flags: Object.entries(DEFAULT_FEATURE_FLAGS).map(([key, enabled]) => ({
+      key,
+      environment,
+      enabled,
+      description: "Local control-center preview",
+      updatedAt: new Date().toISOString(),
+    })),
+    audit: [],
+  }]),
+);
+
+async function readLocalAdminConfig({ environment }) {
+  const state = localAdminState.get(environment);
+  return { source: "local-memory", flags: state.flags, audit: state.audit };
+}
+
+async function updateLocalAdminFlag({ environment, key, enabled, expectedUpdatedAt, changedBy }) {
+  const state = localAdminState.get(environment);
+  const flag = state.flags.find((entry) => entry.key === key);
+  if (!flag || flag.updatedAt !== expectedUpdatedAt) return null;
+  const oldEnabled = flag.enabled;
+  const changedAt = new Date().toISOString();
+  flag.enabled = enabled;
+  flag.updatedAt = changedAt;
+  state.audit.unshift({ key, environment, oldEnabled, newEnabled: enabled, changedBy, changedAt });
+  return { ...flag };
+}
+
+const localAdminFeatureHandler = createAdminFeatureHandler(
+  hasFeatureDatabase ? {} : {
+    readConfig: readLocalAdminConfig,
+    updateFlag: updateLocalAdminFlag,
+  },
+);
 
 const types = {
   ".css": "text/css; charset=utf-8",
@@ -19,11 +61,57 @@ const types = {
   ".svg": "image/svg+xml",
 };
 
+function createApiResponse(response) {
+  return {
+    setHeader(name, value) {
+      response.setHeader(name, value);
+    },
+    status(code) {
+      response.statusCode = code;
+      return this;
+    },
+    json(value) {
+      response.setHeader("Content-Type", "application/json; charset=utf-8");
+      response.end(JSON.stringify(value));
+    },
+  };
+}
+
+async function readJsonBody(request) {
+  const chunks = [];
+  for await (const chunk of request) chunks.push(chunk);
+  if (chunks.length === 0) return {};
+  try {
+    return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+  } catch {
+    return {};
+  }
+}
+
 createServer(async (request, response) => {
   const url = new URL(request.url || "/", `http://localhost:${port}`);
 
+  if (url.pathname === "/api/admin/auth-config") {
+    await adminAuthConfigHandler(request, createApiResponse(response));
+    return;
+  }
+
+  if (url.pathname === "/api/admin/features") {
+    request.query = Object.fromEntries(url.searchParams);
+    request.body = request.method === "PUT" ? await readJsonBody(request) : {};
+    await localAdminFeatureHandler(request, createApiResponse(response));
+    return;
+  }
+
   if (url.pathname === "/api/config") {
-    const storedConfig = await readFeatureConfig({ environment: "development" });
+    const storedConfig = hasFeatureDatabase
+      ? await readFeatureConfig({ environment: "development" })
+      : {
+        source: "local-memory",
+        flags: Object.fromEntries(
+          localAdminState.get("development").flags.map((flag) => [flag.key, flag.enabled]),
+        ),
+      };
     const flags = { ...storedConfig.flags };
     let hasOverrides = false;
 

@@ -1,6 +1,6 @@
 # Vercel Deployment
 
-This portfolio uses a static browser application plus `api/config.js`, a read-only Vercel Function that serves validated runtime feature values. Private feedback is forwarded through Formspree. Neon is optional and its free plan is sufficient for this configuration workload; a missing database connection safely restores checked-in defaults.
+This portfolio uses a static browser application plus Vercel Functions for public configuration reads and authenticated owner updates. Private feedback is forwarded through Formspree. Neon is optional for the public portfolio and its free plan is sufficient for this configuration workload; a missing database connection safely restores checked-in defaults.
 
 ## Production
 
@@ -32,16 +32,16 @@ Vercel preview deployments are connected to feature branches and pull requests, 
 
 ## Runtime Configuration
 
-`GET /api/config` returns the seven public feature flags used during portfolio startup. The endpoint supports only `GET`, exposes no secrets, and uses a short edge-cache window for database-backed responses. If the request fails or returns malformed data, the browser enables the complete checked-in experience.
+`GET /api/config` returns the seven public feature flags used during portfolio startup. The endpoint supports only `GET`, exposes no secrets, and bypasses browser and edge caches so owner changes apply on the next page refresh. If the request fails or returns malformed data, the browser enables the complete checked-in experience.
 
 ### Neon Setup
 
-1. Add Neon from the Vercel Marketplace and select its free plan. Keep it as a separate managed resource connected to the `portfolio-website` project, and leave optional Neon Auth disabled until the Admin Control Center phase.
+1. Add Neon from the Vercel Marketplace and select its free plan. Keep it as a separate managed resource connected to the `portfolio-website` project.
 2. In the Neon SQL Editor, run migrations in numeric order, then `db/seeds/001_feature_flags.sql`. Existing v1.4 databases should run `db/migrations/002_add_visitor_customization_flag.sql` for the v1.5 rollout flag.
 3. Copy the connection string for Neon's persistent `main` branch into a server-only Vercel variable named `FEATURE_CONFIG_DATABASE_URL`. Enable it for Preview and Production; never prefix it with `VITE_` or expose it in browser code.
 4. Keep Neon's integration-managed `DATABASE_URL` if Preview database branches are useful for future schema or application-data testing. `/api/config` deliberately prefers `FEATURE_CONFIG_DATABASE_URL`, so those isolated branches do not fragment feature-flag control.
 5. Redeploy the Preview. Its `/api/config` response should report `"environment":"staging"` and `"source":"database"`.
-6. Change only the intended staging row on the persistent Neon branch, verify every Preview follows it after the short cache window, and restore it before production promotion.
+6. Change only the intended staging row on the persistent Neon branch, verify every Preview follows it on the next refresh, and restore it before production promotion.
 
 The schema stores all three environment scopes in one persistent configuration database. A unique `(key, environment)` constraint keeps their values separate. Neon may still create isolated database branches for Vercel Previews, but those branches are intentionally ignored by the configuration reader when `FEATURE_CONFIG_DATABASE_URL` is present.
 
@@ -54,9 +54,24 @@ WHERE key = 'features.feedback.enabled'
   AND environment = 'staging';
 ```
 
-Every insert or meaningful update creates a `feature_audit` record automatically. The future Admin Control Center will provide authenticated writes without changing the public read contract.
+Every insert or meaningful update creates a `feature_audit` record automatically. The Admin Control Center provides authenticated writes without changing the public read contract.
 
-The current deployment should expose `FEATURE_CONFIG_DATABASE_URL` server-side. It may also expose Neon's integration-managed `DATABASE_URL`, but should not expose `NEON_AUTH_BASE_URL` or `VITE_NEON_AUTH_URL`. Authentication will be added only when its owner allowlist, registration policy, trusted domains, and token verification can ship together.
+The deployment should expose `FEATURE_CONFIG_DATABASE_URL` server-side. It may also expose Neon's integration-managed `DATABASE_URL`; neither connection string belongs in browser code.
+
+### Admin Control Center Setup
+
+1. In the Neon Console, select the intended persistent branch, open **Auth**, and enable Managed Better Auth with email/password authentication.
+2. Create the single owner identity through Neon's email sign-up API, then disable email sign-up while keeping email sign-in enabled. Do not use the Neon Console's **Create user** action for a password login: it creates a user record without a password credential. Never publish a permanent sign-up interface. Every non-owner account remains unauthorized by the portfolio APIs through the exact owner allowlist.
+3. In the connected Neon/Vercel integration, enable Auth and Preview branching. Neon then injects a branch-correct `NEON_AUTH_BASE_URL` and registers each deployment origin automatically. The app derives the matching JWKS URL from that base URL so Preview tokens are never checked against Production signing keys. Auth users and settings clone with the database branch, while Preview sessions remain isolated from Production.
+4. Confirm the integration-managed `NEON_AUTH_BASE_URL` exists in the Vercel Preview and Production environments. `NEON_AUTH_JWKS_URL` remains an optional legacy fallback only when no Auth base URL is available. `NEON_AUTH_ISSUER` and `NEON_AUTH_AUDIENCE` are optional additional checks and should be added only when those exact claims are declared by the issued token.
+5. Add the exact identity to `ADMIN_OWNER_IDS` and optionally `ADMIN_OWNER_EMAILS`. The immutable Auth user id is preferred; email remains supported as an exact, case-normalized allowlist.
+6. Add any additional stable portfolio origins to `ADMIN_TRUSTED_ORIGINS`, separated by commas. Vercel's current deployment and production hostnames are trusted automatically from their system variables.
+7. Do not add `ADMIN_LOCAL_TOKEN` to Vercel. It is a local-development credential and is rejected whenever `VERCEL_ENV` is present or `NODE_ENV=production`.
+8. Redeploy, open `/admin.html`, sign in as the owner, change one staging flag, confirm the audit entry, and verify a Preview follows the new value on its next refresh.
+
+The page is unlinked and marked `noindex`, but access control comes from server-side JWT verification and the exact owner allowlist. Each admin read and write repeats authorization. Production mutations also require a confirmation in the UI and stale updates receive a `409` conflict.
+
+Neon's current Managed Better Auth service does not yet provide a built-in restricted-signup switch. The portfolio therefore exposes sign-in only and treats the API allowlist as the authorization boundary. Enable email verification when available, use `ADMIN_OWNER_IDS` for the owner, and remove any unexpected Auth users from Neon.
 
 ## Private Feedback Setup
 
@@ -88,3 +103,5 @@ After deploying the feature to a Vercel Preview URL, submit one test suggestion 
 - [Vercel GitHub Integration](https://vercel.com/docs/git/vercel-for-github)
 - [Neon Vercel Integration](https://vercel.com/marketplace/neon)
 - [Neon Serverless Driver](https://neon.com/docs/serverless/serverless-driver)
+- [Neon Auth](https://neon.com/docs/neon-auth)
+- [Neon Auth Flow](https://neon.com/docs/auth/authentication-flow)
