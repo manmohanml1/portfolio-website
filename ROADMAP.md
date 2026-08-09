@@ -10,6 +10,14 @@ This list tracks additions that make the site useful to explore, not simply more
 | Neon Configuration Store | Persist environment-specific flags and audit history without exposing database credentials to the browser. | Shipped in v1.4.0 |
 | Admin Control Center | Let the portfolio owner update environment flags through an authenticated interface with audit history. | Shipped in v1.6.0 |
 | Control Center Observability | Add owner-only Vercel Web Analytics summaries and protected Speed Insights access after the authenticated control plane ships. | Shipped in v1.7.0 |
+| Evidence Explorer | Let visitors search verified projects, experience, skills, and credentials by technology or capability from the same surface used to browse work. | Ready for v1.8.0 Preview |
+| Engineering Progression | Connect education, cloud backend work, enterprise delivery, platform operations, and wearable experiments in one career path. | Ready for v1.8.0 Preview |
+| Curated Flagship Work | Lead with operated systems and distinctive wearable products, while giving every curated repository an honest implementation story and inspectable architecture path. | Ready for v1.8.0 Preview |
+| Portfolio Layout Worlds | Render one evidence model through five independent, responsive portfolio compositions without duplicating content or interactions. | Ready for v1.8.0 Preview |
+| Project Publishing Inbox | Stage newly tagged GitHub repositories for owner review, enrichment, and approval before public presentation. | Ready for v1.8.0 Preview |
+| Project Media Curation | Extract repository image and demo candidates, then let the owner approve an accessible cover and optional external demo link. | Ready for v1.8.0 Preview |
+| Database-First Project Catalog | Import every current project into the publishing inventory, preserve the checked-in fallback during parity review, then cut public presentation over to owner-reviewed Neon records. | In progress for v1.8.0 Preview |
+| Owned Writing Hub | Publish canonical technical articles on the portfolio, then syndicate excerpts and links to LinkedIn or other networks without duplicating the source of truth. | Planned after v1.8.0 |
 | Visitor Customization | Let viewers choose an audience lens and project layout locally within admin-enabled capabilities. | Shipped in v1.5.0 |
 | Project Case Study Mode | Let viewers understand the problem, implementation choices, and result behind selected work. | Shipped in v1.2.0 |
 | Architecture Explorer | Make backend, data, and product-system flows inspectable stage by stage. | Shipped in v1.2.0 |
@@ -17,6 +25,10 @@ This list tracks additions that make the site useful to explore, not simply more
 | Command Palette | Provide fast keyboard navigation across projects, technologies, themes, and contact actions. | Planned |
 | Live Tech Filter | Let a viewer choose a technology and see every relevant project immediately. | Planned |
 | Project Timeline | Present the progression from interface work into APIs, data systems, and wearable or AI experiments. | Planned |
+| Wearable Developer Lab | Provide a 600 by 600 device simulator and reusable focus-navigation patterns across selected Meta Display projects. | Planned for v1.9.0 |
+| Operations & Resilience Lab | Pair private OpenTelemetry diagnostics with safe public failure and graceful-degradation scenarios. | Planned for v1.10.0 |
+| Portfolio Evidence Service | Expose verified portfolio knowledge through a read-only Spring AI and MCP service. | Planned for v1.11.0 |
+| Job Evidence Agent | Match role requirements to cited portfolio evidence and report honest capability gaps. | Planned for v1.12.0 |
 | Visitor Feedback Channel | Collect structured private improvement suggestions; approved testimonials remain a later curation step. | Shipped in v1.2.0 |
 
 ## Delivery Notes
@@ -33,6 +45,13 @@ This list tracks additions that make the site useful to explore, not simply more
 - Database credentials and admin writes must remain behind Vercel Functions rather than browser code.
 - Case studies remain curated for accuracy instead of being generated from incomplete repository metadata.
 - Architecture explorers are used only where a real system flow can be explained clearly.
+- The `portfolio-showcase` GitHub topic creates an owner review candidate; it never grants public visibility by itself. Only approved queue records are exposed by the public project API.
+- Project moderation is global rather than environment-specific so one reviewed publication decision follows Preview into Production; every status transition is owner-attributed and audited.
+- Repository sync extracts transparent GitHub evidence and generates an editable draft; owner approval remains mandatory because generated case-study language is never treated as verified merely because it was inferred.
+- Repository media remains owner-curated: images are proposed from public project documentation, alternative text is editable, and video stays an external HTTPS demo link rather than an embedded upload system.
+- Owner image uploads use public Vercel Blob storage; Neon stores only the resulting HTTPS URL and accessible description with the project record.
+- The checked-in project catalog remains a temporary fallback during database parity review. Removing it is a separate cutover step after all 14 baseline records are synchronized and verified in Preview.
+- A future Writing Hub should use the portfolio as the canonical article source and treat LinkedIn as distribution. It should remain a separate content workflow inside this Control Center until multiple unrelated products justify a standalone operations repository.
 - Every shipped interaction should remain usable on mobile, keyboard accessible, and compatible with reduced motion.
 - Visitor feedback should be privately submitted and moderated; the public portfolio should never expose an unreviewed comment feed.
 - Shipped feedback routes suggestions privately through Formspree; testimonials remain a later opt-in curation decision.

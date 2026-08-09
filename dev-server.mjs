@@ -3,10 +3,17 @@ import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DEFAULT_FEATURE_FLAGS, isKnownFeatureFlag } from "./src/config/feature-defaults.js";
+import {
+  BASELINE_REVIEWER,
+  isBaselinePublishedRepository,
+} from "./src/config/project-publication.js";
 import { readFeatureConfig } from "./api/_lib/feature-store.js";
 import adminAuthConfigHandler from "./api/admin/auth-config.js";
 import { createAdminAnalyticsHandler } from "./api/admin/analytics.js";
 import { createAdminFeatureHandler } from "./api/admin/features.js";
+import { createAdminProjectsHandler } from "./api/admin/projects.js";
+import { createAdminProjectMediaHandler } from "./api/admin/project-media.js";
+import { createPublishedProjectsHandler } from "./api/projects.js";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 const port = Number(process.env.PORT || 4173);
@@ -85,6 +92,109 @@ async function readLocalAnalytics({ days }) {
 }
 
 const localAdminAnalyticsHandler = createAdminAnalyticsHandler({ readSummary: readLocalAnalytics });
+const localAdminProjectMediaHandler = createAdminProjectMediaHandler({
+  upload: async () => { throw new Error("local-storage-unconfigured"); },
+});
+
+const localProjectState = { projects: [], audit: [] };
+
+function mapLocalRepository(repository, existing = {}) {
+  const timestamp = existing.updatedAt || new Date().toISOString();
+  const draft = repository.portfolioDraft || {};
+  const presentation = draft.presentation || {};
+  const ownerEdited = existing.caseStudySource === "owner";
+  const baselinePublished = isBaselinePublishedRepository(repository);
+  return {
+    githubId: String(repository.id),
+    name: repository.name,
+    repo: repository.html_url,
+    homepage: repository.homepage || "",
+    githubDescription: repository.description || "",
+    language: repository.language || "",
+    topics: repository.topics || [],
+    githubUpdatedAt: repository.updated_at || null,
+    status: existing.status || (baselinePublished ? "approved" : "pending"),
+    title: ownerEdited ? existing.title : presentation.title || "",
+    description: ownerEdited ? existing.description : presentation.description || "",
+    category: ownerEdited ? existing.category : presentation.category || "",
+    tags: ownerEdited ? existing.tags : presentation.tags || [],
+    evidence: draft.evidence || existing.evidence || {},
+    caseStudy: ownerEdited ? existing.caseStudy : draft.caseStudy || {},
+    caseStudySource: ownerEdited ? "owner" : "generated",
+    media: ownerEdited ? existing.media : presentation.media || {},
+    mediaSource: ownerEdited ? "owner" : "generated",
+    discoveredAt: existing.discoveredAt || timestamp,
+    reviewedBy: existing.reviewedBy || (baselinePublished ? BASELINE_REVIEWER : ""),
+    reviewedAt: existing.reviewedAt || (baselinePublished ? timestamp : null),
+    updatedAt: timestamp,
+  };
+}
+
+async function syncLocalProjects({ repositories }) {
+  repositories.forEach((repository) => {
+    const index = localProjectState.projects.findIndex(
+      (project) => project.githubId === String(repository.id),
+    );
+    const existing = index >= 0 ? localProjectState.projects[index] : {};
+    const candidate = mapLocalRepository(repository, existing);
+    if (index >= 0) localProjectState.projects[index] = candidate;
+    else localProjectState.projects.push(candidate);
+  });
+  return repositories.length;
+}
+
+async function readLocalProjectQueue() {
+  const priority = { pending: 0, approved: 1, hidden: 2 };
+  return {
+    source: "local-memory",
+    projects: [...localProjectState.projects].sort(
+      (left, right) => priority[left.status] - priority[right.status]
+        || left.name.localeCompare(right.name),
+    ),
+    audit: localProjectState.audit.slice(0, 50),
+  };
+}
+
+async function reviewLocalProject({ githubId, review, expectedUpdatedAt, changedBy }) {
+  const project = localProjectState.projects.find((entry) => entry.githubId === String(githubId));
+  if (!project || project.updatedAt !== expectedUpdatedAt) return null;
+  const oldStatus = project.status;
+  const changedAt = new Date().toISOString();
+  Object.assign(project, review, {
+    title: review.title || "",
+    description: review.description || "",
+    category: review.category || "",
+    reviewedBy: changedBy,
+    reviewedAt: changedAt,
+    updatedAt: changedAt,
+    caseStudySource: "owner",
+    mediaSource: "owner",
+  });
+  if (oldStatus !== review.status) {
+    localProjectState.audit.unshift({
+      githubId: project.githubId,
+      name: project.name,
+      oldStatus,
+      newStatus: review.status,
+      changedBy,
+      changedAt,
+    });
+  }
+  return { ...project };
+}
+
+async function readLocalApprovedProjects() {
+  return localProjectState.projects.filter((project) => project.status === "approved");
+}
+
+const localAdminProjectsHandler = createAdminProjectsHandler({
+  sync: hasFeatureDatabase ? undefined : syncLocalProjects,
+  readQueue: hasFeatureDatabase ? undefined : readLocalProjectQueue,
+  review: hasFeatureDatabase ? undefined : reviewLocalProject,
+});
+const localPublishedProjectsHandler = createPublishedProjectsHandler({
+  readProjects: hasFeatureDatabase ? undefined : readLocalApprovedProjects,
+});
 
 const types = {
   ".css": "text/css; charset=utf-8",
@@ -142,6 +252,24 @@ createServer(async (request, response) => {
   if (url.pathname === "/api/admin/analytics") {
     request.query = Object.fromEntries(url.searchParams);
     await localAdminAnalyticsHandler(request, createApiResponse(response));
+    return;
+  }
+
+  if (url.pathname === "/api/admin/projects") {
+    request.query = Object.fromEntries(url.searchParams);
+    request.body = ["POST", "PUT"].includes(request.method) ? await readJsonBody(request) : {};
+    await localAdminProjectsHandler(request, createApiResponse(response));
+    return;
+  }
+
+  if (url.pathname === "/api/admin/project-media") {
+    request.query = Object.fromEntries(url.searchParams);
+    await localAdminProjectMediaHandler(request, createApiResponse(response));
+    return;
+  }
+
+  if (url.pathname === "/api/projects") {
+    await localPublishedProjectsHandler(request, createApiResponse(response));
     return;
   }
 

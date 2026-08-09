@@ -131,31 +131,53 @@ export function mapGitHubRepository(repository) {
   };
 }
 
+export function applyProjectCuration(project, curation = {}) {
+  const categoryPresentation = Object.values(CATEGORY_TOPICS)
+    .find((entry) => entry.category === curation.category);
+  const category = categoryPresentation?.category || project.category;
+  const tags = Array.isArray(curation.tags) && curation.tags.length >= 2
+    ? curation.tags.slice(0, 8)
+    : project.tags;
+  const mediaPreview = curation.media?.coverImageUrl
+    ? {
+      src: curation.media.coverImageUrl,
+      alt: curation.media.coverImageAlt || `${curation.title || project.title} project preview`,
+    }
+    : null;
+  return {
+    ...project,
+    ownerReviewed: curation.ownerReviewed === true,
+    title: curation.title?.trim() || project.title,
+    description: curation.description?.trim() || project.description,
+    category,
+    type: categoryPresentation?.type || project.type,
+    visual: categoryPresentation?.visual || project.visual,
+    accent: categoryPresentation?.accent || project.accent,
+    audiences: CATEGORY_AUDIENCES[category] || [],
+    tags,
+    details: {
+      ...(project.details || {}),
+      ...(curation.caseStudy?.caseStudy ? { ...curation.caseStudy, caseStudy: true } : {}),
+      ...(mediaPreview ? { preview: mediaPreview } : {}),
+      ...(curation.media?.demoUrl ? { demoUrl: curation.media.demoUrl } : {}),
+    },
+  };
+}
+
 export async function fetchOptInProjects(fetcher = globalThis.fetch) {
   if (typeof fetcher !== "function") {
     return [];
   }
 
-  const response = await fetcher(
-    `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100&type=owner`,
-    {
-      headers: {
-        Accept: "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-      },
-    },
-  );
+  const response = await fetcher("/api/projects", { cache: "no-store" });
 
   if (!response.ok) {
-    throw new Error(`GitHub projects request failed: ${response.status}`);
+    throw new Error(`Published projects request failed: ${response.status}`);
   }
 
-  const repositories = await response.json();
+  const payload = await response.json();
+  const repositories = Array.isArray(payload.repositories) ? payload.repositories : [];
 
   return repositories
-    .filter(
-      (repository) =>
-        !repository.archived && !repository.fork && (repository.topics || []).includes(PORTFOLIO_TOPIC),
-    )
-    .map(mapGitHubRepository);
+    .map((repository) => applyProjectCuration(mapGitHubRepository(repository), repository.curation));
 }

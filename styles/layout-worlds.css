@@ -1,0 +1,734 @@
+/*
+ * Composition worlds
+ *
+ * Every world consumes the same semantic HTML, data, renderers, and controls.
+ * Only spatial composition changes here, so new content automatically works in
+ * every portfolio experience without component forks.
+ */
+
+/* Android / Bento OS: modular, friendly, information-dense. */
+:root[data-theme-layout="bento-os"] .bento-grid,
+:root[data-theme-layout="bento-os"][data-project-layout="cards"] .project-grid,
+:root[data-theme-layout="bento-os"] .skill-grid {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+:root[data-theme-layout="bento-os"] .bento-tile.wide {
+  grid-column: span 6;
+}
+
+:root[data-theme-layout="bento-os"] .bento-tile:not(.wide) {
+  grid-column: span 2;
+}
+
+:root[data-theme-layout="bento-os"][data-project-layout="cards"] .project-card {
+  grid-column: span 5;
+  min-height: 430px;
+  border-radius: 28px;
+}
+
+:root[data-theme-layout="bento-os"][data-project-layout="cards"] .project-card:nth-child(3n + 1) {
+  grid-column: span 7;
+}
+
+:root[data-theme-layout="bento-os"][data-project-layout="cards"] .project-card:nth-child(3n + 1) .project-visual {
+  min-height: 210px;
+}
+
+:root[data-theme-layout="bento-os"] .project-visual,
+:root[data-theme-layout="bento-os"] .skill-grid section,
+:root[data-theme-layout="bento-os"] .contact-section .section-heading {
+  border-radius: 22px;
+}
+
+:root[data-theme-layout="bento-os"] .journey-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:root[data-theme-layout="bento-os"] .timeline {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+:root[data-theme-layout="bento-os"] .credential-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+:root[data-theme-layout="bento-os"] .skill-grid section {
+  grid-column: span 3;
+}
+
+:root[data-theme-layout="bento-os"] .skill-grid section:first-child,
+:root[data-theme-layout="bento-os"] .skill-grid section:last-child {
+  grid-column: span 4;
+}
+
+:root[data-theme-layout="bento-os"] .skill-grid section:nth-child(2),
+:root[data-theme-layout="bento-os"] .skill-grid section:nth-child(3) {
+  grid-column: span 2;
+}
+
+/* Cosmos / Constellation: projects become celestial nodes and the career a mission log. */
+:root[data-theme-layout="constellation"] .bento-grid {
+  grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(150px, 0.55fr));
+  align-items: stretch;
+  gap: 24px;
+}
+
+:root[data-theme-layout="constellation"] .bento-tile {
+  border-radius: 999px;
+  text-align: center;
+}
+
+:root[data-theme-layout="constellation"] .bento-tile.wide {
+  border-radius: 120px 24px 24px 120px;
+  text-align: left;
+}
+
+:root[data-theme-layout="constellation"][data-project-layout="cards"] .project-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 84px 54px;
+  padding: 48px 3vw;
+}
+
+:root[data-theme-layout="constellation"][data-project-layout="cards"] .project-card,
+:root[data-theme-layout="constellation"][data-project-layout="cards"] .project-card.featured {
+  grid-column: auto;
+  align-items: center;
+  min-height: 520px;
+  padding: 34px clamp(24px, 4vw, 52px);
+  border-color: rgba(112, 215, 255, 0.24);
+  border-radius: 48% 48% 24px 24px / 28% 28% 24px 24px;
+  background: linear-gradient(180deg, rgba(16, 27, 49, 0.88), rgba(7, 12, 25, 0.72));
+  text-align: center;
+  box-shadow: 0 0 0 1px rgba(112, 215, 255, 0.04), 0 32px 90px rgba(0, 0, 0, 0.42);
+}
+
+:root[data-theme-layout="constellation"][data-project-layout="cards"] .project-card:nth-child(even) {
+  transform: translateY(58px);
+}
+
+:root[data-theme-layout="constellation"][data-project-layout="cards"] .project-card:nth-child(even).show {
+  transform: translateY(58px);
+}
+
+:root[data-theme-layout="constellation"][data-project-layout="cards"] .project-visual {
+  width: 210px;
+  min-height: 210px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 36% 30%, rgba(255, 255, 255, 0.2), transparent 6%),
+    radial-gradient(circle at 52% 48%, rgba(112, 215, 255, 0.24), rgba(130, 90, 255, 0.1) 48%, transparent 70%);
+  box-shadow: 0 0 54px rgba(112, 215, 255, 0.16);
+}
+
+:root[data-theme-layout="constellation"][data-project-layout="cards"] .project-card p {
+  max-width: 470px;
+}
+
+:root[data-theme-layout="constellation"] .tags,
+:root[data-theme-layout="constellation"] .project-links {
+  justify-content: center;
+}
+
+:root[data-theme-layout="constellation"] .journey-grid {
+  grid-template-columns: minmax(0, 0.9fr) minmax(300px, 0.45fr);
+  gap: clamp(28px, 6vw, 86px);
+}
+
+:root[data-theme-layout="constellation"] .timeline {
+  position: relative;
+  gap: 36px;
+  padding-left: 34px;
+}
+
+:root[data-theme-layout="constellation"] .timeline::before {
+  content: "";
+  position: absolute;
+  inset: 12px auto 12px 8px;
+  width: 1px;
+  background: linear-gradient(var(--cyan), var(--amber), transparent);
+}
+
+:root[data-theme-layout="constellation"] .timeline-item {
+  border-width: 0 0 1px;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+:root[data-theme-layout="constellation"] .skill-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+:root[data-theme-layout="constellation"] .skill-grid section {
+  border-radius: 48px 8px 48px 8px;
+}
+
+/* Product / Editorial Casebook: wide alternating stories for quick professional scanning. */
+:root[data-theme-layout="casebook"] .hero {
+  grid-template-columns: minmax(0, 0.88fr) minmax(420px, 1.12fr);
+}
+
+:root[data-theme-layout="casebook"] .profile-panel {
+  align-self: end;
+  border-width: 0 0 1px;
+  background: transparent;
+}
+
+:root[data-theme-layout="casebook"] .bento-grid {
+  grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 0.5fr));
+  gap: 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+:root[data-theme-layout="casebook"] .bento-tile {
+  border-width: 0 1px 0 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+:root[data-theme-layout="casebook"][data-project-layout="cards"] .project-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+
+:root[data-theme-layout="casebook"][data-project-layout="cards"] .project-card,
+:root[data-theme-layout="casebook"][data-project-layout="cards"] .project-card.featured {
+  display: grid;
+  grid-column: auto;
+  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+  min-height: 360px;
+  padding: 40px 0;
+  border-width: 1px 0 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+:root[data-theme-layout="casebook"][data-project-layout="cards"] .project-visual {
+  grid-column: 1;
+  grid-row: 1 / span 5;
+  min-height: 280px;
+  margin: 0 42px 0 0;
+  border-radius: 0;
+}
+
+:root[data-theme-layout="casebook"][data-project-layout="cards"] .project-card > :not(.project-visual) {
+  grid-column: 2;
+}
+
+:root[data-theme-layout="casebook"][data-project-layout="cards"] .project-card:nth-child(even) {
+  grid-template-columns: minmax(0, 1.28fr) minmax(260px, 0.72fr);
+}
+
+:root[data-theme-layout="casebook"][data-project-layout="cards"] .project-card:nth-child(even) .project-visual {
+  grid-column: 2;
+  margin: 0 0 0 42px;
+}
+
+:root[data-theme-layout="casebook"][data-project-layout="cards"] .project-card:nth-child(even) > :not(.project-visual) {
+  grid-column: 1;
+}
+
+:root[data-theme-layout="casebook"] .journey-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:root[data-theme-layout="casebook"] .timeline {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+}
+
+:root[data-theme-layout="casebook"] .timeline-item,
+:root[data-theme-layout="casebook"] .credential-card,
+:root[data-theme-layout="casebook"] .skill-grid section {
+  border-width: 1px 0 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Blueprint / System Map: connected technical modules and numbered evidence. */
+:root[data-theme-layout="system-map"] .bento-grid,
+:root[data-theme-layout="system-map"] .skill-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  padding: 1px;
+  background: var(--line);
+}
+
+:root[data-theme-layout="system-map"] .bento-tile,
+:root[data-theme-layout="system-map"] .skill-grid section {
+  border: 0;
+  border-radius: 0;
+  background: var(--panel-strong);
+  box-shadow: none;
+}
+
+:root[data-theme-layout="system-map"][data-project-layout="cards"] .project-grid {
+  position: relative;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+  padding: 32px;
+  border: 1px solid var(--line);
+  background-image: linear-gradient(90deg, transparent calc(50% - 0.5px), var(--line) 50%, transparent calc(50% + 0.5px));
+}
+
+:root[data-theme-layout="system-map"][data-project-layout="cards"] .project-card,
+:root[data-theme-layout="system-map"][data-project-layout="cards"] .project-card.featured {
+  grid-column: auto;
+  display: grid;
+  grid-template-columns: 124px minmax(0, 1fr);
+  min-height: 330px;
+  padding: 22px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+:root[data-theme-layout="system-map"][data-project-layout="cards"] .project-card::before {
+  content: "MODULE / " counter(project-module, decimal-leading-zero);
+  grid-column: 1 / -1;
+  margin-bottom: 18px;
+  color: var(--amber);
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+:root[data-theme-layout="system-map"][data-project-layout="cards"] .project-grid {
+  counter-reset: project-module;
+}
+
+:root[data-theme-layout="system-map"][data-project-layout="cards"] .project-card {
+  counter-increment: project-module;
+}
+
+:root[data-theme-layout="system-map"][data-project-layout="cards"] .project-visual {
+  grid-column: 1;
+  grid-row: 2 / span 5;
+  width: 96px;
+  min-height: 96px;
+  align-self: start;
+  border-radius: 50%;
+}
+
+:root[data-theme-layout="system-map"][data-project-layout="cards"] .project-card > :not(.project-visual) {
+  grid-column: 2;
+}
+
+:root[data-theme-layout="system-map"] .journey-grid {
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+}
+
+:root[data-theme-layout="system-map"] .timeline-item {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Future Lab / Interface Deck: staggered instruments and asymmetric panels. */
+:root[data-theme-layout="interface-deck"] .bento-grid,
+:root[data-theme-layout="interface-deck"][data-project-layout="cards"] .project-grid,
+:root[data-theme-layout="interface-deck"] .skill-grid {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+:root[data-theme-layout="interface-deck"] .bento-tile.wide {
+  grid-column: span 5;
+}
+
+:root[data-theme-layout="interface-deck"] .bento-tile:not(.wide) {
+  grid-column: span 2;
+}
+
+:root[data-theme-layout="interface-deck"] .bento-tile:last-child {
+  grid-column: span 3;
+}
+
+:root[data-theme-layout="interface-deck"][data-project-layout="cards"] .project-card,
+:root[data-theme-layout="interface-deck"][data-project-layout="cards"] .project-card.featured {
+  grid-column: span 5;
+  min-height: 430px;
+  border-radius: 34px 4px 34px 4px;
+}
+
+:root[data-theme-layout="interface-deck"][data-project-layout="cards"] .project-card:nth-child(4n + 1),
+:root[data-theme-layout="interface-deck"][data-project-layout="cards"] .project-card:nth-child(4n) {
+  grid-column: span 7;
+}
+
+:root[data-theme-layout="interface-deck"][data-project-layout="cards"] .project-card:nth-child(even) {
+  margin-top: 42px;
+}
+
+:root[data-theme-layout="interface-deck"] .project-visual {
+  border-radius: 26px 2px 26px 2px;
+}
+
+:root[data-theme-layout="interface-deck"] .journey-grid {
+  grid-template-columns: minmax(320px, 0.72fr) minmax(0, 1.28fr);
+}
+
+:root[data-theme-layout="interface-deck"] .timeline-item:nth-child(even) {
+  margin-left: 42px;
+}
+
+:root[data-theme-layout="interface-deck"] .skill-grid section {
+  grid-column: span 5;
+  border-radius: 26px 3px 26px 3px;
+}
+
+:root[data-theme-layout="interface-deck"] .skill-grid section:nth-child(3n + 1) {
+  grid-column: span 7;
+}
+
+:root[data-theme-layout="interface-deck"] .contact-section .section-heading {
+  border-radius: 48px 4px 48px 4px;
+}
+
+/* Page-level identity: navigation, section rhythm, controls, and endings. */
+:root[data-theme-layout] .site-header,
+:root[data-theme-layout] .work-explorer,
+:root[data-theme-layout] .project-toolbar,
+:root[data-theme-layout] .career-progression,
+:root[data-theme-layout] .contact-section .section-heading {
+  transition: border-color 220ms ease, background 220ms ease, box-shadow 220ms ease;
+}
+
+/* Android uses a floating app bar and tactile Material-style content surfaces. */
+:root[data-theme-layout="bento-os"] .site-header {
+  top: 12px;
+  width: min(1160px, calc(100% - 32px));
+  margin-top: 12px;
+  border: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
+  border-radius: 28px;
+  box-shadow: 0 12px 34px rgba(40, 62, 45, 0.1);
+}
+
+:root[data-theme-layout="bento-os"] nav a {
+  border-radius: 18px;
+}
+
+:root[data-theme-layout="bento-os"] nav a:hover,
+:root[data-theme-layout="bento-os"] nav a.active {
+  background: #dce8f8;
+  color: var(--blue);
+}
+
+:root[data-theme-layout="bento-os"] .section-heading {
+  align-items: end;
+  padding: 0 8px;
+}
+
+:root[data-theme-layout="bento-os"] .work-explorer {
+  padding: 24px;
+  border: 0;
+  border-radius: 32px;
+  background: var(--soft-panel);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+:root[data-theme-layout="bento-os"] .project-toolbar {
+  border: 0;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(40, 62, 45, 0.08);
+}
+
+:root[data-theme-layout="bento-os"] .career-progression {
+  gap: 12px;
+  border: 0;
+}
+
+:root[data-theme-layout="bento-os"] .progression-step {
+  min-height: 210px;
+  border: 0;
+  border-radius: 28px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+:root[data-theme-layout="bento-os"] .progression-step::before {
+  top: 20px;
+  right: 20px;
+  left: auto;
+  width: 12px;
+  height: 12px;
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--cyan) 12%, transparent);
+}
+
+:root[data-theme-layout="bento-os"] .contact-section .section-heading {
+  min-height: 260px;
+  border: 0;
+  border-radius: 42px;
+  background:
+    radial-gradient(circle at 82% 22%, rgba(11, 87, 208, 0.14), transparent 24%),
+    var(--soft-panel);
+}
+
+/* Cosmos uses a centered command bar, mission panels, and luminous waypoints. */
+:root[data-theme-layout="constellation"] .site-header {
+  width: min(980px, calc(100% - 40px));
+  border-radius: 999px;
+  background: rgba(6, 10, 23, 0.78);
+  box-shadow: 0 0 0 1px rgba(112, 215, 255, 0.08), 0 18px 70px rgba(0, 0, 0, 0.34);
+}
+
+:root[data-theme-layout="constellation"] nav a {
+  border-radius: 999px;
+}
+
+:root[data-theme-layout="constellation"] .section-heading {
+  align-items: center;
+  text-align: center;
+}
+
+:root[data-theme-layout="constellation"] .section-heading > div:first-child {
+  margin-inline: auto;
+}
+
+:root[data-theme-layout="constellation"] .section-copy {
+  margin-inline: auto;
+}
+
+:root[data-theme-layout="constellation"] .work-explorer {
+  border-radius: 42px;
+  background:
+    radial-gradient(circle at 50% -30%, rgba(112, 215, 255, 0.16), transparent 46%),
+    rgba(10, 17, 33, 0.82);
+  box-shadow: inset 0 0 0 1px rgba(112, 215, 255, 0.06), 0 28px 90px rgba(0, 0, 0, 0.3);
+}
+
+:root[data-theme-layout="constellation"] .project-toolbar {
+  border-radius: 999px;
+  background: rgba(10, 17, 33, 0.76);
+}
+
+:root[data-theme-layout="constellation"] .career-progression {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 34px;
+  padding: 22px;
+  border: 0;
+}
+
+:root[data-theme-layout="constellation"] .progression-step {
+  min-height: 230px;
+  padding: 36px;
+  border: 1px solid rgba(112, 215, 255, 0.22);
+  border-radius: 110px 18px 110px 18px;
+  background: linear-gradient(135deg, rgba(17, 28, 51, 0.86), rgba(7, 12, 25, 0.66));
+  box-shadow: 0 0 52px rgba(112, 215, 255, 0.07);
+}
+
+:root[data-theme-layout="constellation"] .progression-step::before {
+  top: 34px;
+  left: auto;
+  right: 34px;
+  box-shadow: 0 0 18px var(--cyan);
+}
+
+:root[data-theme-layout="constellation"] .skill-section {
+  background: rgba(7, 12, 25, 0.54);
+}
+
+:root[data-theme-layout="constellation"] .contact-section .section-heading {
+  min-height: 320px;
+  justify-content: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(112, 215, 255, 0.16), transparent 58%),
+    rgba(10, 17, 33, 0.82);
+  text-align: center;
+}
+
+/* Product removes dashboard framing and reads like a designed case-study publication. */
+:root[data-theme-layout="casebook"] .site-header {
+  width: 100%;
+  border-width: 0 0 1px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+:root[data-theme-layout="casebook"] .section-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.5fr);
+  align-items: end;
+  padding-bottom: 30px;
+  border-bottom: 1px solid var(--line);
+}
+
+:root[data-theme-layout="casebook"] .work-explorer {
+  padding: 28px 0;
+  border-width: 1px 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+:root[data-theme-layout="casebook"] .project-toolbar {
+  padding: 18px 0;
+  border-width: 0 0 1px;
+  border-radius: 0;
+  background: transparent;
+}
+
+:root[data-theme-layout="casebook"] .career-progression {
+  border-top: 4px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+
+:root[data-theme-layout="casebook"] .progression-step {
+  min-height: 250px;
+  padding-top: 32px;
+}
+
+:root[data-theme-layout="casebook"] .progression-step h3 {
+  max-width: 220px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+  font-weight: 500;
+}
+
+:root[data-theme-layout="casebook"] .skill-section {
+  background: transparent;
+}
+
+:root[data-theme-layout="casebook"] .contact-section .section-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 240px;
+  padding-inline: 0;
+  border-width: 4px 0 1px;
+  border-radius: 0;
+  background: transparent;
+}
+
+/* Blueprint frames every major surface as part of one inspectable system diagram. */
+:root[data-theme-layout="system-map"] .site-header {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+:root[data-theme-layout="system-map"] .section-heading {
+  position: relative;
+  padding: 22px;
+  border: 1px solid var(--line);
+  background: rgba(8, 37, 65, 0.68);
+}
+
+:root[data-theme-layout="system-map"] .section-heading::before,
+:root[data-theme-layout="system-map"] .work-explorer::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 18px;
+  height: 18px;
+  border-top: 3px solid var(--amber);
+  border-left: 3px solid var(--amber);
+}
+
+:root[data-theme-layout="system-map"] .work-explorer {
+  position: relative;
+  border-radius: 0;
+  background: rgba(8, 37, 65, 0.8);
+  box-shadow: none;
+}
+
+:root[data-theme-layout="system-map"] .project-toolbar {
+  border-radius: 0;
+  background: rgba(8, 37, 65, 0.86);
+}
+
+:root[data-theme-layout="system-map"] .career-progression {
+  gap: 1px;
+  padding: 1px;
+  border: 0;
+  background: var(--line);
+  counter-reset: progression-module;
+}
+
+:root[data-theme-layout="system-map"] .progression-step {
+  counter-increment: progression-module;
+  border: 0;
+  background: var(--panel-strong);
+}
+
+:root[data-theme-layout="system-map"] .progression-step::after {
+  content: "PATH / " counter(progression-module, decimal-leading-zero);
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  color: var(--cyan);
+  font-size: 0.64rem;
+}
+
+:root[data-theme-layout="system-map"] .contact-section .section-heading {
+  min-height: 260px;
+  border-radius: 0;
+  background:
+    linear-gradient(90deg, transparent 49.9%, rgba(103, 212, 255, 0.14) 50%, transparent 50.1%),
+    rgba(8, 37, 65, 0.86);
+}
+
+/* Future Lab behaves like a speculative interface deck with offset instruments. */
+:root[data-theme-layout="interface-deck"] .site-header {
+  border-radius: 4px 28px 4px 28px;
+  background: rgba(238, 243, 241, 0.84);
+  backdrop-filter: blur(24px);
+}
+
+:root[data-theme-layout="interface-deck"] nav a {
+  border-radius: 2px 14px 2px 14px;
+}
+
+:root[data-theme-layout="interface-deck"] .section-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(300px, 0.45fr);
+  align-items: center;
+}
+
+:root[data-theme-layout="interface-deck"] .work-explorer {
+  border-radius: 4px 42px 4px 42px;
+  background:
+    linear-gradient(115deg, rgba(0, 127, 115, 0.08), transparent 42%),
+    rgba(255, 255, 255, 0.72);
+  box-shadow: 0 24px 70px rgba(21, 61, 58, 0.1);
+  backdrop-filter: blur(20px);
+}
+
+:root[data-theme-layout="interface-deck"] .project-toolbar {
+  border-radius: 18px 3px 18px 3px;
+  background: rgba(255, 255, 255, 0.84);
+}
+
+:root[data-theme-layout="interface-deck"] .career-progression {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 14px;
+  border: 0;
+}
+
+:root[data-theme-layout="interface-deck"] .progression-step {
+  grid-column: span 5;
+  min-height: 220px;
+  border: 1px solid var(--line);
+  border-radius: 34px 3px 34px 3px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: var(--shadow);
+}
+
+:root[data-theme-layout="interface-deck"] .progression-step:nth-child(3n + 1) {
+  grid-column: span 7;
+}
+
+:root[data-theme-layout="interface-deck"] .progression-step:nth-child(even) {
+  margin-top: 32px;
+}
+
+:root[data-theme-layout="interface-deck"] .contact-section .section-heading {
+  min-height: 300px;
+  background:
+    linear-gradient(115deg, rgba(0, 127, 115, 0.11), transparent 46%),
+    rgba(255, 255, 255, 0.84);
+}

@@ -34,10 +34,24 @@ Vercel preview deployments are connected to feature branches and pull requests, 
 
 `GET /api/config` returns the seven public feature flags used during portfolio startup. The endpoint supports only `GET`, exposes no secrets, and bypasses browser and edge caches so owner changes apply on the next page refresh. If the request fails or returns malformed data, the browser enables the complete checked-in experience.
 
+## Browser Security And Safe Browsing
+
+`vercel.json` applies a restrictive Content Security Policy, anti-framing controls, MIME-sniffing protection, a limited browser permissions policy, and explicit referrer handling. The owner page and admin APIs additionally return `no-store` and `X-Robots-Tag` headers. `robots.txt` excludes the owner workspace and admin API from normal crawling, while `sitemap.xml` lists only the public portfolio root.
+
+If Google displays a deceptive-site or phishing warning:
+
+1. Check the exact affected production or Preview hostname in [Google Safe Browsing Site Status](https://transparencyreport.google.com/safe-browsing/search).
+2. Add the exact production URL-prefix property to Google Search Console and open **Security & Manual Actions → Security issues**.
+3. Inspect every example URL. Confirm that the public page, `/admin.html`, third-party images, Formspree endpoint, and outbound project links match the expected repository configuration.
+4. Deploy the security configuration and verify the response headers on the public page and `/admin.html`.
+5. Request a review from the Security Issues report only after the corrected deployment is live. Google may take several days to propagate an approved review to browser warnings.
+
+Security headers reduce exploitability and accidental data exposure, but they do not automatically remove an existing Safe Browsing classification. The production portfolio should eventually use a stable owned domain, and the owner Control Center can move to a separate restricted deployment if automated scanners continue to associate a password form with the public portfolio hostname.
+
 ### Neon Setup
 
 1. Add Neon from the Vercel Marketplace and select its free plan. Keep it as a separate managed resource connected to the `portfolio-website` project.
-2. In the Neon SQL Editor, run migrations in numeric order, then `db/seeds/001_feature_flags.sql`. Existing v1.4 databases should run `db/migrations/002_add_visitor_customization_flag.sql` for the v1.5 rollout flag.
+2. In the Neon SQL Editor, run migrations in numeric order, then `db/seeds/001_feature_flags.sql`. Existing databases should apply any newer migration they have not yet run; v1.8 requires `db/migrations/003_create_project_publishing_queue.sql` and `db/migrations/004_add_project_evidence_drafts.sql`.
 3. Copy the connection string for Neon's persistent `main` branch into a server-only Vercel variable named `FEATURE_CONFIG_DATABASE_URL`. Enable it for Preview and Production; never prefix it with `VITE_` or expose it in browser code.
 4. Keep Neon's integration-managed `DATABASE_URL` if Preview database branches are useful for future schema or application-data testing. `/api/config` deliberately prefers `FEATURE_CONFIG_DATABASE_URL`, so those isolated branches do not fragment feature-flag control.
 5. Redeploy the Preview. Its `/api/config` response should report `"environment":"staging"` and `"source":"database"`.
@@ -72,6 +86,31 @@ The deployment should expose `FEATURE_CONFIG_DATABASE_URL` server-side. It may a
 The page is unlinked and marked `noindex`, but access control comes from server-side JWT verification and the exact owner allowlist. Each admin read and write repeats authorization. Production mutations also require a confirmation in the UI and stale updates receive a `409` conflict.
 
 Neon's current Managed Better Auth service does not yet provide a built-in restricted-signup switch. The portfolio therefore exposes sign-in only and treats the API allowlist as the authorization boundary. Enable email verification when available, use `ADMIN_OWNER_IDS` for the owner, and remove any unexpected Auth users from Neon.
+
+### Project Publishing Inbox Setup
+
+1. Run `db/migrations/003_create_project_publishing_queue.sql`, `db/migrations/004_add_project_evidence_drafts.sql`, and `db/migrations/005_publish_curated_project_baseline.sql` against the persistent Neon database referenced by `FEATURE_CONFIG_DATABASE_URL`.
+2. Optionally add a server-only `GITHUB_TOKEN` to Preview and Production. Use a fine-grained token with read access to public repository metadata only. Without it, manual sync still works within GitHub's lower unauthenticated rate limit.
+3. Redeploy, sign in to `/admin.html`, open **Projects**, and select **Sync GitHub**. The 14 current checked-in repositories enter as the approved baseline; any other repository tagged `portfolio-showcase` enters the queue as `pending`. Sync extracts public README sections and repository languages to prefill a presentation and case-study draft.
+4. Review the extracted evidence and generated claims, adjust the visitor-facing title, description, category, technology tags, case study, proposed cover image, accessible alternative text, and optional external demo link, then keep the project pending, approve it, or hide it.
+5. Refresh the public portfolio after approval and confirm the project appears. Hidden and pending records must never be returned by `/api/projects`.
+
+The publishing queue is intentionally global rather than split by development, staging, and production. Preview is used to review the UI and owner workflow, while the approval itself represents one publication decision that will follow the same code into Production. Status changes are owner-attributed in `portfolio_project_audit`, and stale reviews receive a `409` conflict rather than overwriting newer work.
+
+Repository media discovery reads only public documentation and proposes candidates; it does not upload or mirror files. Selected images and demo URLs must use HTTPS. Images render with owner-reviewed alternative text, while videos open as external links so the portfolio does not inherit video storage, transcoding, consent, or autoplay complexity.
+
+### Project Image Upload Setup
+
+1. In the Vercel project, open **Storage**, create a **Blob** store named `portfolio-media`, and choose **Public** access because approved project images are displayed directly on the public portfolio.
+2. Connect the Blob store to Preview and Production. New stores use Vercel OIDC automatically; an older store may provide `BLOB_READ_WRITE_TOKEN` instead. Keep every storage credential server-only.
+3. Redeploy, sign in to the Control Center, expand a project's **Media** section, and choose **Upload from device**. JPEG, PNG, and WebP files up to 3 MB are accepted from desktop or mobile.
+4. Add meaningful alternative text, review the preview, and select **Save changes**. Uploading creates the Blob object, while saving attaches its URL and alternative text to the Neon project record.
+
+The upload endpoint repeats owner authentication, checks the mutation origin, validates the declared content type and file signature, and generates a randomized public Blob pathname. Localhost deliberately reports storage as unconfigured unless it is run with Vercel storage credentials; use a Vercel Preview for the complete upload test.
+
+The checked-in curated portfolio remains the reliable baseline if Neon is unavailable. Dynamic GitHub additions fail closed to an empty set, so an outage cannot publish an unreviewed repository or remove the curated projects already shipped with the site.
+
+Project content currently has two deliberate sources. `src/data/portfolio.js` is the checked-in baseline used for reliable public rendering. GitHub supplies repository metadata and README evidence, while Neon stores its synchronized queue record, generated drafts, owner overrides, publication status, review attribution, and audit history. An owner-reviewed Neon record can enrich a matching baseline project; an untouched baseline record is listed as published without replacing the stronger checked-in presentation.
 
 ### Control Center Analytics Setup
 

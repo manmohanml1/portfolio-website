@@ -78,13 +78,18 @@ export function createProjectDetailTemplate(project, { allowFeedback = true } = 
   const overviewNotes = [details.purpose, details.build, details.engineering].filter(Boolean);
 
   return `
-    <div class="dialog-layout ${details.preview ? "with-preview" : "without-preview"}">
+    <div class="dialog-layout">
       <div class="dialog-content">
-        <div class="project-topline">
-          <span class="project-type">${escapeHtml(project.type)}</span>
+        <div class="dialog-intro ${details.preview ? "with-preview" : "without-preview"}">
+          <div class="dialog-intro-copy">
+            <div class="project-topline">
+              <span class="project-type">${escapeHtml(project.type)}</span>
+            </div>
+            <h2 id="project-dialog-title">${escapeHtml(project.title)}</h2>
+            <p class="dialog-summary">${escapeHtml(details.summary || project.description)}</p>
+          </div>
+          ${renderPreview(project)}
         </div>
-        <h2 id="project-dialog-title">${escapeHtml(project.title)}</h2>
-        <p class="dialog-summary">${escapeHtml(details.summary || project.description)}</p>
         ${
           isCaseStudy
             ? caseStudySections
@@ -116,10 +121,10 @@ export function createProjectDetailTemplate(project, { allowFeedback = true } = 
         <div class="project-links dialog-actions">
           ${externalLink(project.repo, "Repository")}
           ${project.live ? externalLink(project.live, "Live app") : ""}
+          ${details.demoUrl ? externalLink(details.demoUrl, "Demo video") : ""}
           ${allowFeedback ? `<button class="button feedback-action" type="button" data-feedback-project="${escapeHtml(project.title)}">Suggest improvement</button>` : ""}
         </div>
       </div>
-      ${renderPreview(project)}
     </div>
   `;
 }

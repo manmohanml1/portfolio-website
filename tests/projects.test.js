@@ -39,7 +39,10 @@ test("audience lenses retain only projects relevant to the selected portfolio va
   assert.deepEqual(getProjectsForAudience("general"), projects);
   assert.ok(!backend.some((project) => project.category === "frontend"));
   assert.ok(!backend.some((project) => project.title === "OpenGL GLUT Game"));
-  assert.deepEqual(ai.map((project) => project.title), ["LangChain Project"]);
+  assert.ok(ai.some((project) => project.title === "LangChain Project"));
+  assert.ok(ai.some((project) => project.title === "Novel Browser Glass"));
+  assert.ok(ai.some((project) => project.title === "Glass Search"));
+  assert.ok(ai.some((project) => project.title === "Checkmate Glass"));
 });
 
 test("all declared project filters produce projects", () => {
@@ -49,7 +52,7 @@ test("all declared project filters produce projects", () => {
 });
 
 test("specific filters return only matching projects", () => {
-  for (const filter of PROJECT_FILTERS.filter((item) => !["all", "wearable"].includes(item))) {
+  for (const filter of PROJECT_FILTERS.filter((item) => !["all", "featured", "wearable"].includes(item))) {
     const filtered = getProjectsForFilter(filter);
     assert.ok(filtered.every((project) => project.category === filter));
   }
@@ -59,29 +62,63 @@ test("all and invalid filters safely render full portfolio", () => {
   assert.equal(getProjectsForFilter("all").length, projects.length);
   assert.equal(getProjectsForFilter("invalid").length, projects.length);
   assert.equal(getFilterLabel("invalid"), "all projects");
+  assert.equal(getFilterLabel("featured"), "featured projects");
   assert.equal(getFilterLabel("backend"), "Backend projects");
   assert.equal(getFilterLabel("ai"), "AI projects");
   assert.equal(getFilterLabel("wearable"), "Wearable projects");
 });
 
-test("live discovered projects are appended without duplicating curated repositories", () => {
+test("featured filter keeps the default project view intentionally small", () => {
+  const featured = getProjectsForFilter("featured");
+
+  assert.ok(featured.length >= 3);
+  assert.ok(featured.length < projects.length);
+  assert.ok(featured.every((project) => project.featured));
+  assert.ok(featured.some((project) => project.title === "Portfolio Operations Platform"));
+  assert.ok(featured.some((project) => project.title === "Novel Browser Glass"));
+});
+
+test("approved discoveries enrich curated projects and append new repositories", () => {
   const added = { ...projects[0], repo: "https://github.com/manmohanml1/new-project", title: "New project" };
-  const duplicate = { ...projects[0], title: "Duplicate title ignored" };
+  const duplicate = {
+    ...projects[0],
+    title: "Owner-reviewed title",
+    featured: false,
+    ownerReviewed: true,
+    details: { summary: "Owner-reviewed summary" },
+  };
   const merged = mergeProjects(projects, [duplicate, added]);
 
   assert.equal(merged.length, projects.length + 1);
+  assert.equal(merged[0].title, "Owner-reviewed title");
+  assert.equal(merged[0].featured, projects[0].featured);
+  assert.equal(merged[0].details.summary, "Owner-reviewed summary");
   assert.equal(merged.at(-1).title, "New project");
+});
+
+test("baseline publication status does not replace checked-in curation with generated drafts", () => {
+  const baseline = {
+    ...projects[0],
+    title: "Generated title",
+    ownerReviewed: false,
+    details: { summary: "Generated summary" },
+  };
+  const merged = mergeProjects(projects, [baseline]);
+  assert.equal(merged[0], projects[0]);
 });
 
 test("wearable projects can be added and filtered after GitHub discovery", () => {
   const wearable = { ...projects[0], repo: "https://github.com/manmohanml1/display-app", category: "wearable" };
   const merged = mergeProjects(projects, [wearable]);
 
-  assert.deepEqual(getProjectsForFilter("wearable", merged), [wearable]);
+  const wearables = getProjectsForFilter("wearable", merged);
+  assert.ok(wearables.some((project) => project.title === "Novel Browser Glass"));
+  assert.equal(wearables.at(-1), wearable);
 });
 
 test("project detail dialog presents safely separated repository actions", () => {
-  const template = createProjectDetailTemplate(projects[0]);
+  const fitnessApp = projects.find((project) => project.title === "Fitness Exercises App");
+  const template = createProjectDetailTemplate(fitnessApp);
 
   assert.match(template, /Problem and outcome/);
   assert.match(template, /Implementation/);
@@ -89,7 +126,9 @@ test("project detail dialog presents safely separated repository actions", () =>
   assert.match(template, /data-feedback-project=.*Suggest improvement/);
   assert.doesNotMatch(template, /repo-size|[KMG]B/);
   assert.doesNotMatch(template, />Live app</);
-  assert.doesNotMatch(template, /dialog-preview/);
+  assert.match(template, /dialog-preview/);
+  assert.match(template, /dialog-intro with-preview/);
+  assert.ok(template.indexOf("dialog-preview") < template.indexOf("Problem and outcome"));
 });
 
 test("disabled project dialogs leave repository access without dead detail controls", () => {
@@ -113,7 +152,7 @@ test("curated system case studies render interactive architecture stages", () =>
 
 test("project actions reserve case-study wording for genuinely curated stories", () => {
   const dataProject = projects.find((project) => project.title === "Scalable Data Processing System");
-  const basicProject = projects.find((project) => project.title === "Movies API");
+  const basicProject = { title: "Small experiment", tags: ["JavaScript"] };
 
   assert.equal(getProjectActionLabel(dataProject), "Case study");
   assert.equal(getProjectActionLabel(basicProject), "Details");

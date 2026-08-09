@@ -6,6 +6,54 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Added an authenticated Project Publishing Inbox that discovers `portfolio-showcase` repositories and stages them as pending owner review instead of publishing them automatically.
+- Added evidence-assisted project drafts using public README sections, repository languages, topics, and detected technology signals.
+- Added editable generated case studies to the owner review flow, with approved drafts rendered through the existing public project dialog.
+- Added repository-derived image and demo-link candidates with owner-selected cover media, editable alternative text, and safe external video links.
+- Added owner-authenticated JPEG, PNG, and WebP uploads from desktop or mobile to Vercel Blob, with file-signature validation and a 3 MB limit.
+- Added owner-managed project titles, descriptions, categories, and technology tags with pending, approved, and hidden publication states.
+- Added Neon-backed project moderation and audit history, protected sync/review APIs, trusted-origin checks, and optimistic concurrency protection.
+- Added an approved-only public project endpoint with a checked-in curated-project fallback when the publishing store is unavailable.
+- Added five independent composition worlds over one shared component system: Android Bento OS, Cosmos Constellation, Product Casebook, Blueprint System Map, and Future Lab Interface Deck.
+- Added a theme-to-layout configuration contract and dedicated composition stylesheet so new projects, career entries, and skills inherit every portfolio world without duplicated renderers or markup.
+- Added a Vercel security-header baseline with CSP, anti-framing, MIME-sniffing protection, restricted browser permissions, referrer controls, and explicit admin indexing and cache boundaries.
+- Added public crawler guidance and a single-page sitemap while excluding the owner workspace and protected admin APIs.
+- Added five purpose-built visual worlds: Android for friendly tonal surfaces, Cosmos for deep-space viewing, Product for polished scanning, Blueprint for systems work, and Future Lab for a clean speculative interface.
+- Added dedicated theme and responsive style layers so shared components remain reusable while each visual world can customize typography, surfaces, composition, and interaction character.
+- Added an accessible evidence explorer that searches curated projects, professional experience, current skills, and credentials while respecting the active audience lens and opening matching project case studies directly.
+- Added a responsive engineering-progression timeline from graduate study and teaching through cloud backend work, enterprise full-stack delivery, operated platforms, and wearable experiments.
+- Added curated flagship case studies for the Portfolio Operations Platform and Novel Browser Glass, including architecture explorers and verified live links.
+- Added repository-backed case studies and architecture paths for Movies API, LeetCode Practice, Software Engineering Design Patterns, OpenGL GLUT Game, TypeScript Practice, GlassTube, Glass Search, Checkmate Glass, and Autonomous Travel Guide.
+- Added verified preview media for the Fitness Exercises App and GlassTube where repository visuals are available.
+
+### Changed
+
+- Classified all 14 checked-in GitHub projects as the published baseline in the owner queue while keeping future repositories tagged with `portfolio-showcase` pending for review.
+- Kept baseline publication metadata from replacing checked-in case studies until the owner explicitly reviews and saves an override.
+- Reorganized the private Control Center into Runtime, Projects, and Analytics workspaces with focused nested views for controls, history, review states, traffic, and performance.
+- Changed approved GitHub records to enrich matching curated projects instead of being discarded as duplicates, while preserving curated order and featured placement.
+- Routed opt-in GitHub additions through the owner-reviewed publishing queue; applying a repository topic alone no longer makes a project visible to visitors.
+- Moved GitHub discovery to a server-side owner action, removing the public browser's direct dependency on the GitHub API.
+- Rebuilt cards, project grids, career layouts, skill surfaces, metric bands, and responsive fallbacks per theme so switching appearance now feels like moving between five portfolio demos rather than recoloring one site.
+- Extended each composition world into navigation, section headings, evidence controls, career progression, skill bands, and contact endings so the complete page changes design language with the selected theme.
+- Reframed the owner sign-in page with explicit portfolio ownership and visitor guidance so it cannot be mistaken for a public credential request.
+- Reworked the five visual worlds around distinct compositions and ambient motion, including a vertically moving Cosmos galaxy without the previous ring object.
+- Replaced the previous default palette and legacy theme identities with Android, Cosmos, and Future Lab alternatives while retaining the stronger Product and Blueprint worlds.
+- Rebuilt the hiring-perspective choices as equal-width segmented controls and balanced featured project cards into clean two-column desktop rows without unused grid space.
+- Reworked phone, tablet, laptop, desktop, and wide-screen breakpoints across navigation, hero content, profile signals, project controls, card and list layouts, dialogs, career content, skills, and contact actions.
+- Removed mobile navigation and project-filter scrolling in favor of stable grid layouts, and added compact handling for 320px screens without clipped controls or text.
+- Repositioned the public portfolio around the current Java, Spring Boot, Angular, SQL Server, AWS, and TypeScript stack before earlier technologies and experiments.
+- Reworked general-view hero, profile signals, metrics, skills, project ordering, metadata, and contact language to match the current LinkedIn career direction.
+- Combined role perspective, technology search, project category filters, and card/list layout into one visible Work explorer instead of hiding role controls inside the theme menu.
+- Reduced the theme menu to appearance and motion controls so every option has a predictable purpose.
+- Promoted four opt-in wearable repositories from generic GitHub discovery cards to curated portfolio records with accurate descriptions and implementation boundaries.
+- Simplified the mobile Work explorer to one searchable field, wrapped project filters, and Cards/List controls without horizontally scrolling technology or category rows.
+- Moved the search clear action inside the field and made it appear only when a query exists.
+- Reworked project previews into compact dialog-intro media so case-study and architecture content use the full dialog width on desktop and mobile.
+- Advanced the local feature candidate to `v1.8.0` for visitor Evidence & Discovery review.
+
 ## [1.7.0] - 2026-08-09
 
 ### Added

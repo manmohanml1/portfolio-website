@@ -8,9 +8,9 @@ const pullRequestTemplate = await readFile(new URL("../.github/PULL_REQUEST_TEMP
 const deployment = await readFile(new URL("../DEPLOYMENT.md", import.meta.url), "utf8");
 const roadmap = await readFile(new URL("../ROADMAP.md", import.meta.url), "utf8");
 
-test("current release identifies the v1.7 observability feature release", () => {
+test("current release identifies the v1.8 evidence and discovery feature candidate", () => {
   assert.match(release.version, /^v\d+\.\d+\.\d+$/);
-  assert.equal(release.version, "v1.7.0");
+  assert.equal(release.version, "v1.8.0");
   assert.equal(release.type, "feat");
   assert.equal(release.label, "Feature release");
 });
@@ -42,6 +42,12 @@ test("roadmap records the shipped v1.6 admin control center", () => {
 
 test("roadmap records the shipped v1.7 observability release", () => {
   assert.match(roadmap, /\| Control Center Observability .*\| Shipped in v1\.7\.0 \|/);
+});
+
+test("roadmap records the complete v1.8 visitor and owner candidate", () => {
+  assert.match(roadmap, /\| Evidence Explorer .*\| Ready for v1\.8\.0 Preview \|/);
+  assert.match(roadmap, /\| Engineering Progression .*\| Ready for v1\.8\.0 Preview \|/);
+  assert.match(roadmap, /\| Project Publishing Inbox .*\| Ready for v1\.8\.0 Preview \|/);
 });
 
 test("release checklists protect roadmap promotion and GitHub release tagging", () => {
