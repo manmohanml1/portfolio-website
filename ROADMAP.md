@@ -10,13 +10,13 @@ This list tracks additions that make the site useful to explore, not simply more
 | Neon Configuration Store | Persist environment-specific flags and audit history without exposing database credentials to the browser. | Shipped in v1.4.0 |
 | Admin Control Center | Let the portfolio owner update environment flags through an authenticated interface with audit history. | Shipped in v1.6.0 |
 | Control Center Observability | Add owner-only Vercel Web Analytics summaries and protected Speed Insights access after the authenticated control plane ships. | Shipped in v1.7.0 |
-| Evidence Explorer | Let visitors search verified projects, experience, skills, and credentials by technology or capability from the same surface used to browse work. | Ready for v1.8.0 Preview |
-| Engineering Progression | Connect education, cloud backend work, enterprise delivery, platform operations, and wearable experiments in one career path. | Ready for v1.8.0 Preview |
-| Curated Flagship Work | Lead with operated systems and distinctive wearable products, while giving every curated repository an honest implementation story and inspectable architecture path. | Ready for v1.8.0 Preview |
-| Portfolio Layout Worlds | Render one evidence model through five independent, responsive portfolio compositions without duplicating content or interactions. | Ready for v1.8.0 Preview |
-| Project Publishing Inbox | Stage newly tagged GitHub repositories for owner review, enrichment, and approval before public presentation. | Ready for v1.8.0 Preview |
-| Project Media Curation | Extract repository image and demo candidates, then let the owner approve an accessible cover and optional external demo link. | Ready for v1.8.0 Preview |
-| Database-First Project Catalog | Import every current project into the publishing inventory, preserve the checked-in fallback during parity review, then cut public presentation over to owner-reviewed Neon records. | In progress for v1.8.0 Preview |
+| Evidence Explorer | Let visitors search verified projects, experience, skills, and credentials by technology or capability from the same surface used to browse work. | Shipped in v1.8.0 |
+| Engineering Progression | Connect education, cloud backend work, enterprise delivery, platform operations, and wearable experiments in one career path. | Shipped in v1.8.0 |
+| Curated Flagship Work | Lead with operated systems and distinctive wearable products, while giving every curated repository an honest implementation story and inspectable architecture path. | Shipped in v1.8.0 |
+| Portfolio Layout Worlds | Render one evidence model through five independent, responsive portfolio compositions without duplicating content or interactions. | Shipped in v1.8.0 |
+| Project Publishing Inbox | Stage newly tagged GitHub repositories for owner review, enrichment, and approval before public presentation. | Shipped in v1.8.0 |
+| Project Media Curation | Extract repository image and demo candidates, then let the owner approve an accessible cover and optional external demo link. | Shipped in v1.8.0 |
+| Database-First Project Catalog | Import every current project into the publishing inventory, preserve the checked-in fallback during parity review, then cut public presentation over to owner-reviewed Neon records. | Shipped in v1.8.0 |
 | Owned Writing Hub | Publish canonical technical articles on the portfolio, then syndicate excerpts and links to LinkedIn or other networks without duplicating the source of truth. | Planned after v1.8.0 |
 | Visitor Customization | Let viewers choose an audience lens and project layout locally within admin-enabled capabilities. | Shipped in v1.5.0 |
 | Project Case Study Mode | Let viewers understand the problem, implementation choices, and result behind selected work. | Shipped in v1.2.0 |

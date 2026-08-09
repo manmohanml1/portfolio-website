@@ -44,10 +44,11 @@ test("roadmap records the shipped v1.7 observability release", () => {
   assert.match(roadmap, /\| Control Center Observability .*\| Shipped in v1\.7\.0 \|/);
 });
 
-test("roadmap records the complete v1.8 visitor and owner candidate", () => {
-  assert.match(roadmap, /\| Evidence Explorer .*\| Ready for v1\.8\.0 Preview \|/);
-  assert.match(roadmap, /\| Engineering Progression .*\| Ready for v1\.8\.0 Preview \|/);
-  assert.match(roadmap, /\| Project Publishing Inbox .*\| Ready for v1\.8\.0 Preview \|/);
+test("roadmap records the shipped v1.8 visitor and owner platform", () => {
+  assert.match(roadmap, /\| Evidence Explorer .*\| Shipped in v1\.8\.0 \|/);
+  assert.match(roadmap, /\| Engineering Progression .*\| Shipped in v1\.8\.0 \|/);
+  assert.match(roadmap, /\| Project Publishing Inbox .*\| Shipped in v1\.8\.0 \|/);
+  assert.match(roadmap, /\| Database-First Project Catalog .*\| Shipped in v1\.8\.0 \|/);
 });
 
 test("release checklists protect roadmap promotion and GitHub release tagging", () => {

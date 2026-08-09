@@ -51,7 +51,7 @@ Security headers reduce exploitability and accidental data exposure, but they do
 ### Neon Setup
 
 1. Add Neon from the Vercel Marketplace and select its free plan. Keep it as a separate managed resource connected to the `portfolio-website` project.
-2. In the Neon SQL Editor, run migrations in numeric order, then `db/seeds/001_feature_flags.sql`. Existing databases should apply any newer migration they have not yet run; v1.8 requires `db/migrations/003_create_project_publishing_queue.sql` and `db/migrations/004_add_project_evidence_drafts.sql`.
+2. In the Neon SQL Editor, run migrations in numeric order, then `db/seeds/001_feature_flags.sql`. Existing databases should apply any newer migration they have not yet run; v1.8 requires `db/migrations/003_create_project_publishing_queue.sql`, `db/migrations/004_add_project_evidence_drafts.sql`, and `db/migrations/005_publish_curated_project_baseline.sql`.
 3. Copy the connection string for Neon's persistent `main` branch into a server-only Vercel variable named `FEATURE_CONFIG_DATABASE_URL`. Enable it for Preview and Production; never prefix it with `VITE_` or expose it in browser code.
 4. Keep Neon's integration-managed `DATABASE_URL` if Preview database branches are useful for future schema or application-data testing. `/api/config` deliberately prefers `FEATURE_CONFIG_DATABASE_URL`, so those isolated branches do not fragment feature-flag control.
 5. Redeploy the Preview. Its `/api/config` response should report `"environment":"staging"` and `"source":"database"`.
