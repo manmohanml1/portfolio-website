@@ -24,6 +24,7 @@ import {
   renderProjectAudit,
   renderProjectInbox,
 } from "./render.js";
+import { filterProjectQueue } from "./project-filters.js";
 
 const elements = {
   authPanel: document.querySelector("#auth-panel"),
@@ -54,6 +55,9 @@ const elements = {
   projectsViewTitle: document.querySelector("#projects-view-title"),
   projectsListPanel: document.querySelector("#projects-list-panel"),
   projectsHistoryPanel: document.querySelector("#projects-history-panel"),
+  projectFilters: document.querySelector("#project-filters"),
+  projectSearch: document.querySelector("#project-search"),
+  projectCategory: document.querySelector("#project-category"),
   toast: document.querySelector("#admin-toast"),
   workspaceTabs: [...document.querySelectorAll(".workspace-tabs > [role='tab']")],
   workspacePanels: [...document.querySelectorAll("[data-workspace-panel]")],
@@ -129,6 +133,7 @@ function selectProjectView(nextView, { updateUrl = true } = {}) {
   });
   elements.projectsListPanel.hidden = projectView === "history";
   elements.projectsHistoryPanel.hidden = projectView !== "history";
+  elements.projectFilters.hidden = projectView === "history";
   if (projectView !== "history") {
     elements.projectsListPanel.setAttribute("aria-labelledby", `projects-${projectView}-tab`);
   }
@@ -238,22 +243,29 @@ function renderPublishingState() {
     history: "Publication history",
   };
   const selectedStatus = statusByView[projectView];
-  const visibleProjects = selectedStatus
+  const statusProjects = selectedStatus
     ? projectState.projects.filter((project) => project.status === selectedStatus)
     : [];
+  const visibleProjects = filterProjectQueue(statusProjects, {
+    query: elements.projectSearch.value,
+    category: elements.projectCategory.value,
+  });
+  const filtering = Boolean(elements.projectSearch.value.trim() || elements.projectCategory.value);
   const summaryByView = {
-    review: `${visibleProjects.length} awaiting review · ${counts.approved} published · ${counts.hidden} hidden`,
-    published: `${visibleProjects.length} published · ${counts.pending} awaiting review · ${counts.hidden} hidden`,
-    hidden: `${visibleProjects.length} hidden · ${counts.pending} awaiting review · ${counts.approved} published`,
+    review: `${statusProjects.length} awaiting review · ${counts.approved} published · ${counts.hidden} hidden`,
+    published: `${statusProjects.length} published · ${counts.pending} awaiting review · ${counts.hidden} hidden`,
+    hidden: `${statusProjects.length} hidden · ${counts.pending} awaiting review · ${counts.approved} published`,
   };
   elements.projectsViewTitle.textContent = titleByView[projectView];
   elements.publishingSummary.textContent = projectView === "history"
     ? `${projectState.audit.length} recent publication decisions`
-    : summaryByView[projectView];
+    : `${filtering ? `${visibleProjects.length} of ${statusProjects.length} shown · ` : ""}${summaryByView[projectView]}`;
   renderProjectInbox(elements.publishingList, {
     ...projectState,
     projects: visibleProjects,
-    emptyMessage: projectView === "published"
+    emptyMessage: filtering
+      ? "No projects match the current search and category."
+      : projectView === "published"
       ? "No GitHub additions are currently approved for public presentation."
       : projectView === "hidden"
         ? "No projects are hidden."
@@ -467,6 +479,8 @@ elements.syncProjects.addEventListener("click", async () => {
     elements.syncProjects.disabled = false;
   }
 });
+elements.projectSearch.addEventListener("input", renderPublishingState);
+elements.projectCategory.addEventListener("change", renderPublishingState);
 elements.search.addEventListener("input", renderState);
 elements.signOut.addEventListener("click", async () => {
   await signOutOwner(authConfig);

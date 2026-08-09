@@ -378,27 +378,43 @@ export function renderProjectInbox(container, state, { onSave, onUpload, onDisca
   }
 
   state.projects.forEach((project) => {
+    const card = document.createElement("details");
+    card.className = "publishing-row";
+    card.dataset.status = project.status;
+    const cardSummary = document.createElement("summary");
+    cardSummary.className = "publishing-card-summary";
+    const cardIdentity = document.createElement("div");
+    const cardStatus = document.createElement("span");
+    cardStatus.className = "publication-status";
+    cardStatus.textContent = project.status;
+    const cardTitle = document.createElement("strong");
+    cardTitle.textContent = project.title || project.name;
+    const cardRepository = document.createElement("small");
+    cardRepository.textContent = project.name;
+    cardIdentity.append(cardStatus, cardTitle, cardRepository);
+    const cardMeta = document.createElement("div");
+    const cardCategory = document.createElement("strong");
+    cardCategory.textContent = project.category || "Uncategorized";
+    const cardSignals = document.createElement("span");
+    cardSignals.textContent = `${project.tags.length} technology signals`;
+    const cardUpdated = document.createElement("small");
+    cardUpdated.textContent = `Updated ${formatDate(project.githubUpdatedAt)}`;
+    cardMeta.append(cardCategory, cardSignals, cardUpdated);
+    cardSummary.append(cardIdentity, cardMeta);
+
     const form = document.createElement("form");
-    form.className = "publishing-row";
-    form.dataset.status = project.status;
+    form.className = "publishing-editor";
 
     const heading = document.createElement("div");
     heading.className = "publishing-heading";
-    const identity = document.createElement("div");
-    const status = document.createElement("span");
-    status.className = "publication-status";
-    status.textContent = project.status;
-    const title = document.createElement("h3");
-    title.textContent = project.name;
     const repository = document.createElement("a");
     repository.href = project.repo;
     repository.target = "_blank";
     repository.rel = "noopener noreferrer";
     repository.textContent = "Open repository";
-    identity.append(status, title, repository);
     const updated = document.createElement("small");
     updated.textContent = `GitHub updated ${formatDate(project.githubUpdatedAt)}`;
-    heading.append(identity, updated);
+    heading.append(repository, updated);
 
     const context = document.createElement("p");
     context.className = "publishing-context";
@@ -474,7 +490,7 @@ export function renderProjectInbox(container, state, { onSave, onUpload, onDisca
     const initialDraft = JSON.stringify(readDraft());
     const updateDirtyState = () => {
       const dirty = JSON.stringify(readDraft()) !== initialDraft;
-      form.classList.toggle("is-dirty", dirty);
+      card.classList.toggle("is-dirty", dirty);
       actionButtons.hidden = !dirty;
     };
     form.addEventListener("input", updateDirtyState);
@@ -493,7 +509,8 @@ export function renderProjectInbox(container, state, { onSave, onUpload, onDisca
     });
 
     form.append(heading, context, evidence, fields, mediaEditor, caseStudyEditor, actions);
-    container.append(form);
+    card.append(cardSummary, form);
+    container.append(card);
   });
 }
 

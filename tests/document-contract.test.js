@@ -93,6 +93,8 @@ test("admin control center is unlinked, no-index, and uses a dedicated module", 
   assert.match(adminHtml, /id="projects-panel" role="tabpanel"/);
   assert.match(adminHtml, /role="tablist" aria-label="Project publishing views"/);
   assert.match(adminHtml, /id="sync-projects"/);
+  assert.match(adminHtml, /id="project-search" type="search"/);
+  assert.match(adminHtml, /id="project-category"/);
   assert.match(adminHtml, /Project review inbox/);
   assert.match(adminHtml, /id="analytics-panel" role="tabpanel"/);
   assert.match(adminHtml, /role="tablist" aria-label="Analytics views"/);

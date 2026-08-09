@@ -119,6 +119,24 @@
             <button class="secondary-action" id="sync-projects" type="button">Sync GitHub</button>
           </div>
           <div id="projects-list-panel" role="tabpanel" aria-labelledby="projects-review-tab" data-projects-panel>
+            <div class="publishing-filters" id="project-filters" aria-label="Filter projects">
+              <label class="publishing-search">
+                <span>Search projects</span>
+                <input id="project-search" type="search" placeholder="Repository, technology, or capability" autocomplete="off">
+              </label>
+              <label>
+                <span>Category</span>
+                <select id="project-category">
+                  <option value="">All categories</option>
+                  <option value="frontend">Frontend</option>
+                  <option value="backend">Backend</option>
+                  <option value="data">Data</option>
+                  <option value="ai">AI</option>
+                  <option value="wearable">Wearable</option>
+                  <option value="other">Other</option>
+                </select>
+              </label>
+            </div>
             <div class="publishing-summary" id="publishing-summary" aria-live="polite"></div>
             <div class="publishing-list" id="publishing-list" aria-live="polite"></div>
           </div>
