@@ -1,3 +1,5 @@
+import { isUsefulProjectImage } from "../config/project-media.js";
+
 const LABELS = {
   "sections.journey.enabled": "Journey section",
   "sections.skills.enabled": "Skills section",
@@ -234,7 +236,9 @@ function createCaseStudyEditor(project) {
 
 function createMediaEditor(project, onUpload) {
   const candidates = project.evidence?.mediaCandidates || [];
-  const images = candidates.filter((candidate) => candidate.kind === "image");
+  const images = candidates.filter((candidate) => (
+    candidate.kind === "image" && isUsefulProjectImage(candidate)
+  ));
   const videos = candidates.filter((candidate) => candidate.kind === "video");
   const editor = document.createElement("details");
   editor.className = "publishing-media";
@@ -249,7 +253,10 @@ function createMediaEditor(project, onUpload) {
   fields.className = "media-fields";
   const coverInput = document.createElement("input");
   coverInput.type = "url";
-  coverInput.value = project.media?.coverImageUrl || "";
+  coverInput.value = isUsefulProjectImage({
+    url: project.media?.coverImageUrl,
+    alt: project.media?.coverImageAlt,
+  }) ? project.media.coverImageUrl : "";
   coverInput.placeholder = "No cover image selected";
   const coverList = document.createElement("datalist");
   coverList.id = `cover-media-${project.githubId}`;
@@ -299,10 +306,30 @@ function createMediaEditor(project, onUpload) {
   image.alt = "Selected project cover preview";
   preview.append(image);
   const updatePreview = () => {
-    if (coverInput.value) image.src = coverInput.value;
-    else image.removeAttribute("src");
-    preview.hidden = !coverInput.value;
+    const source = coverInput.value.trim();
+    preview.hidden = true;
+    image.removeAttribute("src");
+    if (!source) return;
+    if (!isUsefulProjectImage({ url: source, alt: altInput.value })) {
+      uploadStatus.textContent = "Choose a raster project screenshot instead of a badge or SVG.";
+      uploadStatus.dataset.tone = "error";
+      return;
+    }
+    image.src = source;
   };
+  image.addEventListener("load", () => {
+    preview.hidden = false;
+    if (uploadStatus.dataset.tone === "error") {
+      uploadStatus.textContent = "JPEG, PNG, or WebP · 3 MB maximum";
+      delete uploadStatus.dataset.tone;
+    }
+  });
+  image.addEventListener("error", () => {
+    preview.hidden = true;
+    image.removeAttribute("src");
+    uploadStatus.textContent = "Preview unavailable. Choose another image or upload one.";
+    uploadStatus.dataset.tone = "error";
+  });
   coverInput.addEventListener("input", updatePreview);
   fileInput.addEventListener("change", async () => {
     const file = fileInput.files?.[0];
@@ -315,7 +342,7 @@ function createMediaEditor(project, onUpload) {
       if (!altInput.value) altInput.value = `${project.title || project.name} project preview`;
       uploadStatus.textContent = "Uploaded. Save changes to attach this image.";
       uploadStatus.dataset.tone = "success";
-      updatePreview();
+      coverInput.dispatchEvent(new Event("input", { bubbles: true }));
     } catch (error) {
       uploadStatus.textContent = error.message;
       uploadStatus.dataset.tone = "error";
@@ -338,7 +365,7 @@ function createMediaEditor(project, onUpload) {
   return { editor, controls: { coverInput, altInput, demoInput } };
 }
 
-export function renderProjectInbox(container, state, { onSave, onUpload }) {
+export function renderProjectInbox(container, state, { onSave, onUpload, onDiscard }) {
   container.replaceChildren();
   if (!state.projects.length) {
     const empty = document.createElement("p");
@@ -414,33 +441,55 @@ export function renderProjectInbox(container, state, { onSave, onUpload }) {
     save.type = "submit";
     save.className = "save-action";
     save.textContent = project.status === "pending" ? "Review project" : "Save changes";
-    actions.append(reviewed, save);
+    const discard = document.createElement("button");
+    discard.type = "button";
+    discard.className = "secondary-action";
+    discard.textContent = "Discard";
+    const actionButtons = document.createElement("div");
+    actionButtons.className = "publishing-action-buttons";
+    actionButtons.hidden = true;
+    actionButtons.append(discard, save);
+    actions.append(reviewed, actionButtons);
+
+    const readDraft = () => ({
+      status: publication.value,
+      title: titleInput.value,
+      description: description.value,
+      category: category.value,
+      tags: tags.value.split(",").map((entry) => entry.trim()).filter(Boolean),
+      caseStudy: {
+        caseStudy: true,
+        ...Object.fromEntries(Object.entries(caseStudyControls).map(([field, control]) => [
+          field,
+          control.value,
+        ])),
+        highlights: tags.value.split(",").map((entry) => entry.trim()).filter(Boolean),
+      },
+      media: {
+        coverImageUrl: mediaControls.coverInput.value,
+        coverImageAlt: mediaControls.altInput.value,
+        demoUrl: mediaControls.demoInput.value,
+      },
+    });
+    const initialDraft = JSON.stringify(readDraft());
+    const updateDirtyState = () => {
+      const dirty = JSON.stringify(readDraft()) !== initialDraft;
+      form.classList.toggle("is-dirty", dirty);
+      actionButtons.hidden = !dirty;
+    };
+    form.addEventListener("input", updateDirtyState);
+    form.addEventListener("change", updateDirtyState);
+    discard.addEventListener("click", () => onDiscard(project));
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
+      if (actionButtons.hidden) return;
       save.disabled = true;
       form.classList.add("is-saving");
       await onSave({
         ...project,
-        status: publication.value,
-        title: titleInput.value,
-        description: description.value,
-        category: category.value,
-        tags: tags.value.split(",").map((entry) => entry.trim()).filter(Boolean),
-        caseStudy: {
-          caseStudy: true,
-          ...Object.fromEntries(Object.entries(caseStudyControls).map(([field, control]) => [
-            field,
-            control.value,
-          ])),
-          highlights: tags.value.split(",").map((entry) => entry.trim()).filter(Boolean),
-        },
-        media: {
-          coverImageUrl: mediaControls.coverInput.value,
-          coverImageAlt: mediaControls.altInput.value,
-          demoUrl: mediaControls.demoInput.value,
-        },
-      }, { form, save });
+        ...readDraft(),
+      }, { form, save, previousStatus: project.status });
     });
 
     form.append(heading, context, evidence, fields, mediaEditor, caseStudyEditor, actions);

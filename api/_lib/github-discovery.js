@@ -1,5 +1,6 @@
 import { GITHUB_USERNAME, PORTFOLIO_TOPIC } from "../../src/services/github-projects.js";
 import { generateProjectDraft } from "./project-draft.js";
+import { isUsefulProjectImage } from "../../src/config/project-media.js";
 import { isBaselinePublishedRepository } from "../../src/config/project-publication.js";
 
 async function readOptionalResponse(response, type) {
@@ -34,6 +35,7 @@ export function extractMediaCandidates(repository, markdown = "") {
   const append = (kind, url, alt, source) => {
     const resolvedUrl = resolveRepositoryMediaUrl(repository, url);
     if (!resolvedUrl || candidates.some((candidate) => candidate.url === resolvedUrl)) return;
+    if (kind === "image" && !isUsefulProjectImage({ url: resolvedUrl, alt })) return;
     candidates.push({ kind, url: resolvedUrl, alt: String(alt || "").trim().slice(0, 160), source });
   };
   [...String(markdown).matchAll(/!\[([^\]]*)\]\(([^\s)]+)(?:\s+"[^"]*")?\)/g)]

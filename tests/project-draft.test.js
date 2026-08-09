@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { extractReadmeSections, generateProjectDraft } from "../api/_lib/project-draft.js";
 import { extractEvidenceDocumentPaths, extractMediaCandidates } from "../api/_lib/github-discovery.js";
+import { isUsefulProjectImage } from "../src/config/project-media.js";
 
 const repository = {
   name: "secure-orders-api",
@@ -74,6 +75,8 @@ test("repository enrichment proposes bounded HTTPS image and demo candidates", (
   }, `
     ![Dashboard](docs/dashboard.png)
     <img src="https://user-images.githubusercontent.com/example/diagram.png" alt="Architecture diagram">
+    ![TypeScript](https://img.shields.io/badge/-TypeScript-3178c6?style=flat)
+    ![Build badge](docs/build-badge.svg)
     [Demo](https://www.youtube.com/watch?v=example)
     [Unsafe](javascript:alert(1))
   `);
@@ -85,4 +88,15 @@ test("repository enrichment proposes bounded HTTPS image and demo candidates", (
   assert.match(images[0].url, /raw\.githubusercontent\.com.*docs\/dashboard\.png/);
   assert.equal(videos.length, 1);
   assert.match(videos[0].url, /youtube\.com/);
+});
+
+test("project covers reject badges, SVGs, unsafe schemes, and lookalike status art", () => {
+  assert.equal(isUsefulProjectImage({ url: "https://img.shields.io/badge/build-passing.svg" }), false);
+  assert.equal(isUsefulProjectImage({ url: "https://example.com/project-cover.svg" }), false);
+  assert.equal(isUsefulProjectImage({ url: "javascript:alert(1)" }), false);
+  assert.equal(isUsefulProjectImage({
+    url: "https://example.com/status.png",
+    alt: "Build status",
+  }), false);
+  assert.equal(isUsefulProjectImage({ url: "https://example.com/project-dashboard.webp" }), true);
 });

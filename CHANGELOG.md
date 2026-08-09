@@ -57,6 +57,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ### Fixed
 
 - Trusted Vercel Git branch Preview origins for authenticated owner mutations while retaining exact-origin matching against lookalike hosts.
+- Rejected README badges and SVG shields as project covers, hid failed previews, and showed Save/Discard actions only for changed publishing drafts.
 
 ## [1.7.0] - 2026-08-09
 

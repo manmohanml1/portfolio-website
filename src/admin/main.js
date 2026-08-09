@@ -260,6 +260,7 @@ function renderPublishingState() {
         : "No projects are waiting for review. Sync GitHub to check for tagged repositories.",
   }, {
     onSave: handleProjectSave,
+    onDiscard: () => renderPublishingState(),
     onUpload: async (project, file) => {
       const result = await uploadProjectMedia(project, file, credential);
       showToast("Project image uploaded; save the project to publish it");
@@ -293,10 +294,11 @@ async function refreshProjects() {
 }
 
 async function handleProjectSave(project, controls) {
-  if (project.status === "approved") {
+  if (project.status === "approved" && controls.previousStatus !== "approved") {
     const confirmed = globalThis.confirm(`${project.name} will become visible on the public portfolio. Continue?`);
     if (!confirmed) {
-      renderPublishingState();
+      controls.form.classList.remove("is-saving");
+      controls.save.disabled = false;
       return;
     }
   }
