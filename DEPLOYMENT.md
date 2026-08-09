@@ -77,7 +77,7 @@ Neon's current Managed Better Auth service does not yet provide a built-in restr
 
 1. In the Vercel project, open **Analytics** and enable Web Analytics. Open **Speed Insights** and enable it for the same project.
 2. Create a Vercel access token for the portfolio owner. Add it as the server-only `VERCEL_API_TOKEN` variable for Preview and Production. Never expose it with a `VITE_` prefix or return it from an API.
-3. Keep Vercel's system-provided `VERCEL_PROJECT_ID` and `VERCEL_TEAM_ID` variables enabled. They identify the current project and owning team without another manually copied identifier.
+3. Add `VERCEL_PROJECT_ID` for the portfolio project and `VERCEL_TEAM_ID` for its owning team to Preview and Production. These are public identifiers, but keeping them in environment configuration makes the adapter portable and avoids relying on framework-specific system-variable exposure.
 4. Optionally add `VERCEL_ANALYTICS_DASHBOARD_URL` with the direct project Analytics or Speed Insights URL. Without it, the Control Center links to the general Vercel dashboard.
 5. Redeploy. Visit the public portfolio to begin collecting page views and real-user performance data; `/admin.html` is deliberately excluded from both collectors.
 6. Sign in to `/admin.html`, open **Analytics**, and confirm 7-day and 30-day summaries load. New projects may show an empty state until Vercel processes initial visits.
