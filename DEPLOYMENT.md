@@ -61,7 +61,7 @@ The deployment should expose `FEATURE_CONFIG_DATABASE_URL` server-side. It may a
 ### Admin Control Center Setup
 
 1. In the Neon Console, select the intended persistent branch, open **Auth**, and enable Managed Better Auth with email/password authentication.
-2. Create the single owner identity. Neon currently allows sign-up by default, so do not publish a sign-up interface. Every non-owner account remains unauthorized by the portfolio APIs through the exact owner allowlist.
+2. Create the single owner identity through Neon's email sign-up API, then disable email sign-up while keeping email sign-in enabled. Do not use the Neon Console's **Create user** action for a password login: it creates a user record without a password credential. Never publish a permanent sign-up interface. Every non-owner account remains unauthorized by the portfolio APIs through the exact owner allowlist.
 3. In the connected Neon/Vercel integration, enable Auth and Preview branching. Neon then injects branch-correct `NEON_AUTH_BASE_URL` and `NEON_AUTH_JWKS_URL` values and registers each deployment origin automatically. Auth users and settings clone with the database branch, while Preview sessions remain isolated from Production.
 4. Confirm those two integration-managed variables exist in the Vercel Preview and Production environments. `NEON_AUTH_ISSUER` and `NEON_AUTH_AUDIENCE` are optional additional checks and should be added only when those exact claims are declared by the issued token.
 5. Add the exact identity to `ADMIN_OWNER_IDS` and optionally `ADMIN_OWNER_EMAILS`. The immutable Auth user id is preferred; email remains supported as an exact, case-normalized allowlist.
