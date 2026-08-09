@@ -56,6 +56,21 @@ test("mutation origins are explicit and environment-aware", () => {
     { headers: { origin: "https://attacker.example" } },
     { VERCEL_ENV: "production", ADMIN_TRUSTED_ORIGINS: "https://portfolio.example.com" },
   ), false);
+  assert.equal(isTrustedMutationOrigin(
+    { headers: { origin: "https://portfolio-website-git-cod-c93dc2-owner.vercel.app" } },
+    {
+      VERCEL_ENV: "preview",
+      VERCEL_URL: "portfolio-website-random-deployment.vercel.app",
+      VERCEL_BRANCH_URL: "portfolio-website-git-cod-c93dc2-owner.vercel.app",
+    },
+  ), true);
+  assert.equal(isTrustedMutationOrigin(
+    { headers: { origin: "https://portfolio-website-git-cod-c93dc2-owner.vercel.app.attacker.example" } },
+    {
+      VERCEL_ENV: "preview",
+      VERCEL_BRANCH_URL: "portfolio-website-git-cod-c93dc2-owner.vercel.app",
+    },
+  ), false);
 });
 
 test("public admin auth bootstrap never includes the local secret", () => {

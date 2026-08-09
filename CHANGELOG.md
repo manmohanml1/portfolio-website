@@ -54,6 +54,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Reworked project previews into compact dialog-intro media so case-study and architecture content use the full dialog width on desktop and mobile.
 - Advanced the local feature candidate to `v1.8.0` for visitor Evidence & Discovery review.
 
+### Fixed
+
+- Trusted Vercel Git branch Preview origins for authenticated owner mutations while retaining exact-origin matching against lookalike hosts.
+
 ## [1.7.0] - 2026-08-09
 
 ### Added
