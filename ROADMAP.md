@@ -8,7 +8,7 @@ This list tracks additions that make the site useful to explore, not simply more
 | --- | --- | --- |
 | Runtime Feature Configuration | Separate deployment from availability through validated, fail-open configuration flags. | Shipped in v1.3.0 |
 | Neon Configuration Store | Persist environment-specific flags and audit history without exposing database credentials to the browser. | Shipped in v1.4.0 |
-| Admin Control Center | Let the portfolio owner update environment flags through an authenticated interface with audit history. | In development for v1.6.0 |
+| Admin Control Center | Let the portfolio owner update environment flags through an authenticated interface with audit history. | Shipped in v1.6.0 |
 | Control Center Observability | Add owner-only Vercel Web Analytics and Speed Insights summaries after the authenticated control plane ships. | Planned for v1.7.0 |
 | Visitor Customization | Let viewers choose an audience lens and project layout locally within admin-enabled capabilities. | Shipped in v1.5.0 |
 | Project Case Study Mode | Let viewers understand the problem, implementation choices, and result behind selected work. | Shipped in v1.2.0 |

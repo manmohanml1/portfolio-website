@@ -6,6 +6,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-08-08
+
 ### Added
 
 - Added an unlinked, no-index owner Control Center for switching development, staging, and production feature flags and reviewing environment audit history.
@@ -16,7 +18,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Changed
 
-- Advanced the local and Preview release candidate to `v1.6.0`; production remains `v1.5.2` until the reviewed feature is approved and merged.
+- Released the authenticated owner Control Center and immediate Neon-backed feature availability as `v1.6.0`.
 
 ### Fixed
 
@@ -158,7 +160,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Published the initial production portfolio deployment on Vercel Hobby.
 - Connected the GitHub repository to Vercel for automatic production and preview deployments.
 
-[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.5.2...HEAD
+[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.5.2...v1.6.0
 [1.5.2]: https://github.com/manmohanml1/portfolio-website/compare/v1.5.1...v1.5.2
 [1.5.1]: https://github.com/manmohanml1/portfolio-website/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.4.0...v1.5.0

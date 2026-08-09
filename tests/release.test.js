@@ -8,11 +8,11 @@ const pullRequestTemplate = await readFile(new URL("../.github/PULL_REQUEST_TEMP
 const deployment = await readFile(new URL("../DEPLOYMENT.md", import.meta.url), "utf8");
 const roadmap = await readFile(new URL("../ROADMAP.md", import.meta.url), "utf8");
 
-test("current release identifies the v1.6 admin feature candidate", () => {
+test("current release identifies the v1.6 admin feature release", () => {
   assert.match(release.version, /^v\d+\.\d+\.\d+$/);
   assert.equal(release.version, "v1.6.0");
   assert.equal(release.type, "feat");
-  assert.equal(release.label, "Feature candidate");
+  assert.equal(release.label, "Feature release");
 });
 
 test("pull request quality workflow enforces change-type title prefixes", () => {
@@ -36,8 +36,8 @@ test("roadmap records the shipped audience customization release", () => {
   assert.match(roadmap, /\| Role-Based Viewing .*\| Shipped in v1\.5\.0 \|/);
 });
 
-test("roadmap records the admin control center as the v1.6 candidate", () => {
-  assert.match(roadmap, /\| Admin Control Center .*\| In development for v1\.6\.0 \|/);
+test("roadmap records the shipped v1.6 admin control center", () => {
+  assert.match(roadmap, /\| Admin Control Center .*\| Shipped in v1\.6\.0 \|/);
 });
 
 test("release checklists protect roadmap promotion and GitHub release tagging", () => {
