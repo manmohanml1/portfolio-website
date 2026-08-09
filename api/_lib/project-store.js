@@ -265,3 +265,16 @@ export async function readApprovedProjectRows({
   );
   return rows.map(mapProjectRow);
 }
+
+export async function readManagedProjectRows({
+  connectionString = resolveFeatureConfigConnectionString(),
+  createSql = neon,
+} = {}) {
+  if (!connectionString) return [];
+  const sql = createSql(connectionString);
+  const rows = await sql.query(
+    `SELECT * FROM portfolio_project_queue
+     ORDER BY repository_name`,
+  );
+  return rows.map(mapProjectRow);
+}

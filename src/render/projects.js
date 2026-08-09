@@ -82,13 +82,14 @@ export function getFilterLabel(filter = "all") {
   return FILTER_LABELS[filter] || FILTER_LABELS.all;
 }
 
-export function mergeProjects(curatedProjects, discoveredProjects) {
+export function mergeProjects(curatedProjects, discoveredProjects, managedRepositories = []) {
+  const managedUrls = new Set(managedRepositories.map((repo) => repo.toLowerCase()));
   const discoveredByUrl = new Map(
     discoveredProjects.map((project) => [project.repo.toLowerCase(), project]),
   );
   const mergedCurated = curatedProjects.map((project) => {
     const approved = discoveredByUrl.get(project.repo.toLowerCase());
-    if (!approved) return project;
+    if (!approved) return managedUrls.has(project.repo.toLowerCase()) ? null : project;
     discoveredByUrl.delete(project.repo.toLowerCase());
     if (!approved.ownerReviewed) return project;
     return {
@@ -100,7 +101,7 @@ export function mergeProjects(curatedProjects, discoveredProjects) {
         ...(approved.details || {}),
       },
     };
-  });
+  }).filter(Boolean);
   return [
     ...mergedCurated,
     ...discoveredByUrl.values(),
@@ -223,8 +224,8 @@ export function setupProjectFilters({
   renderProjects(activeFilter);
 
   fetchOptInProjects()
-    .then((fetchedProjects) => {
-      availableProjects = mergeProjects(projects, fetchedProjects);
+    .then(({ projects: fetchedProjects, managedRepositories }) => {
+      availableProjects = mergeProjects(projects, fetchedProjects, managedRepositories);
       const addedProjects = availableProjects.length - projects.length;
       // Keep the discovered subset so audience-specific sync status stays accurate.
       discoveredProjects = availableProjects.filter((project) => project.discovered);

@@ -59,6 +59,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Trusted Vercel Git branch Preview origins for authenticated owner mutations while retaining exact-origin matching against lookalike hosts.
 - Rejected README badges and SVG shields as project covers, hid failed previews, and showed Save/Discard actions only for changed publishing drafts.
 - Added searchable, category-filtered project publishing views with compact accordion cards that expand into the full owner editor.
+- Made publishing-queue visibility authoritative so hidden or pending projects cannot reappear from checked-in fallback data.
 
 ## [1.7.0] - 2026-08-09
 

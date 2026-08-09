@@ -107,6 +107,14 @@ test("baseline publication status does not replace checked-in curation with gene
   assert.equal(merged[0], projects[0]);
 });
 
+test("managed hidden or pending repositories suppress checked-in project copies", () => {
+  const managedRepo = projects[0].repo;
+  const merged = mergeProjects(projects, [], [managedRepo]);
+
+  assert.equal(merged.some((project) => project.repo === managedRepo), false);
+  assert.equal(merged.length, projects.length - 1);
+});
+
 test("wearable projects can be added and filtered after GitHub discovery", () => {
   const wearable = { ...projects[0], repo: "https://github.com/manmohanml1/display-app", category: "wearable" };
   const merged = mergeProjects(projects, [wearable]);

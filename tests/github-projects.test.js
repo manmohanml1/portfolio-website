@@ -33,16 +33,20 @@ test("tagged GitHub repositories map into filterable portfolio cards", () => {
 
 test("only owner-approved repositories returned by the publishing API are fetched", async () => {
   let requestedUrl;
-  const projects = await fetchOptInProjects(async (url) => {
+  const result = await fetchOptInProjects(async (url) => {
     requestedUrl = url;
     return {
     ok: true,
-    json: async () => ({ repositories: [selectedRepository] }),
+    json: async () => ({
+      repositories: [selectedRepository],
+      managedRepositories: [selectedRepository.html_url],
+    }),
   };
   });
 
   assert.equal(requestedUrl, "/api/projects");
-  assert.deepEqual(projects.map((project) => project.title), ["Fresh API Project"]);
+  assert.deepEqual(result.projects.map((project) => project.title), ["Fresh API Project"]);
+  assert.deepEqual(result.managedRepositories, [selectedRepository.html_url]);
 });
 
 test("owner curation overrides generated presentation without changing repository identity", () => {

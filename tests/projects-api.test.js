@@ -27,6 +27,10 @@ test("public project API returns normalized owner-approved repositories", async 
       },
       reviewedBy: "owner@example.com",
     }],
+    readManagedProjects: async () => [
+      { repo: "https://github.com/manmohanml1/approved-project" },
+      { repo: "https://github.com/manmohanml1/hidden-project" },
+    ],
   });
   await handler({ method: "GET" }, response);
   assert.equal(response.statusCode, 200);
@@ -36,14 +40,22 @@ test("public project API returns normalized owner-approved repositories", async 
   assert.equal(response.body.repositories[0].curation.caseStudy.summary, "Reviewed case study");
   assert.match(response.body.repositories[0].curation.media.coverImageUrl, /preview\.png/);
   assert.equal(response.body.repositories[0].curation.ownerReviewed, true);
+  assert.deepEqual(response.body.managedRepositories, [
+    "https://github.com/manmohanml1/approved-project",
+    "https://github.com/manmohanml1/hidden-project",
+  ]);
 });
 
 test("public project API fails open to an empty addition set", async () => {
   const response = createResponse();
-  await createPublishedProjectsHandler({ readProjects: async () => { throw new Error("offline"); } })(
+  await createPublishedProjectsHandler({
+    readProjects: async () => { throw new Error("offline"); },
+    readManagedProjects: async () => [],
+  })(
     { method: "GET" }, response,
   );
   assert.equal(response.statusCode, 200);
   assert.deepEqual(response.body.repositories, []);
+  assert.deepEqual(response.body.managedRepositories, []);
   assert.equal(response.body.source, "fallback");
 });

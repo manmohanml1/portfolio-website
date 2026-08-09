@@ -166,7 +166,7 @@ export function applyProjectCuration(project, curation = {}) {
 
 export async function fetchOptInProjects(fetcher = globalThis.fetch) {
   if (typeof fetcher !== "function") {
-    return [];
+    return { projects: [], managedRepositories: [] };
   }
 
   const response = await fetcher("/api/projects", { cache: "no-store" });
@@ -178,6 +178,11 @@ export async function fetchOptInProjects(fetcher = globalThis.fetch) {
   const payload = await response.json();
   const repositories = Array.isArray(payload.repositories) ? payload.repositories : [];
 
-  return repositories
-    .map((repository) => applyProjectCuration(mapGitHubRepository(repository), repository.curation));
+  return {
+    projects: repositories
+      .map((repository) => applyProjectCuration(mapGitHubRepository(repository), repository.curation)),
+    managedRepositories: Array.isArray(payload.managedRepositories)
+      ? payload.managedRepositories.filter((repository) => typeof repository === "string")
+      : repositories.map((repository) => repository.html_url).filter(Boolean),
+  };
 }

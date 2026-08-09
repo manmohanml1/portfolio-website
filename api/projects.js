@@ -1,4 +1,4 @@
-import { readApprovedProjectRows } from "./_lib/project-store.js";
+import { readApprovedProjectRows, readManagedProjectRows } from "./_lib/project-store.js";
 import { BASELINE_REVIEWER } from "../src/config/project-publication.js";
 
 function toRepository(project) {
@@ -22,7 +22,10 @@ function toRepository(project) {
   };
 }
 
-export function createPublishedProjectsHandler({ readProjects = readApprovedProjectRows } = {}) {
+export function createPublishedProjectsHandler({
+  readProjects = readApprovedProjectRows,
+  readManagedProjects = readManagedProjectRows,
+} = {}) {
   return async function handler(request, response) {
     response.setHeader("Cache-Control", "no-store");
     if (request.method !== "GET") {
@@ -31,10 +34,20 @@ export function createPublishedProjectsHandler({ readProjects = readApprovedProj
       return;
     }
     try {
-      const projects = await readProjects();
-      response.status(200).json({ version: 1, source: "publishing-queue", repositories: projects.map(toRepository) });
+      const [projects, managedProjects] = await Promise.all([readProjects(), readManagedProjects()]);
+      response.status(200).json({
+        version: 2,
+        source: "publishing-queue",
+        repositories: projects.map(toRepository),
+        managedRepositories: managedProjects.map((project) => project.repo),
+      });
     } catch {
-      response.status(200).json({ version: 1, source: "fallback", repositories: [] });
+      response.status(200).json({
+        version: 2,
+        source: "fallback",
+        repositories: [],
+        managedRepositories: [],
+      });
     }
   };
 }

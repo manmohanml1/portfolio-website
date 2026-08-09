@@ -187,6 +187,10 @@ async function readLocalApprovedProjects() {
   return localProjectState.projects.filter((project) => project.status === "approved");
 }
 
+async function readLocalManagedProjects() {
+  return localProjectState.projects;
+}
+
 const localAdminProjectsHandler = createAdminProjectsHandler({
   sync: hasFeatureDatabase ? undefined : syncLocalProjects,
   readQueue: hasFeatureDatabase ? undefined : readLocalProjectQueue,
@@ -194,6 +198,7 @@ const localAdminProjectsHandler = createAdminProjectsHandler({
 });
 const localPublishedProjectsHandler = createPublishedProjectsHandler({
   readProjects: hasFeatureDatabase ? undefined : readLocalApprovedProjects,
+  readManagedProjects: hasFeatureDatabase ? undefined : readLocalManagedProjects,
 });
 
 const types = {

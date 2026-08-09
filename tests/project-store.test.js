@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   normalizeProjectReview,
   readApprovedProjectRows,
+  readManagedProjectRows,
   reviewProjectCandidate,
   syncProjectCandidates,
 } from "../api/_lib/project-store.js";
@@ -108,4 +109,14 @@ test("public store query selects only approved projects", async () => {
   });
   assert.deepEqual(projects, []);
   assert.match(statement, /publication_status = 'approved'/);
+});
+
+test("managed project query includes every publication status", async () => {
+  let statement;
+  const projects = await readManagedProjectRows({
+    connectionString: "postgres://configured",
+    createSql: () => ({ query: async (query) => { statement = query; return []; } }),
+  });
+  assert.deepEqual(projects, []);
+  assert.doesNotMatch(statement, /publication_status\s*=/);
 });
