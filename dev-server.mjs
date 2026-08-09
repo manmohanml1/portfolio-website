@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { DEFAULT_FEATURE_FLAGS, isKnownFeatureFlag } from "./src/config/feature-defaults.js";
 import { readFeatureConfig } from "./api/_lib/feature-store.js";
 import adminAuthConfigHandler from "./api/admin/auth-config.js";
+import { createAdminAnalyticsHandler } from "./api/admin/analytics.js";
 import { createAdminFeatureHandler } from "./api/admin/features.js";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
@@ -49,6 +50,41 @@ const localAdminFeatureHandler = createAdminFeatureHandler(
     updateFlag: updateLocalAdminFlag,
   },
 );
+
+async function readLocalAnalytics({ days }) {
+  const until = new Date();
+  const since = new Date(until);
+  since.setUTCDate(since.getUTCDate() - (days - 1));
+  const trend = Array.from({ length: days }, (_, index) => {
+    const date = new Date(since);
+    date.setUTCDate(date.getUTCDate() + index);
+    return {
+      date: date.toISOString(),
+      pageviews: 8 + ((index * 7) % 19),
+      visitors: 5 + ((index * 5) % 12),
+    };
+  });
+  const rows = (values) => values.map(([label, pageviews, visitors]) => ({ label, pageviews, visitors }));
+  return {
+    configured: true,
+    generatedAt: until.toISOString(),
+    range: { days, since: since.toISOString().slice(0, 10), until: until.toISOString().slice(0, 10) },
+    totals: trend.reduce((total, row) => ({
+      pageviews: total.pageviews + row.pageviews,
+      visitors: total.visitors + row.visitors,
+    }), { pageviews: 0, visitors: 0 }),
+    trend,
+    breakdowns: {
+      pages: rows([["/", 112, 76], ["/#work", 54, 39], ["/#journey", 31, 25]]),
+      referrers: rows([["linkedin.com", 68, 51], ["github.com", 43, 32], ["Direct / Unknown", 36, 28]]),
+      countries: rows([["US", 91, 67], ["IN", 44, 31], ["CA", 18, 14]]),
+      devices: rows([["Desktop", 103, 74], ["Mobile", 47, 35], ["Tablet", 8, 6]]),
+    },
+    dashboardUrl: "https://vercel.com/dashboard",
+  };
+}
+
+const localAdminAnalyticsHandler = createAdminAnalyticsHandler({ readSummary: readLocalAnalytics });
 
 const types = {
   ".css": "text/css; charset=utf-8",
@@ -100,6 +136,12 @@ createServer(async (request, response) => {
     request.query = Object.fromEntries(url.searchParams);
     request.body = request.method === "PUT" ? await readJsonBody(request) : {};
     await localAdminFeatureHandler(request, createApiResponse(response));
+    return;
+  }
+
+  if (url.pathname === "/api/admin/analytics") {
+    request.query = Object.fromEntries(url.searchParams);
+    await localAdminAnalyticsHandler(request, createApiResponse(response));
     return;
   }
 

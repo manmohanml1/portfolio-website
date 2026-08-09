@@ -6,6 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Added privacy-conscious Vercel Web Analytics and Speed Insights collection to the public portfolio while excluding the owner workspace.
+- Added an owner-only Analytics tab with 7-day and 30-day traffic totals, daily trends, top pages, referrers, countries, and devices.
+- Added a protected analytics API that keeps the Vercel token server-side and returns only normalized aggregate data.
+
+### Changed
+
+- Advanced the local release candidate to `v1.7.0` for Control Center observability review.
+
 ## [1.6.0] - 2026-08-08
 
 ### Added

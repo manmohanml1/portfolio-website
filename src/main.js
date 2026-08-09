@@ -2,6 +2,7 @@ import { setupEnvironment } from "./config/environment.js";
 import { applyFeatureAvailability } from "./features/feature-availability.js";
 import { setupBackToTop, setupRevealAnimation, setupTiltCards } from "./features/interactions.js";
 import { setupMotionPreference } from "./features/motion-preference.js";
+import { setupPublicObservability } from "./features/observability.js";
 import { setupFeedbackDialog } from "./features/feedback-dialog.js";
 import { setupProjectDialog } from "./features/project-dialog.js";
 import { setupThemeMenu } from "./features/theme-switcher.js";
@@ -13,6 +14,7 @@ import { isFeatureEnabled, loadFeatureConfig } from "./services/feature-config.j
 import { readVisitorPreferences, resolveAudienceFromSearch, updateVisitorPreferences } from "./services/visitor-preferences.js";
 
 async function bootPortfolio() {
+  setupPublicObservability();
   const environment = setupEnvironment();
   const featureConfig = await loadFeatureConfig({ environment: environment.name });
   applyFeatureAvailability(featureConfig);

@@ -71,6 +71,9 @@ test("admin control center is unlinked, no-index, and uses a dedicated module", 
   assert.match(adminHtml, /role="tablist" aria-label="Control Center views"/);
   assert.match(adminHtml, /id="flags-panel" role="tabpanel"/);
   assert.match(adminHtml, /id="audit-panel" role="tabpanel"/);
+  assert.match(adminHtml, /id="analytics-panel" role="tabpanel"/);
+  assert.match(adminHtml, /data-analytics-days="7"/);
+  assert.match(mainSource, /setupPublicObservability/);
 });
 
 test("public profile links open outside the portfolio tab", () => {

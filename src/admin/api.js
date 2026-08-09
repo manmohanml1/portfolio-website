@@ -17,6 +17,13 @@ export async function loadFeatureState(environment, credential) {
   }));
 }
 
+export async function loadAnalyticsSummary(days, credential) {
+  return readJson(await fetch(`/api/admin/analytics?days=${encodeURIComponent(days)}`, {
+    cache: "no-store",
+    headers: createAdminHeaders(credential),
+  }));
+}
+
 export async function saveFeatureFlag(environment, flag, credential) {
   return readJson(await fetch(`/api/admin/features?environment=${encodeURIComponent(environment)}`, {
     method: "PUT",

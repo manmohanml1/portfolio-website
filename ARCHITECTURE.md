@@ -6,9 +6,10 @@ This portfolio has a static, no-build frontend with modular ES modules, read-onl
 
 - `index.html`: semantic page shell and persistent layout anchors.
 - `api/config.js`: public allow-listed feature configuration endpoint.
-- `api/admin/`: owner-only authentication bootstrap and feature-management endpoint.
+- `api/admin/`: owner-only authentication, feature-management, and analytics endpoints.
 - `api/_lib/admin-auth.js`: local-development isolation, Neon JWT verification, exact owner authorization, and mutation-origin checks.
 - `api/_lib/feature-store.js`: server-only shared-control-plane Neon reader, connection precedence, timeout, validation, and defaults fallback.
+- `api/_lib/vercel-analytics.js`: server-only Vercel Web Analytics adapter with exact period totals and normalized aggregate summaries.
 - `db/`: idempotent schema migration and environment-specific seed data.
 - `styles.css`: current visual system, responsive layout, theme variables, and animations.
 - `src/data/portfolio.js`: editable curated portfolio content, skills, and journey sections.
@@ -23,7 +24,8 @@ This portfolio has a static, no-build frontend with modular ES modules, read-onl
 - `src/features/feature-availability.js`: section and control visibility rules for registered flags.
 - `src/render/`: DOM rendering modules for content sections.
 - `src/features/`: interactive features such as theme switching, motion preference, project and feedback dialogs, card tilt, and back-to-top.
-- `admin.html`, `admin.css`, and `src/admin/`: unlinked owner workspace for environment flags and audit history.
+- `src/features/observability.js`: public-only Web Analytics and Speed Insights bootstrap with local and admin exclusions.
+- `admin.html`, `admin.css`, and `src/admin/`: unlinked owner workspace for environment flags, audit history, and production analytics.
 - `src/utils/`: small shared utilities.
 - `tests/`: data integrity tests that catch broken projects, missing themes, and incomplete section content.
 - `.github/workflows/quality.yml`: CI quality gate and deployable static artifact packaging.

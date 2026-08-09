@@ -6,8 +6,8 @@ import {
   signOutOwner,
   storeCredential,
 } from "./auth-client.js";
-import { loadFeatureState, mergeSavedFlag, saveFeatureFlag } from "./api.js";
-import { renderAudit, renderFlags } from "./render.js";
+import { loadAnalyticsSummary, loadFeatureState, mergeSavedFlag, saveFeatureFlag } from "./api.js";
+import { renderAnalytics, renderAudit, renderFlags } from "./render.js";
 
 const elements = {
   authPanel: document.querySelector("#auth-panel"),
@@ -20,11 +20,15 @@ const elements = {
   systemState: document.querySelector("#system-state"),
   signOut: document.querySelector("#sign-out"),
   refresh: document.querySelector("#refresh-config"),
+  configurationContext: document.querySelector("#configuration-context"),
   notice: document.querySelector("#environment-notice"),
   source: document.querySelector("#flag-source"),
   search: document.querySelector("#flag-search"),
   flags: document.querySelector("#flag-list"),
   audit: document.querySelector("#audit-list"),
+  analytics: document.querySelector("#analytics-summary"),
+  analyticsStatus: document.querySelector("#analytics-status"),
+  analyticsRanges: [...document.querySelectorAll("[data-analytics-days]")],
   toast: document.querySelector("#admin-toast"),
   tabs: [...document.querySelectorAll("[role='tab']")],
   panels: [...document.querySelectorAll("[role='tabpanel']")],
@@ -34,11 +38,14 @@ let authConfig;
 let credential;
 let environment = "development";
 let currentState = { flags: [], audit: [] };
+let analyticsDays = 7;
 let toastTimer;
-let workspaceTab = globalThis.location.hash === "#audit" ? "audit" : "flags";
+let workspaceTab = ["audit", "analytics"].includes(globalThis.location.hash.slice(1))
+  ? globalThis.location.hash.slice(1)
+  : "flags";
 
 function selectWorkspaceTab(nextTab, { updateUrl = true } = {}) {
-  workspaceTab = nextTab === "audit" ? "audit" : "flags";
+  workspaceTab = ["flags", "audit", "analytics"].includes(nextTab) ? nextTab : "flags";
   elements.tabs.forEach((tab) => {
     const selected = tab.id === `${workspaceTab}-tab`;
     tab.setAttribute("aria-selected", String(selected));
@@ -47,9 +54,11 @@ function selectWorkspaceTab(nextTab, { updateUrl = true } = {}) {
   elements.panels.forEach((panel) => {
     panel.hidden = panel.id !== `${workspaceTab}-panel`;
   });
+  elements.configurationContext.hidden = workspaceTab === "analytics";
+  elements.refresh.title = workspaceTab === "analytics" ? "Refresh analytics" : "Refresh configuration";
   if (updateUrl) {
     const url = new URL(globalThis.location.href);
-    url.hash = workspaceTab === "audit" ? "audit" : "";
+    url.hash = workspaceTab === "flags" ? "" : workspaceTab;
     globalThis.history.replaceState(null, "", url);
   }
 }
@@ -105,6 +114,30 @@ async function refreshState() {
   }
 }
 
+async function refreshAnalytics() {
+  elements.analytics.setAttribute("aria-busy", "true");
+  elements.analyticsStatus.textContent = "Loading production analytics...";
+  try {
+    const summary = await loadAnalyticsSummary(analyticsDays, credential);
+    renderAnalytics(elements.analytics, summary);
+    elements.analyticsStatus.textContent = summary.configured
+      ? `${summary.range.since} to ${summary.range.until} · refreshed now`
+      : "Server-side Vercel connection is not configured";
+  } catch (error) {
+    if (error.status === 401) {
+      clearCredentials();
+      credential = null;
+      showLogin("Your owner session is not authorized.");
+      return;
+    }
+    elements.analyticsStatus.textContent = error.message;
+    renderAnalytics(elements.analytics, null);
+    showToast(error.message, "error");
+  } finally {
+    elements.analytics.removeAttribute("aria-busy");
+  }
+}
+
 async function handleSave(flag, controls) {
   if (environment === "production") {
     const confirmed = globalThis.confirm(
@@ -144,6 +177,7 @@ async function showWorkspace() {
   selectWorkspaceTab(workspaceTab, { updateUrl: false });
   selectEnvironment(environment);
   await refreshState();
+  if (workspaceTab === "analytics") await refreshAnalytics();
 }
 
 elements.login.addEventListener("submit", async (event) => {
@@ -175,7 +209,10 @@ document.querySelectorAll("[data-environment]").forEach((button) => {
 });
 
 elements.tabs.forEach((tab) => {
-  tab.addEventListener("click", () => selectWorkspaceTab(tab.id.replace("-tab", "")));
+  tab.addEventListener("click", async () => {
+    selectWorkspaceTab(tab.id.replace("-tab", ""));
+    if (workspaceTab === "analytics") await refreshAnalytics();
+  });
   tab.addEventListener("keydown", (event) => {
     if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
     event.preventDefault();
@@ -187,7 +224,19 @@ elements.tabs.forEach((tab) => {
   });
 });
 
-elements.refresh.addEventListener("click", refreshState);
+elements.analyticsRanges.forEach((button) => {
+  button.addEventListener("click", async () => {
+    analyticsDays = Number(button.dataset.analyticsDays);
+    elements.analyticsRanges.forEach((entry) => {
+      entry.setAttribute("aria-pressed", String(entry === button));
+    });
+    await refreshAnalytics();
+  });
+});
+
+elements.refresh.addEventListener("click", () => (
+  workspaceTab === "analytics" ? refreshAnalytics() : refreshState()
+));
 elements.search.addEventListener("input", renderState);
 elements.signOut.addEventListener("click", async () => {
   await signOutOwner(authConfig);
