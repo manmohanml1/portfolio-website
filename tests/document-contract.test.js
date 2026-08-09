@@ -21,6 +21,7 @@ test("document loads the modular application entry and contact link", () => {
   assert.match(html, /href="styles\/themes\.css"/);
   assert.match(html, /href="styles\/responsive\.css"/);
   assert.match(html, /href="mailto:manmohanlonawat@gmail\.com"/);
+  assert.match(html, /name="google-site-verification" content="rqgYBHHWUweQrbhU6Ho1QVNLmCeroJ6qVoOdMNR3l8w"/);
 });
 
 test("document includes accessible controls for theme, project details, and back-to-top actions", () => {

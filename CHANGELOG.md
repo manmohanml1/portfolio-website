@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [1.8.1] - 2026-08-09
+
+### Fixed
+
+- Added persistent Google Search Console ownership verification for the canonical production portfolio URL so its Safe Browsing status can be inspected and reviewed.
+
 ## [1.8.0] - 2026-08-09
 
 ### Added
@@ -229,7 +235,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Published the initial production portfolio deployment on Vercel Hobby.
 - Connected the GitHub repository to Vercel for automatic production and preview deployments.
 
-[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.8.0...HEAD
+[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.8.1...HEAD
+[1.8.1]: https://github.com/manmohanml1/portfolio-website/compare/v1.8.0...v1.8.1
 [1.8.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.5.2...v1.6.0
