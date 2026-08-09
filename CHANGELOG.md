@@ -6,6 +6,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-08-09
+
 ### Added
 
 - Added privacy-conscious Vercel Web Analytics and Speed Insights collection to the public portfolio while excluding the owner workspace.
@@ -14,7 +16,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Changed
 
-- Advanced the local release candidate to `v1.7.0` for Control Center observability review.
+- Released Control Center observability as `v1.7.0` after authenticated Preview verification.
 
 ## [1.6.0] - 2026-08-08
 
@@ -170,7 +172,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Published the initial production portfolio deployment on Vercel Hobby.
 - Connected the GitHub repository to Vercel for automatic production and preview deployments.
 
-[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/manmohanml1/portfolio-website/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/manmohanml1/portfolio-website/compare/v1.5.2...v1.6.0
 [1.5.2]: https://github.com/manmohanml1/portfolio-website/compare/v1.5.1...v1.5.2
 [1.5.1]: https://github.com/manmohanml1/portfolio-website/compare/v1.5.0...v1.5.1
