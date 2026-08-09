@@ -23,6 +23,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Aligned owner sign-in with Neon's managed Auth protocol by sending client metadata, exchanging the session for an issued JWT, deriving branch-matched JWKS verification, and preserving actionable service errors.
 - Kept successful flag saves synchronized with the database-returned value and optimistic version so the Control Center no longer reverts visually or creates a false second-save conflict.
 - Matched optimistic flag versions at the millisecond precision preserved by JSON, preventing PostgreSQL microseconds from causing false `409` conflicts.
+- Disabled browser and edge caching for public runtime configuration so saved flags take effect on the next page refresh.
+- Opened the Control Center on the environment served by its deployment: Staging for Preview, Production for Production, and Development locally.
 
 ## [1.5.2] - 2026-08-08
 

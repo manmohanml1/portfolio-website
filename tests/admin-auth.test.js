@@ -66,6 +66,7 @@ test("public admin auth bootstrap never includes the local secret", () => {
   assert.deepEqual(config, {
     version: 1,
     mode: "local-token",
+    portfolioEnvironment: "development",
     authUrl: "https://auth.example.com",
     configured: true,
   });
@@ -81,9 +82,16 @@ test("remote bootstrap uses Neon Vercel integration variables", () => {
   assert.deepEqual(config, {
     version: 1,
     mode: "neon-auth",
+    portfolioEnvironment: "staging",
     authUrl: "https://preview-auth.example.com/auth",
     configured: true,
   });
+});
+
+test("admin bootstrap defaults to the environment served by each deployment", () => {
+  assert.equal(createAdminAuthConfig({ VERCEL_ENV: "preview" }).portfolioEnvironment, "staging");
+  assert.equal(createAdminAuthConfig({ VERCEL_ENV: "production" }).portfolioEnvironment, "production");
+  assert.equal(createAdminAuthConfig({}).portfolioEnvironment, "development");
 });
 
 test("JWKS verification follows the deployment-specific Neon Auth branch", () => {

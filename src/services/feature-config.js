@@ -70,6 +70,7 @@ export async function loadFeatureConfig({
 
   try {
     const response = await fetchImpl(getFeatureConfigEndpoint(locationLike), {
+      cache: "no-store",
       headers: { Accept: "application/json" },
       signal: controller.signal,
     });

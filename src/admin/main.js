@@ -197,6 +197,7 @@ elements.signOut.addEventListener("click", async () => {
 
 try {
   authConfig = await loadAdminAuthConfig();
+  environment = authConfig.portfolioEnvironment || "development";
   elements.localFields.hidden = authConfig.mode !== "local-token";
   elements.remoteFields.hidden = authConfig.mode === "local-token";
   elements.remoteFields.querySelectorAll("input").forEach((input) => {
