@@ -18,6 +18,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Advanced the local and Preview release candidate to `v1.6.0`; production remains `v1.5.2` until the reviewed feature is approved and merged.
 
+### Fixed
+
+- Aligned owner sign-in with Neon's managed Auth protocol by sending client metadata, reading the issued JWT response header, and preserving actionable service errors.
+
 ## [1.5.2] - 2026-08-08
 
 ### Fixed

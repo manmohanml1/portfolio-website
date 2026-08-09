@@ -10,14 +10,23 @@ test("owner sign-in uses the JWT returned by Neon Auth", async () => {
     async (url, options) => {
       requests.push({ url, options });
       return new Response(JSON.stringify({
-        data: { session: { access_token: "signed-owner-token" } },
-      }), { status: 200, headers: { "Content-Type": "application/json" } });
+        session: { user: { email: "owner@example.com" } },
+      }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "set-auth-jwt": "signed-owner-token",
+        },
+      });
     },
   );
 
   assert.deepEqual(credential, { mode: "neon-auth", value: "signed-owner-token" });
   assert.equal(requests.length, 1);
   assert.equal(requests[0].url, "https://auth.example.com/auth/sign-in/email");
+  const clientInfo = JSON.parse(requests[0].options.headers["X-Neon-Client-Info"]);
+  assert.equal(clientInfo.sdk, "portfolio-control-center");
+  assert.equal(clientInfo.runtime, "browser");
 });
 
 test("owner sign-in accepts a Neon base URL without an auth suffix", async () => {
@@ -34,4 +43,18 @@ test("owner sign-in accepts a Neon base URL without an auth suffix", async () =>
   );
 
   assert.equal(requestedUrl, "https://auth.example.com/auth/sign-in/email");
+});
+
+test("owner sign-in exposes Neon authentication errors", async () => {
+  await assert.rejects(
+    signInOwner(
+      { mode: "neon-auth", authUrl: "https://auth.example.com/auth" },
+      { email: "owner@example.com", password: "incorrect" },
+      async () => new Response(JSON.stringify({
+        code: "INVALID_EMAIL_OR_PASSWORD",
+        message: "Invalid email or password",
+      }), { status: 401, headers: { "Content-Type": "application/json" } }),
+    ),
+    /Invalid email or password/,
+  );
 });

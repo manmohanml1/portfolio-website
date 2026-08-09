@@ -1,9 +1,17 @@
 const TOKEN_KEY = "portfolio-admin-token";
 const LOCAL_TOKEN_KEY = "portfolio-admin-local-token";
+const NEON_CLIENT_INFO = JSON.stringify({
+  sdk: "portfolio-control-center",
+  version: "1.6.0",
+  runtime: "browser",
+  runtimeVersion: "unknown",
+  platform: "web",
+  arch: "unknown",
+});
 
 async function readJson(response) {
   const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(body.error || "Authentication request failed");
+  if (!response.ok) throw new Error(body.error || body.message || "Authentication request failed");
   return body;
 }
 
@@ -47,13 +55,18 @@ export async function signInOwner(config, { email, password, localToken }, fetch
   }
 
   if (!config.authUrl) throw new Error("Neon Auth is not configured");
-  const signInResponse = await readJson(await fetchImpl(getAuthEndpoint(config.authUrl, "sign-in/email"), {
+  const response = await fetchImpl(getAuthEndpoint(config.authUrl, "sign-in/email"), {
     method: "POST",
     credentials: "include",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "X-Neon-Client-Info": NEON_CLIENT_INFO,
+    },
     body: JSON.stringify({ email, password }),
-  }));
-  const token = signInResponse.data?.session?.access_token
+  });
+  const signInResponse = await readJson(response);
+  const token = response.headers.get("set-auth-jwt")
+    || signInResponse.data?.session?.access_token
     || signInResponse.session?.access_token
     || signInResponse.data?.session?.accessToken;
   if (!token) throw new Error("Neon Auth did not return an access token");
