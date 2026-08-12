@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Added CommitQuest v0.2.0 as a featured, evidence-backed product case study with release-pinned preview media and an interactive repository-to-campaign architecture path.
+
+### Changed
+
+- Presented purpose, challenge, implementation, engineering decisions, and current outcome as distinct sections in curated project case studies.
+
 ## [1.8.1] - 2026-08-09
 
 ### Fixed

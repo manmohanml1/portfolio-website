@@ -55,6 +55,74 @@ export const projects = [
     },
   },
   {
+    title: "CommitQuest",
+    repo: "https://github.com/manmohanml1/commitquest",
+    type: "Interactive product",
+    category: "frontend",
+    audiences: ["fullstack", "ai"],
+    featured: true,
+    description:
+      "An evidence-backed repository visualization product that turns issues, pull requests, tests, workflows, roadmaps, and releases into an explorable engineering world.",
+    tags: ["Angular", "Phaser", "Accessibility", "GitHub Actions", "Evidence design"],
+    visual: "Repository world",
+    accent: "#65f4c5",
+    details: {
+      caseStudy: true,
+      summary:
+        "A standalone product for presenting real repository work as an engaging engineering campaign without replacing the evidence behind it.",
+      purpose:
+        "Makes the story and structure of a software project easier to understand while keeping GitHub as the source of truth for every verified claim.",
+      challenge:
+        "Repository evidence is distributed across code, pull requests, tests, workflows, releases, and planning documents. The experience needed to connect those signals without rewarding activity volume, inventing achievements, or making essential information depend on a game canvas.",
+      build:
+        "Built with Angular 21 for the accessible application and evidence surfaces, plus a lazy-loaded Phaser 4 world. The v0.2 reference campaign, Portfolio Citadel, maps six verified repository responsibilities to distinct scalable landmarks alongside candidate quests, merged encounters, and release chapters.",
+      engineering:
+        "The campaign projection, mapping algorithm, and scoring rules are versioned independently. Roadmap candidates stay visibly separate from verified outcomes, Phaser remains an optional visual layer, and primary-source links preserve the path back to GitHub evidence.",
+      outcome:
+        "Version 0.2.0 is released with six explorable regions, eight candidate quests, four verified encounters, four release chapters, responsive keyboard-accessible navigation, green CI and security checks, and an immutable release artifact. Public repository generation is planned for v0.3.0.",
+      highlights: [
+        "Evidence-backed campaigns",
+        "Six scalable landmarks",
+        "Accessible interaction model",
+        "Versioned projections",
+        "Immutable v0.2.0 release",
+      ],
+      preview: {
+        src: "https://raw.githubusercontent.com/manmohanml1/commitquest/v0.2.0/apps/web/public/og.png",
+        alt: "CommitQuest repository world with connected engineering landmarks",
+      },
+      architecture: {
+        title: "Repository-to-campaign projection",
+        steps: [
+          {
+            label: "Repository evidence",
+            role: "Source of truth",
+            detail:
+              "Issues, roadmap entries, pull requests, tests, workflows, and releases provide the traceable inputs for a campaign.",
+          },
+          {
+            label: "Versioned projection",
+            role: "Domain model",
+            detail:
+              "Deterministic mapping keeps candidate plans, verified outcomes, schema compatibility, and scoring rules explicit.",
+          },
+          {
+            label: "Accessible campaign",
+            role: "Experience",
+            detail:
+              "Angular renders the authoritative controls and evidence while Phaser supplies the scalable visual world and landmark interaction.",
+          },
+          {
+            label: "Primary evidence",
+            role: "Trust",
+            detail:
+              "Every verified encounter and chapter preserves a direct route back to its original GitHub source.",
+          },
+        ],
+      },
+    },
+  },
+  {
     title: "Novel Browser Glass",
     repo: "https://github.com/manmohanml1/novel-browser-glass",
     live: "https://novel-browser-glass.vercel.app/",

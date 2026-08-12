@@ -128,15 +128,17 @@ test("project detail dialog presents safely separated repository actions", () =>
   const fitnessApp = projects.find((project) => project.title === "Fitness Exercises App");
   const template = createProjectDetailTemplate(fitnessApp);
 
-  assert.match(template, /Problem and outcome/);
+  assert.match(template, /Purpose/);
+  assert.match(template, /Problem or challenge/);
   assert.match(template, /Implementation/);
+  assert.match(template, /Outcome or current state/);
   assert.match(template, /target="_blank" rel="noopener noreferrer">Repository/);
   assert.match(template, /data-feedback-project=.*Suggest improvement/);
   assert.doesNotMatch(template, /repo-size|[KMG]B/);
   assert.doesNotMatch(template, />Live app</);
   assert.match(template, /dialog-preview/);
   assert.match(template, /dialog-intro with-preview/);
-  assert.ok(template.indexOf("dialog-preview") < template.indexOf("Problem and outcome"));
+  assert.ok(template.indexOf("dialog-preview") < template.indexOf("Problem or challenge"));
 });
 
 test("disabled project dialogs leave repository access without dead detail controls", () => {
@@ -152,7 +154,7 @@ test("curated system case studies render interactive architecture stages", () =>
   const dataProject = projects.find((project) => project.title === "Scalable Data Processing System");
   const template = createProjectDetailTemplate(dataProject);
 
-  assert.match(template, /Problem and outcome/);
+  assert.match(template, /Problem or challenge/);
   assert.match(template, /Architecture explorer/);
   assert.match(template, /data-architecture-label="Kafka \/ Kinesis"/);
   assert.match(template, /aria-pressed="true"/);
@@ -166,5 +168,17 @@ test("project actions reserve case-study wording for genuinely curated stories",
   assert.equal(getProjectActionLabel(basicProject), "Details");
 
   const basicTemplate = createProjectDetailTemplate(basicProject);
-  assert.doesNotMatch(basicTemplate, /Problem and outcome|Architecture explorer/);
+  assert.doesNotMatch(basicTemplate, /Problem or challenge|Architecture explorer/);
+});
+
+test("CommitQuest is curated as the product while its reference campaign remains supporting context", () => {
+  const commitQuest = projects.find((project) => project.title === "CommitQuest");
+  const template = createProjectDetailTemplate(commitQuest);
+
+  assert.ok(commitQuest.featured);
+  assert.equal(commitQuest.repo, "https://github.com/manmohanml1/commitquest");
+  assert.match(template, /CommitQuest/);
+  assert.match(template, /Version 0\.2\.0 is released/);
+  assert.match(template, /Repository-to-campaign projection/);
+  assert.equal((template.match(/Portfolio Citadel/g) || []).length, 1);
 });

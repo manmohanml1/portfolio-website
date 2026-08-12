@@ -68,12 +68,11 @@ export function createProjectDetailTemplate(project, { allowFeedback = true } = 
   const highlights = details.highlights || project.tags;
   const isCaseStudy = details.caseStudy === true;
   const caseStudySections = [
-    [
-      "Problem and outcome",
-      [details.challenge, details.outcome].filter(Boolean).join(" "),
-    ],
+    ["Purpose", details.purpose],
+    ["Problem or challenge", details.challenge],
     ["Implementation", details.build],
     ["Engineering decisions", details.engineering],
+    ["Outcome or current state", details.outcome],
   ].filter(([, content]) => content);
   const overviewNotes = [details.purpose, details.build, details.engineering].filter(Boolean);
 
