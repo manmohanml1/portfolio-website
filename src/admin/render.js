@@ -196,7 +196,68 @@ function createEvidencePanel(project) {
     excerpt.textContent = evidence.readmeExcerpt;
     body.append(excerpt);
   }
+  if (Array.isArray(evidence.sources) && evidence.sources.length) {
+    const sources = document.createElement("div");
+    sources.className = "evidence-source-list";
+    evidence.sources.forEach((source) => {
+      const link = document.createElement("a");
+      link.href = source.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = `${source.kind === "verified" ? "GitHub verified" : "Repository-authored"}: ${source.label}`;
+      sources.append(link);
+    });
+    body.append(sources);
+  }
   panel.append(summary, body);
+  return panel;
+}
+
+function getProjectReadiness(project) {
+  const caseStudy = project.caseStudy || {};
+  const media = project.media || {};
+  const checks = [
+    ["Public description", Boolean(project.description?.trim())],
+    ["Technology signals", Array.isArray(project.tags) && project.tags.length >= 2],
+    ["Case-study summary", Boolean(caseStudy.summary?.trim())],
+    ["Architecture", Array.isArray(caseStudy.architecture?.steps) && caseStudy.architecture.steps.length >= 3],
+    ["Evidence sources", Array.isArray(project.evidence?.sources) && project.evidence.sources.length > 0],
+    ["Accessible cover", !media.coverImageUrl || Boolean(media.coverImageAlt?.trim())],
+  ];
+  const completed = checks.filter(([, ready]) => ready).length;
+  const missing = checks.find(([, ready]) => !ready)?.[0];
+  return {
+    checks,
+    completed,
+    nextAction: missing ? `Next useful step: add ${missing.toLowerCase()}.` : "Ready for an owner publication decision.",
+  };
+}
+
+function createReadinessPanel(project) {
+  const readiness = getProjectReadiness(project);
+  const panel = document.createElement("section");
+  panel.className = "publishing-readiness";
+  const heading = document.createElement("div");
+  const title = document.createElement("strong");
+  title.textContent = "Publication readiness";
+  const count = document.createElement("span");
+  count.textContent = `${readiness.completed}/${readiness.checks.length}`;
+  heading.append(title, count);
+  const meter = document.createElement("progress");
+  meter.max = readiness.checks.length;
+  meter.value = readiness.completed;
+  meter.setAttribute("aria-label", `${readiness.completed} of ${readiness.checks.length} publication checks complete`);
+  const list = document.createElement("div");
+  list.className = "readiness-checks";
+  readiness.checks.forEach(([label, ready]) => {
+    const item = document.createElement("span");
+    item.dataset.ready = String(ready);
+    item.textContent = `${ready ? "Ready" : "Missing"}: ${label}`;
+    list.append(item);
+  });
+  const action = document.createElement("p");
+  action.textContent = readiness.nextAction;
+  panel.append(heading, meter, list, action);
   return panel;
 }
 
@@ -230,8 +291,34 @@ function createCaseStudyEditor(project) {
     controls[field] = control;
     fields.append(createField(label, control));
   });
+  const architectureTitle = document.createElement("input");
+  architectureTitle.value = caseStudy.architecture?.title || "";
+  architectureTitle.maxLength = 120;
+  architectureTitle.placeholder = "Repository-informed system flow";
+  const architectureSteps = document.createElement("textarea");
+  architectureSteps.rows = 5;
+  architectureSteps.placeholder = "Client | Interface | What the client owns\nService | API boundary | What the service owns";
+  architectureSteps.value = (caseStudy.architecture?.steps || [])
+    .map((step) => [step.label, step.role, step.detail].join(" | "))
+    .join("\n");
+  controls.architectureTitle = architectureTitle;
+  controls.architectureSteps = architectureSteps;
+  fields.append(
+    createField("Architecture diagram title", architectureTitle),
+    createField("Architecture stages (Label | Role | Evidence)", architectureSteps),
+  );
   editor.append(summary, fields);
   return { editor, controls };
+}
+
+function readArchitectureDraft(controls) {
+  const steps = controls.architectureSteps.value
+    .split("\n")
+    .map((line) => line.split("|").map((part) => part.trim()))
+    .filter(([label, role, detail]) => label && role && detail)
+    .slice(0, 6)
+    .map(([label, role, detail]) => ({ label, role, detail }));
+  return steps.length ? { title: controls.architectureTitle.value, steps } : null;
 }
 
 function createMediaEditor(project, onUpload) {
@@ -284,6 +371,22 @@ function createMediaEditor(project, onUpload) {
     demoList.append(option);
   });
   demoInput.setAttribute("list", demoList.id);
+  const liveInput = document.createElement("input");
+  liveInput.type = "url";
+  liveInput.value = project.media?.liveUrl || project.homepage || "";
+  liveInput.placeholder = "Optional HTTPS live application URL";
+  const embedInput = document.createElement("input");
+  embedInput.type = "url";
+  embedInput.value = project.media?.embedUrl || "";
+  embedInput.placeholder = "Optional HTTPS URL permitted to be framed";
+  const embedControl = document.createElement("label");
+  embedControl.className = "embed-toggle";
+  const embedEnabled = document.createElement("input");
+  embedEnabled.type = "checkbox";
+  embedEnabled.checked = project.media?.embedEnabled === true;
+  const embedCopy = document.createElement("span");
+  embedCopy.textContent = "Show this live preview inside the public project card";
+  embedControl.append(embedEnabled, embedCopy);
 
   const uploadControl = document.createElement("div");
   uploadControl.className = "media-upload-control";
@@ -356,13 +459,19 @@ function createMediaEditor(project, onUpload) {
     uploadControl,
     createField("Cover image URL", coverInput),
     createField("Cover image alt text", altInput),
+    createField("Live application URL", liveInput),
     createField("Demo video or walkthrough", demoInput),
+    createField("Card preview URL", embedInput),
+    embedControl,
     coverList,
     demoList,
     preview,
   );
   editor.append(summary, fields);
-  return { editor, controls: { coverInput, altInput, demoInput } };
+  return {
+    editor,
+    controls: { coverInput, altInput, demoInput, liveInput, embedInput, embedEnabled },
+  };
 }
 
 export function renderProjectInbox(container, state, { onSave, onUpload, onDiscard }) {
@@ -420,6 +529,7 @@ export function renderProjectInbox(container, state, { onSave, onUpload, onDisca
     context.className = "publishing-context";
     context.textContent = project.githubDescription || "No GitHub description provided.";
     const evidence = createEvidencePanel(project);
+    const readiness = createReadinessPanel(project);
 
     const fields = document.createElement("div");
     fields.className = "publishing-fields";
@@ -475,16 +585,20 @@ export function renderProjectInbox(container, state, { onSave, onUpload, onDisca
       tags: tags.value.split(",").map((entry) => entry.trim()).filter(Boolean),
       caseStudy: {
         caseStudy: true,
-        ...Object.fromEntries(Object.entries(caseStudyControls).map(([field, control]) => [
+        ...Object.fromEntries(Object.entries(caseStudyControls).filter(([field]) => !field.startsWith("architecture")).map(([field, control]) => [
           field,
           control.value,
         ])),
         highlights: tags.value.split(",").map((entry) => entry.trim()).filter(Boolean),
+        architecture: readArchitectureDraft(caseStudyControls),
       },
       media: {
         coverImageUrl: mediaControls.coverInput.value,
         coverImageAlt: mediaControls.altInput.value,
         demoUrl: mediaControls.demoInput.value,
+        liveUrl: mediaControls.liveInput.value,
+        embedUrl: mediaControls.embedInput.value,
+        embedEnabled: mediaControls.embedEnabled.checked,
       },
     });
     const initialDraft = JSON.stringify(readDraft());
@@ -508,7 +622,7 @@ export function renderProjectInbox(container, state, { onSave, onUpload, onDisca
       }, { form, save, previousStatus: project.status });
     });
 
-    form.append(heading, context, evidence, fields, mediaEditor, caseStudyEditor, actions);
+    form.append(heading, context, readiness, evidence, fields, mediaEditor, caseStudyEditor, actions);
     card.append(cardSummary, form);
     container.append(card);
   });

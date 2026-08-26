@@ -67,6 +67,28 @@ export async function enrichPortfolioRepository(repository, { fetcher, headers }
   ))].filter(Boolean).join("\n");
   const mediaCandidates = extractMediaCandidates(repository, combinedReadme);
   const draft = generateProjectDraft(repository, { readme: combinedReadme, languages });
+  const repositoryUrl = repository.html_url;
+  const branch = repository.default_branch || "main";
+  draft.evidence.sources = [
+    {
+      kind: "verified",
+      label: "GitHub repository",
+      url: repositoryUrl,
+      detail: "Primary source for the published code and repository metadata.",
+    },
+    ...(readme ? [{
+      kind: "repository-authored",
+      label: "Repository README",
+      url: `${repositoryUrl}#readme`,
+      detail: "Repository-authored product and implementation context.",
+    }] : []),
+    ...evidencePaths.map((path) => ({
+      kind: "repository-authored",
+      label: path.split("/").pop().replace(/\.md$/i, "").replaceAll("-", " "),
+      url: `${repositoryUrl}/blob/${encodeURIComponent(branch)}/${encodeRepositoryPath(path)}`,
+      detail: "Linked engineering document extracted during project synchronization.",
+    })),
+  ].slice(0, 6);
   const cover = mediaCandidates.find((candidate) => candidate.kind === "image");
   const demo = mediaCandidates.find((candidate) => candidate.kind === "video");
   draft.evidence.mediaCandidates = mediaCandidates;

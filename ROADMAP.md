@@ -16,6 +16,9 @@ This list tracks additions that make the site useful to explore, not simply more
 | Portfolio Layout Worlds | Render one evidence model through five independent, responsive portfolio compositions without duplicating content or interactions. | Shipped in v1.8.0 |
 | Project Publishing Inbox | Stage newly tagged GitHub repositories for owner review, enrichment, and approval before public presentation. | Shipped in v1.8.0 |
 | Project Media Curation | Extract repository image and demo candidates, then let the owner approve an accessible cover and optional external demo link. | Shipped in v1.8.0 |
+| Project Live Surfaces | Let the owner configure approved live destinations and opt in to a sandboxed miniature live preview on project cards. | Shipped in v1.9.0 |
+| Evidence-Backed Case Studies | Link synchronized project claims to GitHub and repository-authored sources, with owner readiness guidance before publication. | Shipped in v1.9.0 |
+| Repository Security Hardening | Continuously scan code and dependencies, detect common tracked-secret patterns, and document private vulnerability reporting and release security review. | Shipped in v1.9.0 |
 | Database-First Project Catalog | Import every current project into the publishing inventory, preserve the checked-in fallback during parity review, then cut public presentation over to owner-reviewed Neon records. | Shipped in v1.8.0 |
 | Owned Writing Hub | Publish canonical technical articles on the portfolio, then syndicate excerpts and links to LinkedIn or other networks without duplicating the source of truth. | Planned after v1.8.0 |
 | Visitor Customization | Let viewers choose an audience lens and project layout locally within admin-enabled capabilities. | Shipped in v1.5.0 |

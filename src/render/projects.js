@@ -2,7 +2,7 @@ import { projects } from "../data/portfolio.js";
 import { fetchOptInProjects } from "../services/github-projects.js";
 import { AUDIENCE_OPTIONS } from "../services/visitor-preferences.js";
 import { getAudienceLens } from "../data/audience-lenses.js";
-import { escapeHtml, qs, qsa, safeExternalUrl, tagsTemplate } from "../utils/dom.js";
+import { escapeHtml, qs, qsa, safeExternalUrl, safeHttpsUrl, tagsTemplate } from "../utils/dom.js";
 
 export const PROJECT_FILTERS = ["featured", "all", "frontend", "backend", "data", "ai", "wearable"];
 const FILTER_LABELS = {
@@ -109,17 +109,22 @@ export function mergeProjects(curatedProjects, discoveredProjects, managedReposi
 }
 
 export function createProjectCardTemplate(project, index, { allowDetails = true } = {}) {
+  const embeddedPreview = safeHttpsUrl(project.details?.embedPreviewUrl);
+  const visual = embeddedPreview
+    ? `<div class="project-visual project-live-preview">
+        <iframe src="${escapeHtml(embeddedPreview)}" title="${escapeHtml(project.title)} live preview" loading="lazy" sandbox="allow-scripts allow-forms allow-popups" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        <a class="project-live-preview-link" href="${escapeHtml(safeExternalUrl(project.live || embeddedPreview))}" target="_blank" rel="noopener noreferrer">Open live preview</a>
+      </div>`
+    : allowDetails
+      ? `<button class="project-visual project-open" type="button" data-open-project="${index}" aria-label="View details for ${escapeHtml(project.title)}">
+          <span style="--project-accent: ${escapeHtml(project.accent)}">${escapeHtml(project.visual)}</span>
+        </button>`
+      : `<div class="project-visual" aria-hidden="true">
+          <span style="--project-accent: ${escapeHtml(project.accent)}">${escapeHtml(project.visual)}</span>
+        </div>`;
   return `
     <article class="project-card ${project.featured ? "featured" : ""}"${allowDetails ? ` data-project-card-index="${index}"` : ""}>
-      ${
-        allowDetails
-          ? `<button class="project-visual project-open" type="button" data-open-project="${index}" aria-label="View details for ${escapeHtml(project.title)}">
-              <span style="--project-accent: ${escapeHtml(project.accent)}">${escapeHtml(project.visual)}</span>
-            </button>`
-          : `<div class="project-visual" aria-hidden="true">
-              <span style="--project-accent: ${escapeHtml(project.accent)}">${escapeHtml(project.visual)}</span>
-            </div>`
-      }
+      ${visual}
       <div class="project-topline">
         <span class="project-type">${escapeHtml(project.type)}</span>
       </div>

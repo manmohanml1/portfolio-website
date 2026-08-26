@@ -134,6 +134,28 @@ function inferCategory(repository, text) {
   return "other";
 }
 
+function createArchitectureDraft({ tags, sections }) {
+  const has = (label) => tags.includes(label);
+  const client = has("Angular") ? ["Angular application", "Interface", "Responsive client and accessible project exploration."]
+    : has("React") ? ["React application", "Interface", "Responsive client and reusable product UI."]
+      : ["Repository surface", "Entry point", "The project structure and public documentation establish the visible product boundary."];
+  const service = has("Spring Boot") ? ["Spring Boot service", "Service boundary", "A typed application layer keeps API behavior and integration rules separate from the client."]
+    : has("NestJS") || has("Node.js") ? ["Service layer", "Service boundary", "A server-side layer owns API behavior and external integration boundaries."]
+      : ["Project modules", "Application", "Repository modules organize the primary application responsibilities."];
+  const integration = has("PostgreSQL") ? ["PostgreSQL", "Data", "Persistent data is handled through an explicit database boundary."]
+    : has("AWS") ? ["Cloud integrations", "Delivery", "Cloud services provide the project’s external platform boundary."]
+      : ["Repository evidence", "Evidence", "README, source structure, and project signals support the public implementation story."];
+  const verification = has("GitHub Actions") ? ["GitHub Actions", "Verification", "Automated checks validate the project before delivery."]
+    : has("Jest") || has("JUnit") || has("PyTest") ? ["Automated tests", "Verification", "Tests provide repeatable checks for observable behavior."]
+      : ["Quality boundary", "Verification", "The published architecture should be reviewed against the repository evidence."];
+  const architectureSection = bestSectionContent(sections, ["architecture", "how it works", "technical"]);
+
+  return {
+    title: architectureSection ? "Repository-informed system flow" : "Repository evidence flow",
+    steps: [client, service, integration, verification].map(([label, role, detail]) => ({ label, role, detail })),
+  };
+}
+
 export function generateProjectDraft(repository, { readme = "", languages = {} } = {}) {
   const sections = extractReadmeSections(readme);
   const evidenceText = [repository.name, repository.description, readme].filter(Boolean).join("\n");
@@ -164,6 +186,7 @@ export function generateProjectDraft(repository, { readme = "", languages = {} }
     "verification", "contribution flow",
   ]), 800);
   const outcome = clamp(sectionContent(sections, ["outcome", "result", "status", "current state"]), 600);
+  const architecture = createArchitectureDraft({ tags, sections });
 
   return {
     presentation: {
@@ -181,6 +204,7 @@ export function generateProjectDraft(repository, { readme = "", languages = {} }
       engineering,
       outcome,
       highlights: tags.slice(0, 6),
+      architecture,
     },
     evidence: {
       source: "github",

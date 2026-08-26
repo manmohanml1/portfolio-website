@@ -8,11 +8,11 @@ const pullRequestTemplate = await readFile(new URL("../.github/PULL_REQUEST_TEMP
 const deployment = await readFile(new URL("../DEPLOYMENT.md", import.meta.url), "utf8");
 const roadmap = await readFile(new URL("../ROADMAP.md", import.meta.url), "utf8");
 
-test("current release identifies the v1.8.1 Search Console verification fix", () => {
+test("current release identifies the v1.9.0 evidence and security feature release", () => {
   assert.match(release.version, /^v\d+\.\d+\.\d+$/);
-  assert.equal(release.version, "v1.8.1");
-  assert.equal(release.type, "fix");
-  assert.equal(release.label, "Fix release");
+  assert.equal(release.version, "v1.9.0");
+  assert.equal(release.type, "feat");
+  assert.equal(release.label, "Feature release");
 });
 
 test("pull request quality workflow enforces change-type title prefixes", () => {
@@ -56,4 +56,12 @@ test("release checklists protect roadmap promotion and GitHub release tagging", 
   assert.match(pullRequestTemplate, /Reviewed the Vercel Preview/);
   assert.match(deployment, /Create the matching GitHub release tag/);
   assert.match(deployment, /public release badge/);
+});
+
+test("release automation includes dependency, source, and secret security checks", () => {
+  assert.match(qualityWorkflow, /npm audit --omit=dev --audit-level=high/);
+  assert.match(qualityWorkflow, /npm run check/);
+  assert.match(pullRequestTemplate, /Security or privacy impact/);
+  assert.match(roadmap, /\| Evidence-Backed Case Studies .*\| Shipped in v1\.9\.0 \|/);
+  assert.match(roadmap, /\| Repository Security Hardening .*\| Shipped in v1\.9\.0 \|/);
 });

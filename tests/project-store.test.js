@@ -23,11 +23,38 @@ test("project review normalization accepts only bounded publication metadata", (
   assert.deepEqual(review, {
     status: "approved", title: "Reviewed", description: "Useful", category: "backend",
     tags: ["TypeScript", "AWS"], caseStudy: null,
-    media: { coverImageUrl: "", coverImageAlt: "", demoUrl: "" },
+    media: {
+      coverImageUrl: "", coverImageAlt: "", demoUrl: "", liveUrl: "", embedUrl: "", embedEnabled: false,
+    },
   });
   assert.equal(normalizeProjectReview({ status: "public", category: "backend" }), null);
   assert.equal(normalizeProjectReview({ status: "approved", category: "unknown" }), null);
 });
+
+test("project review normalizes architecture diagrams and owner-controlled live surfaces", () => {
+  const review = normalizeProjectReview({
+    status: "approved",
+    category: "backend",
+    caseStudy: {
+      architecture: {
+        title: "Service flow",
+        steps: [
+          { label: "Client", role: "Interface", detail: "Calls the public API." },
+          { label: "Service", role: "Boundary", detail: "Applies domain rules." },
+        ],
+      },
+    },
+    media: {
+      liveUrl: "https://example.com/live",
+      embedUrl: "https://example.com/embed",
+      embedEnabled: true,
+    },
+  });
+  assert.equal(review.caseStudy.architecture.steps.length, 2);
+  assert.equal(review.media.liveUrl, "https://example.com/live");
+  assert.equal(review.media.embedEnabled, true);
+});
+
 
 test("GitHub synchronization upserts metadata without overwriting publication decisions", async () => {
   let statement;

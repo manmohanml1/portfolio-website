@@ -54,7 +54,7 @@ The current theme registry chooses visible worlds and persists a viewer preferen
 6. Promote delivered feature status in `ROADMAP.md` when applicable.
 7. Update `src/config/release.js` according to the versioning policy.
 8. Title the pull request with `feat:` or `fix:`.
-9. Run `node scripts/check.mjs` and `node --test`.
+9. Run `npm run check` and `node --test`.
 10. Preview in browser at desktop and mobile widths.
 11. After production deployment, create the matching GitHub release tag and confirm the public badge and release records agree.
 
@@ -90,7 +90,7 @@ Visitor customization is a browser-only layer and does not create an identity. O
 
 The `features.visitorCustomization.enabled` runtime flag controls audience-lens persistence, Cards/List layout, shareable `?view=backend`, `?view=fullstack`, `?view=data`, and `?view=ai` links, and the restore-defaults action. General remains the complete portfolio. Specialized lenses select only explicitly relevant projects, skills, experience, credentials, profile signals, and technologies, while also replacing section and contact copy so each URL behaves as a curated portfolio variant. The general project filters disappear in specialized variants because a temporary category filter would conflict with the selected audience contract. Theme and motion remain available because they predate this phase. Disabling the customization flag does not delete a viewer's local choices; it simply stops applying the gated preferences until the capability is enabled again.
 
-Cards preserve the visual gallery. List is a separate editorial project index: numbered, unframed rows replace previews and card chrome with readable summaries, inline technologies, separators, and a dedicated action column. On mobile it becomes a numbered reading sequence with actions below each entry.
+Cards preserve the visual gallery and open project details from the complete card surface. List is a separate editorial project index: unframed rows replace previews and card chrome with readable summaries, inline technologies, separators, and a dedicated action column. List rows keep project details opt-in through explicit actions rather than turning the full row into a hidden button.
 
 No preference is sent to Neon, Formspree, GitHub, or an analytics service. Cross-device synchronization remains intentionally deferred until visitor accounts demonstrate enough value to justify their privacy and authentication cost.
 
@@ -98,13 +98,13 @@ The first registry controls Journey, Skills, Feedback, project dialogs, project 
 
 ## GitHub Project Inclusion
 
-Curated flagship projects remain in `src/data/portfolio.js`. Additional public repositories are fetched from GitHub at runtime and rendered only when explicitly tagged `portfolio-showcase`. Optional category topics (`portfolio-frontend`, `portfolio-backend`, `portfolio-data`, `portfolio-ai`, `portfolio-wearable`) place a project into the matching filter. Descriptions that clearly identify a Meta Ray-Ban Display or glasses-first application also map to the wearable presentation automatically.
+Curated flagship projects remain in `src/data/portfolio.js` as a resilient public fallback. The owner Project Publishing Inbox discovers repositories tagged `portfolio-showcase`, extracts bounded public GitHub evidence, and stores generated drafts, owner edits, media, moderation state, and audit history in Neon. Pending and hidden records never enter the public API; only approved records enrich or extend the checked-in catalog.
 
-Live application links for fetched projects require the additional `portfolio-live` topic, so a stale GitHub homepage does not advertise an unavailable demo. This keeps inclusion intentional and avoids requiring a deployment for each new selected repository. If the public GitHub API is temporarily unavailable or rate limited, the curated project set continues to render.
+Live destinations and miniature card previews are owner-controlled publication fields. Preview iframes accept HTTPS only, run without same-origin access in a restrictive sandbox, and remain disabled until explicitly selected. A site that refuses framing still has a normal external live link and cover fallback.
 
 Wearable entries are intentionally different from normal web-app cards. A Meta Display project should identify its glasses-first interaction, constrained 600 x 600 presentation, and focus/D-pad navigation in its repository metadata; the portfolio can then communicate the device work instead of presenting it as generic JavaScript.
 
-Each fetched repository gets a baseline details view from stable GitHub metadata. Rich summaries and preview images are opt-in enrichments defined alongside curated project data or known-display presentation mapping, and should reference only published repository assets. Missing images are omitted instead of rendered as placeholders. This avoids making live-page rendering dependent on fragile README parsing or unverified image selection.
+Synchronization creates an editable case-study and architecture draft from stable metadata, README sections, bounded linked engineering documents, languages, and topics. Evidence sources retain provenance labels and primary GitHub links. Generated language is never public merely because it was extracted: owner review remains mandatory, media stays opt-in, and missing images are omitted instead of rendered as placeholders.
 
 ## Visitor Feedback
 
@@ -122,9 +122,10 @@ The Formspree endpoint is public by design and does not require a custom domain,
 The GitHub Actions quality workflow runs on pull requests, pushes to `main`/`develop`, and manual dispatch:
 
 1. Test all three environments on Node.js 20 and 22.
-2. Syntax-check every application module.
-3. Run automated test coverage for data integrity, themes, filters, feedback form contracts, environment resolution, and HTML accessibility contracts.
-4. Package static deployment assets after every matrix check passes.
+2. Syntax-check every application module and scan tracked source for common credential patterns.
+3. Audit production dependencies and run automated coverage for data integrity, themes, security boundaries, publishing, filters, feedback, environment resolution, and accessibility contracts.
+4. Run CodeQL on pull requests, `main`, and a weekly schedule; Dependabot maintains npm and GitHub Actions dependencies.
+5. Package static deployment assets after every matrix check passes.
 
 The manual `Prepare Release Candidate` workflow selects a GitHub Environment (`development`, `staging`, or `production`) and packages a validated artifact. Configure required reviewers for the `production` environment in repository settings.
 

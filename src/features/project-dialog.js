@@ -63,6 +63,44 @@ function renderArchitecture(details) {
   `;
 }
 
+const EVIDENCE_LABELS = Object.freeze({
+  verified: "GitHub verified",
+  "repository-authored": "Repository-authored",
+  "owner-curated": "Owner-curated",
+  inferred: "Inferred draft",
+});
+
+function renderEvidence(details, project) {
+  const curatedSources = Array.isArray(details.evidenceSources) ? details.evidenceSources : [];
+  const sources = curatedSources.length ? curatedSources : project.repo ? [{
+    kind: "verified",
+    label: "Project repository",
+    url: project.repo,
+    detail: "Primary GitHub source for the public code and repository history.",
+  }] : [];
+  if (!sources.length) return "";
+  return `
+    <section class="dialog-section project-evidence" aria-labelledby="project-evidence-title">
+      <div class="project-evidence-heading">
+        <div>
+          <p class="architecture-role">Traceable claims</p>
+          <h3 id="project-evidence-title">Engineering evidence</h3>
+        </div>
+        <span>${sources.length} source${sources.length === 1 ? "" : "s"}</span>
+      </div>
+      <div class="project-evidence-list">
+        ${sources.map((source) => `
+          <a href="${escapeHtml(safeExternalUrl(source.url))}" target="_blank" rel="noopener noreferrer">
+            <span class="evidence-provenance">${escapeHtml(EVIDENCE_LABELS[source.kind] || "Source")}</span>
+            <strong>${escapeHtml(source.label)}</strong>
+            ${source.detail ? `<small>${escapeHtml(source.detail)}</small>` : ""}
+          </a>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
 export function createProjectDetailTemplate(project, { allowFeedback = true } = {}) {
   const details = project.details || {};
   const highlights = details.highlights || project.tags;
@@ -112,6 +150,7 @@ export function createProjectDetailTemplate(project, { allowFeedback = true } = 
               : ""
         }
         ${renderArchitecture(details)}
+        ${renderEvidence(details, project)}
         <div class="dialog-section">
           <h3>Inside the project</h3>
           <div class="tags" aria-label="${escapeHtml(project.title)} highlights">

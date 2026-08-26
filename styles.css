@@ -745,6 +745,39 @@ footer p {
   color: var(--muted);
 }
 
+.project-live-preview {
+  position: relative;
+  display: grid;
+  place-items: stretch;
+  padding: 0;
+  overflow: hidden;
+  background: var(--visual-bg);
+}
+
+.project-live-preview iframe {
+  display: block;
+  width: 100%;
+  min-height: inherit;
+  height: 100%;
+  border: 0;
+  background: var(--visual-bg);
+  pointer-events: auto;
+}
+
+.project-live-preview-link {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 1;
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--panel-strong);
+  color: var(--ink);
+  font-size: 0.7rem;
+  font-weight: 850;
+}
+
 .profile-detail {
   margin-bottom: 0;
 }
@@ -1572,6 +1605,64 @@ section[id] {
   backdrop-filter: blur(5px);
 }
 
+.project-evidence {
+  display: grid;
+  gap: 14px;
+}
+
+.project-evidence-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.project-evidence-heading h3,
+.project-evidence-heading p {
+  margin: 0;
+}
+
+.project-evidence-heading > span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.project-evidence-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.project-evidence-list a {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--soft-panel) 76%, transparent);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.project-evidence-list a:hover,
+.project-evidence-list a:focus-visible {
+  border-color: var(--cyan);
+}
+
+.project-evidence-list small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.evidence-provenance {
+  color: var(--cyan);
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
 .feedback-dialog {
   width: min(580px, calc(100vw - 32px));
   max-height: min(90vh, 760px);
@@ -2038,6 +2129,14 @@ footer p {
 }
 
 @media (max-width: 720px) {
+  .project-evidence-list {
+    grid-template-columns: 1fr;
+  }
+
+  .project-evidence-heading {
+    align-items: flex-start;
+  }
+
   :root[data-project-layout="list"] .project-card,
   :root[data-project-layout="list"] .project-card.featured {
     grid-template-columns: minmax(0, 1fr);

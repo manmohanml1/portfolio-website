@@ -402,6 +402,64 @@ input:focus, button:focus-visible { outline: 3px solid rgba(23, 107, 77, .22); o
   padding: 18px;
   border-top: 1px solid var(--admin-line);
 }
+
+.publishing-readiness {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--admin-line);
+  border-radius: 5px;
+  background: var(--admin-panel);
+}
+
+.publishing-readiness > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.publishing-readiness progress {
+  width: 100%;
+  height: 7px;
+  accent-color: var(--admin-accent);
+}
+
+.publishing-readiness p {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: .76rem;
+}
+
+.readiness-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.readiness-checks span {
+  padding: 4px 7px;
+  border: 1px solid var(--admin-line);
+  border-radius: 4px;
+  color: var(--admin-muted);
+  font-size: .65rem;
+}
+
+.readiness-checks span[data-ready="true"] {
+  border-color: color-mix(in srgb, var(--admin-accent) 52%, var(--admin-line));
+  color: var(--admin-accent);
+}
+
+.evidence-source-list {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.evidence-source-list a {
+  width: fit-content;
+  color: var(--admin-accent);
+  font-size: .72rem;
+}
 .publishing-heading, .publishing-actions {
   display: flex;
   align-items: center;
@@ -463,6 +521,7 @@ input:focus, button:focus-visible { outline: 3px solid rgba(23, 107, 77, .22); o
 }
 .case-study-fields label { display: grid; min-width: 0; gap: 6px; }
 .case-study-fields label:nth-child(4), .case-study-fields label:nth-child(5) { grid-column: 1 / -1; }
+.case-study-fields label:nth-child(8) { grid-column: 1 / -1; }
 .case-study-fields label > span { color: var(--admin-muted); font-size: .7rem; font-weight: 750; }
 .case-study-fields textarea { width: 100%; min-width: 0; }
 .media-fields {
@@ -475,6 +534,17 @@ input:focus, button:focus-visible { outline: 3px solid rgba(23, 107, 77, .22); o
 .media-fields label > span { color: var(--admin-muted); font-size: .7rem; font-weight: 750; }
 .media-fields input { width: 100%; min-width: 0; }
 .media-fields > label:nth-of-type(3) { grid-column: 1 / -1; }
+.media-fields > label:nth-of-type(4), .media-fields > label:nth-of-type(5), .embed-toggle { grid-column: 1 / -1; }
+.embed-toggle {
+  display: flex !important;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 0;
+  color: var(--admin-muted);
+  font-size: .73rem;
+  font-weight: 700;
+}
+.embed-toggle input { width: auto !important; }
 .media-upload-control {
   grid-column: 1 / -1;
   display: flex;
