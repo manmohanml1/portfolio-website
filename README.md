@@ -8,7 +8,7 @@ Personal portfolio website presenting frontend, AI, and systems work in a theme-
 - Five distinct visual worlds: Swiss Grid, Interstellar, Studio Light, Terminal, and Neo Brutalist.
 - Responsive navigation, an accessible theme selector, reduced-motion control, and back-to-top control.
 - Anonymous device-local customization with complete audience-specific portfolio variants, spacious Cards/List project layouts, shareable `?view=` links, and no account requirement.
-- Project case-study dialogs with challenge/outcome context, interactive architecture explorers for selected systems, and curated visual previews when available.
+- Evidence-backed project case studies with architecture explorers, source provenance, and curated visual or live previews when available.
 - Private visitor suggestions from Contact or an individual project, delivered through a hosted form endpoint.
 - Portfolio content separated from UI behavior for easier updates.
 - Optional live inclusion of newly selected GitHub repositories through a repository topic.
@@ -40,7 +40,7 @@ http://localhost:4173/?flag=features.feedback.enabled:false&flag=features.projec
 ## Verification
 
 ```bash
-node scripts/check.mjs
+npm run check
 node --test
 ```
 
@@ -73,17 +73,17 @@ The browser application remains static, with a small read-only Vercel Function f
 
 ## Add A New Project
 
-New public GitHub repositories can be included without editing or redeploying the website:
+New public GitHub repositories enter an owner-reviewed publishing workflow:
 
 1. Open the repository on GitHub and edit its **About** topics.
 2. Add the topic `portfolio-showcase`.
 3. Optionally add one classification topic: `portfolio-frontend`, `portfolio-backend`, `portfolio-data`, `portfolio-ai`, or `portfolio-wearable`.
 4. Add a description, language, and relevant technology topics so the project card is informative.
-5. Add `portfolio-live` only after verifying that the repository homepage points to a working deployed app.
+5. Open the private Control Center, select **Sync GitHub**, review the extracted evidence and generated draft, then approve, keep pending, or hide the project.
 
-The published website reads public GitHub repository metadata and appends newly tagged projects to the curated project list. Untagged repositories remain on your GitHub profile rather than appearing in the portfolio automatically. Repositories described as Meta Ray-Ban Display or glasses-first apps are also presented as wearable projects, because their interaction and display constraints differ from ordinary web apps.
+The `portfolio-showcase` topic creates a review candidate; it never grants public visibility. Neon stores the synchronized repository evidence, generated draft, owner edits, publication state, media configuration, and audit history. The public endpoint returns approved projects only, while the checked-in catalog keeps the site useful during an integration outage.
 
-Every included repository receives a project card and a baseline detail dialog from its public description and technology topics. Rich preview imagery and deeper implementation notes are deliberately curated in the portfolio source only when the repository publishes a trustworthy screenshot or documented project context; projects without imagery show content only rather than an empty placeholder.
+Synchronization proposes presentation copy, architecture stages, case-study material, source links, images, and demos from bounded public repository evidence. The Control Center shows publication readiness and one next useful action; generated claims and media remain drafts until owner approval. Projects without approved imagery show content without an empty placeholder.
 
 ## Private Feedback
 

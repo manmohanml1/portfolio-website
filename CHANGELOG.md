@@ -6,6 +6,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Added owner-curated live application URLs and optional sandboxed card previews for approved GitHub projects. Live previews are explicitly enabled per project and fall back to the project cover and external link when a site does not permit framing.
+- Added repository-informed architecture-flow drafts to GitHub project sync, with structured owner-editable stages rendered through the public Architecture Explorer.
+- Added source provenance to synchronized case studies so visitors can distinguish GitHub-verified and repository-authored evidence and open the primary material directly.
+- Added project publication readiness checks and a single next-useful-action prompt to the owner review workflow.
+- Added CodeQL analysis, Dependabot configuration, production dependency auditing, tracked-secret pattern checks, a private vulnerability-reporting policy, and expanded PR security review fields.
+
+### Changed
+
+- Reworked the Android layout world’s header into a stable full-width app bar so its navigation no longer collapses into an awkward centered floating surface.
+- Reorganized project detail reading flow around overview, architecture, evidence, and external actions while keeping generated claims behind owner approval.
+
 ## [1.8.1] - 2026-08-09
 
 ### Fixed

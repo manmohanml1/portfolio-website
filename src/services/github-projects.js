@@ -144,6 +144,10 @@ export function applyProjectCuration(project, curation = {}) {
       alt: curation.media.coverImageAlt || `${curation.title || project.title} project preview`,
     }
     : null;
+  const live = curation.media?.liveUrl || project.live;
+  const embedPreviewUrl = curation.media?.embedEnabled && curation.media?.embedUrl
+    ? curation.media.embedUrl
+    : "";
   return {
     ...project,
     ownerReviewed: curation.ownerReviewed === true,
@@ -155,11 +159,16 @@ export function applyProjectCuration(project, curation = {}) {
     accent: categoryPresentation?.accent || project.accent,
     audiences: CATEGORY_AUDIENCES[category] || [],
     tags,
+    live,
     details: {
       ...(project.details || {}),
       ...(curation.caseStudy?.caseStudy ? { ...curation.caseStudy, caseStudy: true } : {}),
+      ...(Array.isArray(curation.evidence?.sources) && curation.evidence.sources.length
+        ? { evidenceSources: curation.evidence.sources }
+        : {}),
       ...(mediaPreview ? { preview: mediaPreview } : {}),
       ...(curation.media?.demoUrl ? { demoUrl: curation.media.demoUrl } : {}),
+      ...(embedPreviewUrl ? { embedPreviewUrl } : {}),
     },
   };
 }

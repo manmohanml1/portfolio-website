@@ -24,6 +24,15 @@ export function safeExternalUrl(value) {
   }
 }
 
+export function safeHttpsUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" ? url.href : "";
+  } catch {
+    return "";
+  }
+}
+
 export function tagsTemplate(tags) {
   return tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("");
 }

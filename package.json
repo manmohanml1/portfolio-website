@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "check": "node scripts/check.mjs",
+    "check": "node scripts/check.mjs && node scripts/check-secrets.mjs",
     "test": "node --test",
     "verify": "npm run check && npm test",
     "dev": "node dev-server.mjs"

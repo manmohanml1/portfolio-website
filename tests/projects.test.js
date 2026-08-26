@@ -148,6 +148,17 @@ test("disabled project dialogs leave repository access without dead detail contr
   assert.doesNotMatch(detail, /data-feedback-project|Suggest improvement/);
 });
 
+test("owner-enabled live previews render only with a safe HTTPS project URL", () => {
+  const card = createProjectCardTemplate({
+    ...projects[0],
+    details: { embedPreviewUrl: "https://example.com/preview" },
+    live: "https://example.com/live",
+  }, 0);
+  assert.match(card, /<iframe src="https:\/\/example\.com\/preview"/);
+  assert.match(card, /sandbox="allow-scripts allow-forms allow-popups"/);
+  assert.match(card, /Open live preview/);
+});
+
 test("curated system case studies render interactive architecture stages", () => {
   const dataProject = projects.find((project) => project.title === "Scalable Data Processing System");
   const template = createProjectDetailTemplate(dataProject);
@@ -156,6 +167,28 @@ test("curated system case studies render interactive architecture stages", () =>
   assert.match(template, /Architecture explorer/);
   assert.match(template, /data-architecture-label="Kafka \/ Kinesis"/);
   assert.match(template, /aria-pressed="true"/);
+});
+
+test("project details render traceable evidence sources as external links", () => {
+  const template = createProjectDetailTemplate({
+    title: "Evidence API",
+    type: "Backend",
+    description: "Traceable project",
+    repo: "https://github.com/example/evidence-api",
+    tags: ["Java"],
+    details: {
+      caseStudy: true,
+      evidenceSources: [{
+        kind: "verified",
+        label: "GitHub repository",
+        url: "https://github.com/example/evidence-api",
+        detail: "Primary source",
+      }],
+    },
+  });
+  assert.match(template, /Engineering evidence/);
+  assert.match(template, /GitHub verified/);
+  assert.match(template, /target="_blank" rel="noopener noreferrer"/);
 });
 
 test("project actions reserve case-study wording for genuinely curated stories", () => {

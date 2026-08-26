@@ -16,6 +16,7 @@ function toRepository(project) {
       category: project.category,
       tags: project.tags,
       caseStudy: project.caseStudy,
+      evidence: project.evidence,
       media: project.media,
       ownerReviewed: Boolean(project.reviewedBy && project.reviewedBy !== BASELINE_REVIEWER),
     },

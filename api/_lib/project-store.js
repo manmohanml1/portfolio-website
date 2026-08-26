@@ -16,6 +16,7 @@ const CASE_STUDY_FIELDS = Object.freeze({
   engineering: 800,
   outcome: 600,
 });
+const ARCHITECTURE_STEP_LIMIT = 6;
 
 function normalizeTags(value) {
   if (!Array.isArray(value)) return [];
@@ -41,12 +42,36 @@ function normalizeHttpsUrl(value) {
 
 function normalizeMedia(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return { coverImageUrl: "", coverImageAlt: "", demoUrl: "" };
+    return {
+      coverImageUrl: "", coverImageAlt: "", demoUrl: "", liveUrl: "", embedUrl: "", embedEnabled: false,
+    };
   }
   return {
     coverImageUrl: normalizeHttpsUrl(value.coverImageUrl),
     coverImageAlt: normalizeOptionalText(value.coverImageAlt, 180) || "",
     demoUrl: normalizeHttpsUrl(value.demoUrl),
+    liveUrl: normalizeHttpsUrl(value.liveUrl),
+    embedUrl: normalizeHttpsUrl(value.embedUrl),
+    embedEnabled: value.embedEnabled === true,
+  };
+}
+
+function normalizeArchitecture(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const steps = Array.isArray(value.steps)
+    ? value.steps
+      .map((step) => ({
+        label: normalizeOptionalText(step?.label, 80),
+        role: normalizeOptionalText(step?.role, 60),
+        detail: normalizeOptionalText(step?.detail, 260),
+      }))
+      .filter((step) => step.label && step.role && step.detail)
+      .slice(0, ARCHITECTURE_STEP_LIMIT)
+    : [];
+  if (!steps.length) return null;
+  return {
+    title: normalizeOptionalText(value.title, 120) || "System flow",
+    steps,
   };
 }
 
@@ -70,7 +95,7 @@ function mapProjectRow(row) {
     category: row.category_override ?? generatedPresentation.category ?? "",
     tags: row.tags_override ?? generatedPresentation.tags ?? [],
     evidence: row.extracted_evidence || {},
-    caseStudy: caseStudyOverride || generatedCaseStudy,
+    caseStudy: { ...generatedCaseStudy, ...(caseStudyOverride || {}) },
     caseStudySource: caseStudyOverride ? "owner" : "generated",
     media: mediaOverride || generatedPresentation.media || {},
     mediaSource: mediaOverride ? "owner" : "generated",
@@ -90,6 +115,7 @@ function normalizeCaseStudy(value) {
       normalizeOptionalText(value[field], maximum) || "",
     ])),
     highlights: normalizeTags(value.highlights),
+    architecture: normalizeArchitecture(value.architecture),
   };
 }
 

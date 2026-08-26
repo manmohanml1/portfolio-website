@@ -46,6 +46,8 @@ test("project drafts use observed repository evidence to prefill review content"
   assert.match(draft.caseStudy.challenge, /consistent/);
   assert.match(draft.caseStudy.build, /NestJS/);
   assert.match(draft.caseStudy.engineering, /Jest/);
+  assert.equal(draft.caseStudy.architecture.steps.length, 4);
+  assert.equal(draft.caseStudy.architecture.steps[0].label, "Repository surface");
   assert.equal(draft.evidence.source, "github");
 });
 

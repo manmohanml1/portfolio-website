@@ -396,14 +396,16 @@
   transition: border-color 220ms ease, background 220ms ease, box-shadow 220ms ease;
 }
 
-/* Android uses a floating app bar and tactile Material-style content surfaces. */
+/* Android uses a full-width app bar and tactile Material-style content surfaces. */
 :root[data-theme-layout="bento-os"] .site-header {
-  top: 12px;
-  width: min(1160px, calc(100% - 32px));
-  margin-top: 12px;
-  border: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
-  border-radius: 28px;
-  box-shadow: 0 12px 34px rgba(40, 62, 45, 0.1);
+  top: 0;
+  width: 100%;
+  margin-top: 0;
+  padding-right: max(16px, calc((100% - 1280px) / 2));
+  padding-left: max(16px, calc((100% - 1280px) / 2));
+  border-width: 0 0 1px;
+  border-radius: 0;
+  box-shadow: 0 8px 24px rgba(40, 62, 45, 0.08);
 }
 
 :root[data-theme-layout="bento-os"] nav a {

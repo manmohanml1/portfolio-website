@@ -56,10 +56,16 @@ test("owner curation overrides generated presentation without changing repositor
     category: "data",
     tags: ["TypeScript", "PostgreSQL", "AWS"],
     caseStudy: { caseStudy: true, summary: "Evidence-backed summary", build: "Built as an API." },
+    evidence: {
+      sources: [{ kind: "verified", label: "GitHub repository", url: "https://github.com/example/api" }],
+    },
     media: {
       coverImageUrl: "https://raw.githubusercontent.com/manmohanml1/fresh-api-project/main/preview.png",
       coverImageAlt: "API dashboard preview",
       demoUrl: "https://www.youtube.com/watch?v=example",
+      liveUrl: "https://example.com/live",
+      embedUrl: "https://example.com/embed",
+      embedEnabled: true,
     },
     ownerReviewed: true,
   });
@@ -72,9 +78,12 @@ test("owner curation overrides generated presentation without changing repositor
   assert.equal(project.repo, selectedRepository.html_url);
   assert.equal(project.details.summary, "Evidence-backed summary");
   assert.equal(project.details.caseStudy, true);
+  assert.equal(project.details.evidenceSources[0].kind, "verified");
   assert.match(project.details.preview.src, /preview\.png/);
   assert.equal(project.details.preview.alt, "API dashboard preview");
   assert.match(project.details.demoUrl, /youtube\.com/);
+  assert.equal(project.live, "https://example.com/live");
+  assert.equal(project.details.embedPreviewUrl, "https://example.com/embed");
   assert.equal(project.ownerReviewed, true);
 });
 

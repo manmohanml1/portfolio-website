@@ -119,7 +119,9 @@ function mapLocalRepository(repository, existing = {}) {
     category: ownerEdited ? existing.category : presentation.category || "",
     tags: ownerEdited ? existing.tags : presentation.tags || [],
     evidence: draft.evidence || existing.evidence || {},
-    caseStudy: ownerEdited ? existing.caseStudy : draft.caseStudy || {},
+    caseStudy: ownerEdited
+      ? { ...(draft.caseStudy || {}), ...(existing.caseStudy || {}) }
+      : draft.caseStudy || {},
     caseStudySource: ownerEdited ? "owner" : "generated",
     media: ownerEdited ? existing.media : presentation.media || {},
     mediaSource: ownerEdited ? "owner" : "generated",
