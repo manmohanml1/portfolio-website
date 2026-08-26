@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
-    "@vercel/blob": "^2.7.0",
-    "jose": "^6.2.8"
+    "@vercel/blob": "^2.8.0",
+    "jose": "^6.2.10"
   }
 }
