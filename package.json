@@ -7,8 +7,8 @@
     "dev": "node dev-server.mjs"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.1.0",
-    "@vercel/blob": "^2.7.0",
-    "jose": "^6.2.8"
+    "@neondatabase/serverless": "^1.2.0",
+    "@vercel/blob": "^2.8.0",
+    "jose": "^6.2.12"
   }
 }
